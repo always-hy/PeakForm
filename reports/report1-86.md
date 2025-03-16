@@ -84,7 +84,7 @@ The system will be deployed as a web-based application, ensuring accessibility a
   - **Core Technologies**  
     - **HTML:** Defines the structure and content of web pages.  
     - **CSS:** Styles the web application.. 
-    - **JS (JavaScript):** Adds interactivity, handles data fetching, and powers dynamic content.
+    - **JavaScript:** Adds interactivity, handles data fetching, and powers dynamic content.
 
   - **Frameworks**  
     - **React:** A component-based JavaScript library for building dynamic, reusable UI elements.  
