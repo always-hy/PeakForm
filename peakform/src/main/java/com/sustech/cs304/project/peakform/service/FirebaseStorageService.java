@@ -7,26 +7,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 @Service
 public class FirebaseStorageService {
 
+    public String uploadFile(MultipartFile file, String filePath) throws IOException {
+        Bucket bucket = StorageClient.getInstance().bucket();
+        String fileName = filePath + file.getOriginalFilename();
+        Blob blob = bucket.create(fileName, file.getBytes(), file.getContentType());
+        return blob.getMediaLink(); // Returns the public URL of the uploaded file
+    }
 
-    private static final Logger logger = Logger.getLogger(FirebaseStorageService.class.getName());
-
-    public String uploadFile(MultipartFile file) throws IOException {
-        try {
-            Bucket bucket = StorageClient.getInstance().bucket();
-            logger.info("Firebase bucket initialized: " + bucket.getName());
-
-            Blob blob = bucket.create(file.getOriginalFilename(), file.getBytes(), file.getContentType());
-            logger.info("File uploaded successfully: " + blob.getMediaLink());
-
-            return blob.getMediaLink();
-        } catch (Exception e) {
-            logger.severe("Error uploading file: " + e.getMessage());
-            throw e;
-        }
+    public String getFileUrl(String filePath) {
+        Bucket bucket = StorageClient.getInstance().bucket();
+        Blob blob = bucket.get(filePath);
+        return blob.getMediaLink(); // Returns the public URL of the file
     }
 }
