@@ -55,6 +55,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Workout> workouts;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserSchedule> userSchedules;
+
     public enum Gender {
         MALE, FEMALE, OTHER
     }

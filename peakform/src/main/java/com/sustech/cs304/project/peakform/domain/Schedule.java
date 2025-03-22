@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -38,6 +39,10 @@ public class Schedule {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, columnDefinition = "ENUM('AVAILABLE', 'FULL', 'BOOKED', 'COMPLETED', 'CANCELLED')")
     private Status status;
+
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserSchedule> userSchedules;
+
 
     public enum Status {
         AVAILABLE, FULL, BOOKED, COMPLETED, CANCELLED
