@@ -1,11 +1,11 @@
-### MacOS ###
 .DS_Store
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+.vscode/
