@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class UserStat {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy  = GenerationType.IDENTITY)
     @Column(name = "user_stat_id", columnDefinition = "INT UNSIGNED")
     private Long userStatId;
 
@@ -34,7 +34,7 @@ public class UserStat {
 
     @Column(name = "water_intake")
     private Float waterIntake;
-
+ 
     @Column(name = "calories_burned", columnDefinition = "INT UNSIGNED")
     private Integer caloriesBurned;
     
