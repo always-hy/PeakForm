@@ -9,12 +9,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-//@Table(
-//        name = "workout_exercise",
-//        uniqueConstraints = @UniqueConstraint(
-//                columnNames = {"workout_id", "exercise_id", "day"}
-//        )
-//)
+@Table(
+        name = "workout_exercise",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"workout_id", "exercise_id", "day"}
+        )
+)
 public class WorkoutExercise {
 
     @Id
