@@ -10,7 +10,6 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Table(
-        name = "workout_exercise",
         uniqueConstraints = @UniqueConstraint(
                 columnNames = {"workout_id", "exercise_id", "day"}
         )
