@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
@@ -47,7 +48,9 @@ public class FirebaseStorageService {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found.");
             }
 
-            return ResponseEntity.status(HttpStatus.OK).body(blob.getMediaLink());
+            String signedUrl = blob.signUrl(7, TimeUnit.DAYS).toString();
+
+            return ResponseEntity.status(HttpStatus.OK).body(signedUrl);
         } catch (StorageException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Firebase Storage error: " + e.getMessage());
         }
@@ -59,10 +62,17 @@ public class FirebaseStorageService {
             Page<Blob> blobs = bucket.list(Storage.BlobListOption.prefix(folderPath));
 
             List<String> fileUrls = new ArrayList<>();
-            for (Blob blob : blobs.iterateAll()) {
-                fileUrls.add(blob.getMediaLink());
-            }
+            boolean isFirst = true;
 
+            for (Blob blob : blobs.iterateAll()) {
+                if (isFirst) {
+                    isFirst = false;
+                    continue;
+                }
+                String signedUrl = blob.signUrl(7, TimeUnit.DAYS).toString();
+                fileUrls.add(signedUrl);
+            }
+            
             return ResponseEntity.status(HttpStatus.OK).body(fileUrls);
         } catch (StorageException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonList("Firebase Storage error: " + e.getMessage()));
