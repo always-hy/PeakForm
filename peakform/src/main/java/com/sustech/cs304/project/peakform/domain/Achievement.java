@@ -18,7 +18,7 @@ public class Achievement {
     @Column(name = "achievement_id", updatable = false, nullable = false)
     private Long achievementId;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "achievenmet_name", nullable = false)
     private String achievementName;
 
     @OneToMany(mappedBy = "achievement", cascade = CascadeType.ALL, orphanRemoval = true)
