@@ -3,6 +3,7 @@ package com.sustech.cs304.project.peakform.service;
 import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.*;
 import com.google.firebase.cloud.StorageClient;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -13,15 +14,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class FirebaseStorageService {
-
-    private final Storage storage;
-
-    public FirebaseStorageService() {
-        this.storage = StorageClient.getInstance().bucket().getStorage();
-    }
-
     public ResponseEntity<String> uploadFile(MultipartFile file, String filePath) {
         try {
             if (file.isEmpty()) {
