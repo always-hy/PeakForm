@@ -19,7 +19,7 @@ public class Achievement {
     private Long achievementId;
 
     @Column(name = "name", nullable = false)
-    private String name;
+    private String achievementName;
 
     @OneToMany(mappedBy = "achievement", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserAchievement> userAchievements;

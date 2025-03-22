@@ -1,7 +1,9 @@
 package com.sustech.cs304.project.peakform.config;
 
+import com.sustech.cs304.project.peakform.domain.Achievement;
 import com.sustech.cs304.project.peakform.domain.Exercise;
 import com.sustech.cs304.project.peakform.domain.Gym;
+import com.sustech.cs304.project.peakform.repository.AchievementRepository;
 import com.sustech.cs304.project.peakform.repository.ExerciseRepository;
 import com.sustech.cs304.project.peakform.repository.GymRepository;
 import jakarta.annotation.PostConstruct;
@@ -17,11 +19,13 @@ public class DataInitializer {
 
     private final ExerciseRepository exerciseRepository;
     private final GymRepository gymRepository;
+    private final AchievementRepository achievementRepository;
 
     @PostConstruct
     public void init() {
         initExerciseData();
         initGymData();
+        initAchievementData();
     }
 
     private void initExerciseData() {
@@ -89,4 +93,20 @@ public class DataInitializer {
             gymRepository.saveAll(gyms);
         }
     }
+
+    private void initAchievementData() {
+        if (achievementRepository.count() == 0) {
+            List<Achievement> achievements = List.of(
+                    Achievement.builder().achievementName("10 Workout Streak").build(),
+                    Achievement.builder().achievementName("50 Workout Streak").build(),
+                    Achievement.builder().achievementName("100 Workout Streak").build(),
+                    Achievement.builder().achievementName("10 Water Intake Streak").build(),
+                    Achievement.builder().achievementName("50 Water Intake Streak").build(),
+                    Achievement.builder().achievementName("100 Water Intake Streak").build(),
+                    Achievement.builder().achievementName("Target Weight Reached").build()
+            );
+            achievementRepository.saveAll(achievements);
+        }
+    }
+
 }
