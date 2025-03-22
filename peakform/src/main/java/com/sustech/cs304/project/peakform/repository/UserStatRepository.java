@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserStatRepository extends JpaRepository<UserStat, Long> {
-    // You can add custom queries here if needed, but this will provide basic CRUD operations
 }
