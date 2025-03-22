@@ -52,6 +52,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserStat> userStats;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Workout> workouts;
+
     public enum Gender {
         MALE, FEMALE, OTHER
     }
