@@ -4,6 +4,7 @@ import com.sustech.cs304.project.peakform.domain.User;
 import com.sustech.cs304.project.peakform.dto.RegistrationRequest;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +15,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public String registerUser(RegistrationRequest registrationRequest) {
+    public ResponseEntity<String> registerUser(RegistrationRequest registrationRequest) {
         if (registrationRequest.getUsername() == null || registrationRequest.getEmail() == null || registrationRequest.getPassword() == null) {
-            return "Username, email, and password are required.";
+            return ResponseEntity.status(404).body("Username, email, and password are required.");
         }
 
         if (userRepository.findByEmail(registrationRequest.getEmail()).isPresent()) {
-            return "Email is already registered.";
+            return ResponseEntity.status(404).body("Email is already registered.");
         }
 
         String hashedPassword = passwordEncoder.encode(registrationRequest.getPassword());
@@ -34,6 +35,6 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
-        return "Registration successful.";
+        return ResponseEntity.status(200).body("Registration successful.");
     }
 }
