@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -24,8 +25,9 @@ public class FileController {
     @PostMapping("/upload/gym-photo")
     public ResponseEntity<String> uploadGymPhoto(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("gymId") String gymId) {
-        return firebaseStorageService.uploadFile(file, "gym-photo/" + gymId + "/photo.jpg");
+            @RequestParam("gymId") String gymId,
+            @RequestParam("photoId") String photoId) {
+        return firebaseStorageService.uploadFile(file, "gym-photo/" + gymId + "/" + photoId + ".jpg");
     }
 
     @PostMapping("/upload/exercise-video")
@@ -41,12 +43,19 @@ public class FileController {
     }
 
     @GetMapping("/gym-photo")
-    public ResponseEntity<String> getGymPhotoUrl(@RequestParam("gymId") String gymId) {
-        return firebaseStorageService.getFileUrl("gym-photo/" + gymId + "/photo.jpg");
+    public ResponseEntity<String> getGymPhotoUrl(
+            @RequestParam("gymId") String gymId,
+            @RequestParam("photoId") String photoId) {
+        return firebaseStorageService.getFileUrl("gym-photo/" + gymId + "/" + photoId + ".jpg");
     }
 
     @GetMapping("/exercise-video")
     public ResponseEntity<String> getExerciseVideoUrl(@RequestParam("exerciseId") String exerciseId) {
         return firebaseStorageService.getFileUrl("exercise-video/" + exerciseId + ".mp4");
+    }
+
+    @GetMapping("/gym-photos")
+    public ResponseEntity<List<String>> listGymPhotos(@RequestParam("gymId") String gymId) {
+        return firebaseStorageService.listFiles("gym-photo/" + gymId + "/");
     }
 }
