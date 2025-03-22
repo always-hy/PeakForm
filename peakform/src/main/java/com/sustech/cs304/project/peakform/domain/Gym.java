@@ -25,9 +25,8 @@ public class Gym {
     @Column(name = "location", nullable = false, columnDefinition = "TEXT")
     private String location;
 
-    @Column(name = "contact", length = 3, nullable = false)
+    @Column(name = "contact", length = 30, nullable = false)
     private String contact;
-
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
@@ -38,8 +37,8 @@ public class Gym {
     @Column(name = "end_time", nullable = false)
     private LocalTime endTime;
 
-    @Column(name = "max_capacity", columnDefinition = "INT UNSIGNED")
-    private Integer maxCapacity;
+    @Column(name = "session_max_capacity", columnDefinition = "INT UNSIGNED")
+    private Integer sessionMaxCapacity;
 
     @Column(name = "session_interval", columnDefinition = "FLOAT UNSIGNED")
     private Float sessionInterval;
