@@ -18,7 +18,7 @@ public class FileController {
     public ResponseEntity<String> uploadUserProfilePicture(
             @RequestParam("file") MultipartFile file,
             @RequestParam("userId") String userId) {
-        return firebaseStorageService.uploadFile(file, "user-profile/" + userId + "/profile.jpg");
+        return firebaseStorageService.uploadFile(file, "user-profile/" + userId + ".jpg");
     }
 
     @PostMapping("/upload/gym-photo")
@@ -32,12 +32,12 @@ public class FileController {
     public ResponseEntity<String> uploadExerciseVideo(
             @RequestParam("file") MultipartFile file,
             @RequestParam("exerciseId") String exerciseId) {
-        return firebaseStorageService.uploadFile(file, "exercise-video/" + exerciseId + "/video.mp4");
+        return firebaseStorageService.uploadFile(file, "exercise-video/" + exerciseId + ".mp4");
     }
 
     @GetMapping("/user-profile")
     public ResponseEntity<String> getUserProfilePictureUrl(@RequestParam("userId") String userId) {
-        return firebaseStorageService.getFileUrl("user-profile/" + userId + "/profile.jpg");
+        return firebaseStorageService.getFileUrl("user-profile/" + userId + ".jpg");
     }
 
     @GetMapping("/gym-photo")
@@ -47,6 +47,6 @@ public class FileController {
 
     @GetMapping("/exercise-video")
     public ResponseEntity<String> getExerciseVideoUrl(@RequestParam("exerciseId") String exerciseId) {
-        return firebaseStorageService.getFileUrl("exercise-video/" + exerciseId + "/video.mp4");
+        return firebaseStorageService.getFileUrl("exercise-video/" + exerciseId + ".mp4");
     }
 }

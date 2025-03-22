@@ -10,4 +10,5 @@ public class RegistrationRequest {
     private String password;
     private Integer age;
     private User.Gender gender;
+    private String recaptchaResponse;
 }
