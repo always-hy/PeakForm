@@ -39,7 +39,7 @@
      ```
      ./gradlew bootRun
      ```
-   - The backend server will run on `localhost:8081`.
+   - The backend server will run on `localhost:8080`.
 
 ---
 
