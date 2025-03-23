@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -14,7 +13,13 @@ import java.util.List;
 @RequestMapping("/files")
 public class FileController {
     private final FirebaseStorageService firebaseStorageService;
-
+    /**
+     * AI-generated-content
+     * tool: DeepSeek
+     * version: latest
+     * usage: I asked the tool to guide me on how to implement a get and post method for user profile picture.
+     * I learned from it and completed the get and post methods for gym photo and exercise video.
+     */
     @PostMapping("/upload/user-profile")
     public ResponseEntity<String> uploadUserProfilePicture(
             @RequestParam("file") MultipartFile file,

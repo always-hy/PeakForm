@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +21,15 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final RestTemplate restTemplate;
+    private final EmailService emailService;
 
+    /**
+     * AI-generated-content
+     * tool: DeepSeek
+     * version: latest
+     * usage: I asked the tool to introduce me the workflow of recaptcha and email verification.
+     * I referred to the idea and template provided and implemented the function with different tutorials online.
+     */
     public ResponseEntity<String> registerUser(RegistrationRequest registrationRequest) {
         if (registrationRequest.getUsername() == null || registrationRequest.getEmail() == null || registrationRequest.getPassword() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username, email, and password are required.");
@@ -36,6 +45,7 @@ public class UserService {
         }
 
         String hashedPassword = passwordEncoder.encode(registrationRequest.getPassword());
+        String verificationToken = UUID.randomUUID().toString();
 
         User user = User.builder()
                 .username(registrationRequest.getUsername())
@@ -43,10 +53,13 @@ public class UserService {
                 .password(hashedPassword)
                 .age(registrationRequest.getAge() != null ? registrationRequest.getAge() : 0)
                 .gender(registrationRequest.getGender() != null ? registrationRequest.getGender() : User.Gender.OTHER)
+                .emailVerified(false)
+                .verificationToken(verificationToken)
                 .build();
 
         userRepository.save(user);
-        return ResponseEntity.status(HttpStatus.OK).body("Registration successful.");
+        emailService.sendVerificationEmail(user.getEmail(), verificationToken);
+        return ResponseEntity.status(HttpStatus.OK).body("Registration successful. Please check your email to verify your account.");
     }
 
     private boolean verifyRecaptcha(String recaptchaResponse) {

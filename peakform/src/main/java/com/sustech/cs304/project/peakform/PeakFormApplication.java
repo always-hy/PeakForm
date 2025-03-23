@@ -11,6 +11,8 @@ public class PeakFormApplication {
 		Dotenv dotenv = Dotenv.load();
 		System.setProperty("spring.datasource.username", dotenv.get("DB_USERNAME"));
 		System.setProperty("spring.datasource.password", dotenv.get("DB_PASSWORD"));
+		System.setProperty("spring.mail.username", dotenv.get("MAIL_USERNAME"));
+		System.setProperty("spring.mail.password", dotenv.get("MAIL_PASSWORD"));
 		SpringApplication.run(PeakFormApplication.class, args);
 	}
 }

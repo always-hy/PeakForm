@@ -11,7 +11,7 @@ public class UserStatService {
     @Autowired
     private UserStatRepository userStatRepository;
 
-    // Meth  od to save user stat
+    // Method to save user stat
     public UserStat createUserStat(UserStat userStat) {
         return userStatRepository.save(userStat);  // Save the user stat to the database
     }

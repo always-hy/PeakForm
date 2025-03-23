@@ -40,8 +40,14 @@ public class User {
     @Column(name = "bio", columnDefinition = "TEXT")
     private String bio;
 
-    @Column(name = "profile_picture")
-    private String profilePicture;
+//    @Column(name = "profile_picture")
+//    private String profilePicture;
+
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified;
+
+    @Column(name = "verification_token")
+    private String verificationToken;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserRecord userRecord;

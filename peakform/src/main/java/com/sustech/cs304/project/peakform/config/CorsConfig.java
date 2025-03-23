@@ -6,7 +6,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
-
+    /**
+     * AI-generated-content
+     * tool: DeepSeek
+     * version: latest
+     * usage: I asked the tool why there was an error when interacting between frontend and backend on the same browser.
+     * The tool provided me a template code like the following and I have modified it according to my needs.
+     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Allow all endpoints
