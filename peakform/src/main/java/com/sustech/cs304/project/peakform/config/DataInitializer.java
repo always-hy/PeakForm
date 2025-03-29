@@ -3,9 +3,11 @@ package com.sustech.cs304.project.peakform.config;
 import com.sustech.cs304.project.peakform.domain.Achievement;
 import com.sustech.cs304.project.peakform.domain.Exercise;
 import com.sustech.cs304.project.peakform.domain.Gym;
+import com.sustech.cs304.project.peakform.domain.User;
 import com.sustech.cs304.project.peakform.repository.AchievementRepository;
 import com.sustech.cs304.project.peakform.repository.ExerciseRepository;
 import com.sustech.cs304.project.peakform.repository.GymRepository;
+import com.sustech.cs304.project.peakform.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -17,17 +19,56 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DataInitializer {
 
+    private final UserRepository userRepository;
     private final ExerciseRepository exerciseRepository;
     private final GymRepository gymRepository;
     private final AchievementRepository achievementRepository;
 
     @PostConstruct
     public void init() {
+        initUserData();
         initExerciseData();
         initGymData();
         initAchievementData();
     }
 
+    private void initUserData() {
+        if (userRepository.count() == 0) {
+            List<User> users = List.of(
+                    User.builder()
+                            .username("bong layheng")
+                            .email("layhenghok@gmail.com")
+                            .password("1")
+                            .age(18)
+                            .gender(User.Gender.OTHER)
+                            .bio("hello")
+                            .emailVerified(true)
+                            .verificationToken(null)
+                            .build(),
+                    User.builder()
+                            .username("oun jouwy")
+                            .email("jouwy@gmail.com")
+                            .password("1")
+                            .age(18)
+                            .gender(User.Gender.OTHER)
+                            .bio("hello")
+                            .emailVerified(true)
+                            .verificationToken(null)
+                            .build(),
+                    User.builder()
+                            .username("deadlift")
+                            .email("peakform.noreply@gmail.com")
+                            .password("1")
+                            .age(18)
+                            .gender(User.Gender.OTHER)
+                            .bio("hello")
+                            .emailVerified(true)
+                            .verificationToken(null)
+                            .build()
+            );
+            userRepository.saveAll(users);
+        }
+    }
     private void initExerciseData() {
         if (exerciseRepository.count() == 0) {
             List<Exercise> exercises = List.of(

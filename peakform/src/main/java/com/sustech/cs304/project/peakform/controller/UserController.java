@@ -15,8 +15,6 @@ public class UserController {
 
     @GetMapping("/verify-email")
     public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
-        System.out.println("token: " + token);
-        System.out.println(userRepository.findByVerificationToken(token));
         return userRepository.findByVerificationToken(token)
             .map(user -> {
                 user.setEmailVerified(true);
