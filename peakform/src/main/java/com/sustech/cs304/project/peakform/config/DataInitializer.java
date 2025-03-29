@@ -9,7 +9,9 @@ import com.sustech.cs304.project.peakform.repository.ExerciseRepository;
 import com.sustech.cs304.project.peakform.repository.GymRepository;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
@@ -23,45 +25,55 @@ public class DataInitializer {
     private final ExerciseRepository exerciseRepository;
     private final GymRepository gymRepository;
     private final AchievementRepository achievementRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Transactional
     @PostConstruct
     public void init() {
+        clearData();
         initUserData();
         initExerciseData();
         initGymData();
         initAchievementData();
     }
 
+    private void clearData() {
+        userRepository.deleteAll();
+        exerciseRepository.deleteAll();
+        gymRepository.deleteAll();
+        achievementRepository.deleteAll();
+    }
+
     private void initUserData() {
         if (userRepository.count() == 0) {
             List<User> users = List.of(
                     User.builder()
-                            .username("bong layheng")
-                            .email("layhenghok@gmail.com")
-                            .password("1")
-                            .age(18)
-                            .gender(User.Gender.OTHER)
-                            .bio("hello")
+                            .username("Toji Fushiguro")
+                            .email("fbringer99@gmail.com")
+                            .password(bCryptPasswordEncoder.encode("1"))
+                            .age(23)
+                            .gender(User.Gender.MALE)
+                            .bio("The Sorcerer Killer")
                             .emailVerified(true)
                             .verificationToken(null)
                             .build(),
                     User.builder()
-                            .username("oun jouwy")
-                            .email("jouwy@gmail.com")
-                            .password("1")
-                            .age(18)
-                            .gender(User.Gender.OTHER)
-                            .bio("hello")
+                            .username("Escanor")
+                            .email("prakbunlong53@gmail.com")
+                            .password(bCryptPasswordEncoder.encode("1"))
+                            .age(53)
+                            .gender(User.Gender.FEMALE)
+                            .bio("The Lion's Sin of Pride")
                             .emailVerified(true)
                             .verificationToken(null)
                             .build(),
                     User.builder()
-                            .username("deadlift")
-                            .email("peakform.noreply@gmail.com")
-                            .password("1")
-                            .age(18)
+                            .username("Guts")
+                            .email("sussycourses@gmail.com")
+                            .password(bCryptPasswordEncoder.encode("1"))
+                            .age(20)
                             .gender(User.Gender.OTHER)
-                            .bio("hello")
+                            .bio("The Black Swordsman")
                             .emailVerified(true)
                             .verificationToken(null)
                             .build()
