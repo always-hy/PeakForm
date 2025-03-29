@@ -3,7 +3,6 @@ package com.sustech.cs304.project.peakform.service;
 import com.sustech.cs304.project.peakform.domain.Gym;
 import com.sustech.cs304.project.peakform.domain.GymSchedule;
 import com.sustech.cs304.project.peakform.repository.GymRepository;
-import com.sustech.cs304.project.peakform.repository.GymScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +15,6 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class GymScheduleService {
-    private final GymScheduleRepository gymScheduleRepository;
     private final GymRepository gymRepository;
 
     public List<GymSchedule> generateGymSchedules(Long gymId) {

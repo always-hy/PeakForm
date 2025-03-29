@@ -6,6 +6,7 @@ import com.sustech.cs304.project.peakform.dto.GymDetailResponse;
 import com.sustech.cs304.project.peakform.dto.GymListResponse;
 import com.sustech.cs304.project.peakform.dto.GymScheduleResponse;
 import com.sustech.cs304.project.peakform.repository.GymRepository;
+import com.sustech.cs304.project.peakform.repository.GymScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ public class GymService {
 
     private final GymScheduleService gymScheduleService;
     private final FirebaseStorageService firebaseStorageService;
+    private final GymScheduleRepository gymScheduleRepository;
 
     public ResponseEntity<List<GymListResponse>> getGyms() {
         List<Gym> gyms = gymRepository.findAll();
@@ -49,7 +51,7 @@ public class GymService {
 
         ResponseEntity<List<String>> gymPhotos = firebaseStorageService.getFiles("gym-photo/" + gymId + "/");
 
-        List<GymSchedule> gymSchedules = gymScheduleService.generateGymSchedules(gymId);
+        List<GymSchedule> gymSchedules = gymScheduleRepository.findByGym_GymId(gymId);
         List<GymScheduleResponse> gymScheduleResponses = gymSchedules.stream()
                 .map(schedule -> new GymScheduleResponse(
                         schedule.getDate(),
