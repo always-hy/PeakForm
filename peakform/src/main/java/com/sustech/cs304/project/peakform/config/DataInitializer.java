@@ -69,6 +69,7 @@ public class DataInitializer {
             userRepository.saveAll(users);
         }
     }
+
     private void initExerciseData() {
         if (exerciseRepository.count() == 0) {
             List<Exercise> exercises = List.of(
@@ -101,7 +102,7 @@ public class DataInitializer {
         if (gymRepository.count() == 0) {
             List<Gym> gyms = List.of(
                     Gym.builder()
-                            .name("FitPower Gym")
+                            .gymName("FitPower Gym")
                             .location("123 Fitness St, City Center")
                             .contact("123-456-7890")
                             .startTime(LocalTime.of(6, 0))
@@ -111,7 +112,7 @@ public class DataInitializer {
                             .description("A high-end gym with the best equipment and trainers.")
                             .build(),
                     Gym.builder()
-                            .name("StrengthHub Gym")
+                            .gymName("StrengthHub Gym")
                             .location("456 Muscle Rd, Downtown")
                             .contact("987-654-3210")
                             .startTime(LocalTime.of(7, 0))
@@ -121,7 +122,7 @@ public class DataInitializer {
                             .description("A gym focused on weightlifting and strength training.")
                             .build(),
                     Gym.builder()
-                            .name("FlexZone Gym")
+                            .gymName("FlexZone Gym")
                             .location("789 Fit Blvd, Uptown")
                             .contact("555-888-2222")
                             .startTime(LocalTime.of(5, 0))
