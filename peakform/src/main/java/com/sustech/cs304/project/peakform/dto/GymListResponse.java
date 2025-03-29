@@ -8,6 +8,7 @@ public record GymListResponse(
         LocalTime endTime,
         String location,
         String description,
-        String contact
+        String contact,
+        String gymCoverPhoto
 ) {
 }

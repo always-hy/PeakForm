@@ -6,13 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/files")
 public class FileController {
     private final FirebaseStorageService firebaseStorageService;
+
     /**
      * AI-generated-content
      * tool: DeepSeek
@@ -57,10 +56,5 @@ public class FileController {
     @GetMapping("/exercise-video")
     public ResponseEntity<String> getExerciseVideoUrl(@RequestParam("exerciseId") String exerciseId) {
         return firebaseStorageService.getFileUrl("exercise-video/" + exerciseId + ".mp4");
-    }
-
-    @GetMapping("/gym-photos")
-    public ResponseEntity<List<String>> listGymPhotos(@RequestParam("gymId") String gymId) {
-        return firebaseStorageService.listFiles("gym-photo/" + gymId + "/");
     }
 }

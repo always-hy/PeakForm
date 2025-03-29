@@ -10,6 +10,7 @@ public record GymDetailResponse(
         String location,
         String description,
         String contact,
-        List<GymScheduleResponse> gymScheduleResponse
+        List<String> gymPhotos,
+        List<GymScheduleResponse> gymSessions
 ) {
 }

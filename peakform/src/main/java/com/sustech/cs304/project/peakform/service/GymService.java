@@ -20,6 +20,7 @@ public class GymService {
     private final GymRepository gymRepository;
 
     private final GymScheduleService gymScheduleService;
+    private final FirebaseStorageService firebaseStorageService;
 
     public ResponseEntity<List<GymListResponse>> getGyms() {
         List<Gym> gyms = gymRepository.findAll();
@@ -30,7 +31,8 @@ public class GymService {
                         gym.getEndTime(),
                         gym.getLocation(),
                         gym.getDescription(),
-                        gym.getContact()
+                        gym.getContact(),
+                        firebaseStorageService.getFiles("gym-photo/" + gym.getGymId() + "/").getBody().get(0)
                 ))
                 .toList();
         return ResponseEntity.status(HttpStatus.OK).body(gymResponses);
@@ -43,6 +45,9 @@ public class GymService {
         }
 
         Gym gym = gymOptional.get();
+
+
+        ResponseEntity<List<String>> gymPhotos = firebaseStorageService.getFiles("gym-photo/" + gymId + "/");
 
         List<GymSchedule> gymSchedules = gymScheduleService.generateGymSchedules(gymId);
         List<GymScheduleResponse> gymScheduleResponses = gymSchedules.stream()
@@ -62,6 +67,7 @@ public class GymService {
                 gym.getLocation(),
                 gym.getDescription(),
                 gym.getContact(),
+                gymPhotos.getBody(),
                 gymScheduleResponses
         );
 
