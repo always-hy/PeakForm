@@ -1,0 +1,15 @@
+package com.sustech.cs304.project.peakform.dto;
+
+import com.sustech.cs304.project.peakform.domain.GymSchedule;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+
+public record GymScheduleResponse(
+        LocalDate date,
+        LocalTime sessionStart,
+        LocalTime sessionEnd,
+        Integer availableSlots,
+        GymSchedule.Status status
+) {
+}
