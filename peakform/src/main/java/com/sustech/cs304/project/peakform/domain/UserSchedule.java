@@ -21,6 +21,6 @@ public class UserSchedule {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "schedule_id", nullable = false)
-    private Schedule schedule;
+    @JoinColumn(name = "gym_schedule_id", nullable = false)
+    private GymSchedule gymSchedule;
 }

@@ -13,12 +13,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Schedule {
+public class GymSchedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "schedule_id", updatable = false, nullable = false)
-    private Long scheduleId;
+    @Column(name = "gym_schedule_id", updatable = false, nullable = false)
+    private Long gymScheduleId;
 
     @ManyToOne
     @JoinColumn(name = "gym_id", nullable = false)
@@ -33,14 +33,14 @@ public class Schedule {
     @Column(name = "session_end", nullable = false)
     private LocalTime sessionEnd;
 
-    @Column(name = "capacity", nullable = false, columnDefinition = "INT UNSIGNED")
-    private Integer capacity;
+    @Column(name = "available_slots", nullable = false, columnDefinition = "INT UNSIGNED")
+    private Integer availableSlots;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, columnDefinition = "ENUM('AVAILABLE', 'FULL', 'BOOKED', 'COMPLETED', 'CANCELLED')")
     private Status status;
 
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "gymSchedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserSchedule> userSchedules;
 
 

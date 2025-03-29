@@ -4,10 +4,8 @@ import com.sustech.cs304.project.peakform.domain.Achievement;
 import com.sustech.cs304.project.peakform.domain.Exercise;
 import com.sustech.cs304.project.peakform.domain.Gym;
 import com.sustech.cs304.project.peakform.domain.User;
-import com.sustech.cs304.project.peakform.repository.AchievementRepository;
-import com.sustech.cs304.project.peakform.repository.ExerciseRepository;
-import com.sustech.cs304.project.peakform.repository.GymRepository;
-import com.sustech.cs304.project.peakform.repository.UserRepository;
+import com.sustech.cs304.project.peakform.repository.*;
+import com.sustech.cs304.project.peakform.service.GymScheduleService;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +22,11 @@ public class DataInitializer {
     private final UserRepository userRepository;
     private final ExerciseRepository exerciseRepository;
     private final GymRepository gymRepository;
+    private final GymScheduleRepository gymScheduleRepository;
     private final AchievementRepository achievementRepository;
+
+    private final GymScheduleService gymScheduleService;
+
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Transactional
@@ -34,6 +36,7 @@ public class DataInitializer {
         initUserData();
         initExerciseData();
         initGymData();
+        initGymScheduleData();
         initAchievementData();
     }
 
@@ -41,6 +44,7 @@ public class DataInitializer {
         userRepository.deleteAll();
         exerciseRepository.deleteAll();
         gymRepository.deleteAll();
+        gymScheduleRepository.deleteAll();
         achievementRepository.deleteAll();
     }
 
@@ -117,9 +121,9 @@ public class DataInitializer {
                             .gymName("FitPower Gym")
                             .location("123 Fitness St, City Center")
                             .contact("123-456-7890")
-                            .startTime(LocalTime.of(6, 0))
-                            .endTime(LocalTime.of(22, 0))
-                            .sessionMaxCapacity(10)
+                            .startTime(LocalTime.of(9, 0))
+                            .endTime(LocalTime.of(21, 0))
+                            .sessionMaxCapacity(15)
                             .sessionInterval(1.5f)
                             .description("A high-end gym with the best equipment and trainers.")
                             .build(),
@@ -127,9 +131,9 @@ public class DataInitializer {
                             .gymName("StrengthHub Gym")
                             .location("456 Muscle Rd, Downtown")
                             .contact("987-654-3210")
-                            .startTime(LocalTime.of(7, 0))
-                            .endTime(LocalTime.of(21, 0))
-                            .sessionMaxCapacity(15)
+                            .startTime(LocalTime.of(2, 0))
+                            .endTime(LocalTime.of(20, 0))
+                            .sessionMaxCapacity(10)
                             .sessionInterval(1.0f)
                             .description("A gym focused on weightlifting and strength training.")
                             .build(),
@@ -137,14 +141,21 @@ public class DataInitializer {
                             .gymName("FlexZone Gym")
                             .location("789 Fit Blvd, Uptown")
                             .contact("555-888-2222")
-                            .startTime(LocalTime.of(5, 0))
-                            .endTime(LocalTime.of(23, 0))
+                            .startTime(LocalTime.of(10, 0))
+                            .endTime(LocalTime.of(22, 0))
                             .sessionMaxCapacity(20)
                             .sessionInterval(2.0f)
                             .description("A modern gym with various workout zones.")
                             .build()
             );
             gymRepository.saveAll(gyms);
+        }
+    }
+
+    private void initGymScheduleData() {
+        List<Gym> gyms = gymRepository.findAll();
+        for (Gym gym : gyms) {
+            gymScheduleRepository.saveAll(gymScheduleService.generateGymSchedules(gym.getGymId()));
         }
     }
 
