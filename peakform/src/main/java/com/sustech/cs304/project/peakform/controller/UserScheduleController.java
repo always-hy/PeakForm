@@ -4,10 +4,7 @@ import com.sustech.cs304.project.peakform.service.UserScheduleService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -23,5 +20,12 @@ public class UserScheduleController {
     public ResponseEntity<String> bookGymSession(@RequestParam(value = "gymSessionId") Long gymSessionId,
                                                  @RequestParam(value = "userUuid") UUID userUuid) {
         return userScheduleService.bookGymSession(gymSessionId, userUuid);
+    }
+
+    @Transactional
+    @PutMapping("/cancel")
+    public ResponseEntity<String> cancelGymSession(@RequestParam(value = "gymSessionId") Long gymSessionId,
+                                                   @RequestParam(value = "userUuid") UUID userUuid) {
+        return userScheduleService.cancelGymSession(gymSessionId, userUuid);
     }
 }
