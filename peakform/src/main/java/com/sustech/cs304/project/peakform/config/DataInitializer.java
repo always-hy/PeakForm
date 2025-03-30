@@ -2,7 +2,7 @@ package com.sustech.cs304.project.peakform.config;
 
 import com.sustech.cs304.project.peakform.domain.*;
 import com.sustech.cs304.project.peakform.repository.*;
-import com.sustech.cs304.project.peakform.service.GymScheduleService;
+import com.sustech.cs304.project.peakform.service.GymSessionService;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +22,10 @@ public class DataInitializer {
     private final UserRepository userRepository;
     private final ExerciseRepository exerciseRepository;
     private final GymRepository gymRepository;
-    private final GymScheduleRepository gymScheduleRepository;
+    private final GymSessionRepository gymSessionRepository;
     private final AchievementRepository achievementRepository;
 
-    private final GymScheduleService gymScheduleService;
+    private final GymSessionService gymSessionService;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserScheduleRepository userScheduleRepository;
@@ -36,7 +36,7 @@ public class DataInitializer {
         initUserData();
         initExerciseData();
         initGymData();
-        initGymScheduleData();
+        initGymSessionData();
         initUserScheduleData();
         initAchievementData();
     }
@@ -160,7 +160,7 @@ public class DataInitializer {
                             .gymName("EQUINOX")
                             .location("456 Old Rd, Downtown")
                             .contact("987-654-3210")
-                            .startTime(LocalTime.of(2, 0))
+                            .startTime(LocalTime.of(14, 0))
                             .endTime(LocalTime.of(20, 0))
                             .sessionMaxCapacity(10)
                             .sessionInterval(1.0f)
@@ -182,10 +182,12 @@ public class DataInitializer {
         }
     }
 
-    private void initGymScheduleData() {
-        List<Gym> gyms = gymRepository.findAll();
-        for (Gym gym : gyms) {
-            gymScheduleRepository.saveAll(gymScheduleService.generateGymSchedules(gym.getGymId()));
+    private void initGymSessionData() {
+        if (gymSessionRepository.count() == 0) {
+            List<Gym> gyms = gymRepository.findAll();
+            for (Gym gym : gyms) {
+                gymSessionRepository.saveAll(gymSessionService.generateGymSessions(gym.getGymId()));
+            }
         }
     }
 
@@ -195,43 +197,43 @@ public class DataInitializer {
      * version: 4o
      * usage: I had a persistent bug that I could not update the available slots correctly when I had to update the same
      * available slots twice. I copied and pasted my original code and asked ChatGPT to fix it. I copied and pasted the
-     * code from ChatGPT, then made some modifications. I learned from it that I should fetch all GymSchedule instances
-     * in one query and caches them in Map to avoid fetching the same schedule multiple times, so that it holds the same
+     * code from ChatGPT, then made some modifications. I learned from it that I should fetch all GymSession instances
+     * in one query and caches them in Map to avoid fetching the same session multiple times, so that it holds the same
      * reference.
      */
     private void initUserScheduleData() {
         if (userScheduleRepository.count() == 0) {
-            // Fetch all required GymSchedules in one batch
-            List<Long> gymScheduleIds = List.of(2L, 6L, 10L, 28L);
-            Map<Long, GymSchedule> gymScheduleMap = gymScheduleRepository.findAllById(gymScheduleIds)
+            // Fetch all required GymSessions in one batch
+            List<Long> gymSessionIds = List.of(2L, 6L, 10L, 18L);
+            Map<Long, GymSession> gymSessionMap = gymSessionRepository.findAllById(gymSessionIds)
                     .stream()
-                    .collect(Collectors.toMap(GymSchedule::getGymScheduleId, schedule -> schedule));
+                    .collect(Collectors.toMap(GymSession::getGymSessionId, schedule -> schedule));
 
-            // Create user schedules with shared GymSchedule references
+            // Create user schedules with shared GymSession references
             List<UserSchedule> userSchedules = List.of(
                     UserSchedule.builder()
-                            .user(userRepository.findByEmail("prakbunlong53@gmail.com").get())
-                            .gymSchedule(gymScheduleMap.get(2L))
+                            .user(userRepository.findById(UUID.fromString("9fa2fa3e-a194-4187-95a3-5c818c433973")).get())
+                            .gymSession(gymSessionMap.get(2L))
                             .status(UserSchedule.Status.COMPLETED)
                             .build(),
                     UserSchedule.builder()
-                            .user(userRepository.findByEmail("shor1@paragoniu.edu.kh").get())
-                            .gymSchedule(gymScheduleMap.get(6L))
+                            .user(userRepository.findById(UUID.fromString("2c2134c1-d410-429f-8ea7-da0ba62534d0")).get())
+                            .gymSession(gymSessionMap.get(6L))
                             .status(UserSchedule.Status.BOOKED)
                             .build(),
                     UserSchedule.builder()
-                            .user(userRepository.findByEmail("esok@paragoniu.edu.kh").get())
-                            .gymSchedule(gymScheduleMap.get(6L))
+                            .user(userRepository.findById(UUID.fromString("54f843ef-665c-4f9e-b4c7-414dd5495662")).get())
+                            .gymSession(gymSessionMap.get(6L))
                             .status(UserSchedule.Status.CANCELLED)
                             .build(),
                     UserSchedule.builder()
-                            .user(userRepository.findByEmail("bzhou@paragoniu.edu.kh").get())
-                            .gymSchedule(gymScheduleMap.get(10L))
+                            .user(userRepository.findById(UUID.fromString("d137a897-d0c9-4a36-85f3-efbc83e96800")).get())
+                            .gymSession(gymSessionMap.get(10L))
                             .status(UserSchedule.Status.BOOKED)
                             .build(),
                     UserSchedule.builder()
-                            .user(userRepository.findByEmail("sussycourses@gmail.com").get())
-                            .gymSchedule(gymScheduleMap.get(28L))
+                            .user(userRepository.findById(UUID.fromString("aded6999-0e77-4710-8b61-031db5e7d456")).get())
+                            .gymSession(gymSessionMap.get(18L))
                             .status(UserSchedule.Status.BOOKED)
                             .build()
             );
@@ -239,18 +241,18 @@ public class DataInitializer {
             userScheduleRepository.saveAll(userSchedules);
 
             // Update available slots
-            for (GymSchedule gymSchedule : gymScheduleMap.values()) {
+            for (GymSession gymSession : gymSessionMap.values()) {
                 long count = userSchedules.stream()
-                        .filter(userSchedule -> userSchedule.getGymSchedule().equals(gymSchedule))
+                        .filter(userSchedule -> userSchedule.getGymSession().equals(gymSession))
                         .count();
 
-                gymSchedule.setAvailableSlots(gymSchedule.getAvailableSlots() - (int) count);
+                gymSession.setAvailableSlots(gymSession.getAvailableSlots() - (int) count);
 
-                if (gymSchedule.getAvailableSlots() <= 0) {
-                    gymSchedule.setAvailableSlots(0);
+                if (gymSession.getAvailableSlots() <= 0) {
+                    gymSession.setAvailableSlots(0);
                 }
 
-                gymScheduleRepository.save(gymSchedule);
+                gymSessionRepository.save(gymSession);
             }
         }
     }

@@ -1,7 +1,7 @@
 package com.sustech.cs304.project.peakform.service;
 
 import com.sustech.cs304.project.peakform.domain.Gym;
-import com.sustech.cs304.project.peakform.domain.GymSchedule;
+import com.sustech.cs304.project.peakform.domain.GymSession;
 import com.sustech.cs304.project.peakform.repository.GymRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,10 +14,11 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class GymScheduleService {
+public class GymSessionService {
+
     private final GymRepository gymRepository;
 
-    public List<GymSchedule> generateGymSchedules(Long gymId) {
+    public List<GymSession> generateGymSessions(Long gymId) {
         Optional<Gym> gymOptional = gymRepository.findById(gymId);
         if (gymOptional.isEmpty()) {
             throw new IllegalArgumentException("Gym with ID " + gymId + " not found");
@@ -29,7 +30,7 @@ public class GymScheduleService {
         int intervalMinutes = (int) (gym.getSessionInterval() * 60);
         LocalDate today = LocalDate.now();
 
-        List<GymSchedule> gymSchedules = new ArrayList<>();
+        List<GymSession> gymSessions = new ArrayList<>();
 
         while (currentStartTime.isBefore(endTime)) {
             LocalTime sessionEndTime = currentStartTime.plusMinutes(intervalMinutes);
@@ -37,7 +38,7 @@ public class GymScheduleService {
                 sessionEndTime = endTime;
             }
 
-            GymSchedule gymSchedule = GymSchedule.builder()
+            GymSession gymSession = GymSession.builder()
                     .gym(gym)
                     .date(today)
                     .sessionStart(currentStartTime)
@@ -45,10 +46,10 @@ public class GymScheduleService {
                     .availableSlots(gym.getSessionMaxCapacity())
                     .build();
 
-            gymSchedules.add(gymSchedule);
+            gymSessions.add(gymSession);
             currentStartTime = sessionEndTime;
         }
 
-        return gymSchedules;
+        return gymSessions;
     }
 }

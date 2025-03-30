@@ -13,12 +13,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GymSchedule {
+public class GymSession {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "gym_schedule_id", updatable = false, nullable = false)
-    private Long gymScheduleId;
+    @Column(name = "gym_session_id", updatable = false, nullable = false)
+    private Long gymSessionId;
 
     @ManyToOne
     @JoinColumn(name = "gym_id", nullable = false)
@@ -36,6 +36,6 @@ public class GymSchedule {
     @Column(name = "available_slots", nullable = false, columnDefinition = "INT UNSIGNED")
     private Integer availableSlots;
 
-    @OneToMany(mappedBy = "gymSchedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "gymSession", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserSchedule> userSchedules;
 }

@@ -7,5 +7,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface UserScheduleRepository extends JpaRepository<UserSchedule, Long> {
-    Optional<UserSchedule> findByUser_UserUuidAndGymSchedule_GymScheduleId(UUID user_userUuid, Long gymSchedule_gymScheduleId);
+    Optional<UserSchedule> findByUser_UserUuidAndGymSession_GymSessionId(UUID user_userUuid, Long gymSession_gymSessionId);
 }
