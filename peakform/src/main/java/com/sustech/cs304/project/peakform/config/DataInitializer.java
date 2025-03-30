@@ -292,9 +292,9 @@ public class DataInitializer {
     private void initAchievementData() {
         if (achievementRepository.count() == 0) {
             List<Achievement> achievements = List.of(
-                    Achievement.builder().achievementName("10 Workout Streak").build(),
-                    Achievement.builder().achievementName("50 Workout Streak").build(),
-                    Achievement.builder().achievementName("100 Workout Streak").build(),
+                    Achievement.builder().achievementName("10 Workout Completed").build(),
+                    Achievement.builder().achievementName("50 Workout Completed").build(),
+                    Achievement.builder().achievementName("100 Workout Completed").build(),
                     Achievement.builder().achievementName("10 Water Intake Streak").build(),
                     Achievement.builder().achievementName("50 Water Intake Streak").build(),
                     Achievement.builder().achievementName("100 Water Intake Streak").build(),

@@ -8,4 +8,9 @@ import java.util.UUID;
 
 public interface UserScheduleRepository extends JpaRepository<UserSchedule, Long> {
     Optional<UserSchedule> findByUser_UserUuidAndGymSession_GymSessionId(UUID user_userUuid, Long gymSession_gymSessionId);
+
+    Long countByUser_UserUuid(UUID userUuid);
+
+    Long countByUser_UserUuidAndStatus(UUID userUuid, UserSchedule.Status status);
 }
+
