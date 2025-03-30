@@ -1,14 +1,14 @@
 package com.sustech.cs304.project.peakform.service;
 
 import com.sustech.cs304.project.peakform.domain.Gym;
-import com.sustech.cs304.project.peakform.domain.GymSchedule;
+import com.sustech.cs304.project.peakform.domain.GymSession;
 import com.sustech.cs304.project.peakform.domain.User;
 import com.sustech.cs304.project.peakform.domain.UserSchedule;
 import com.sustech.cs304.project.peakform.dto.GymDetailResponse;
 import com.sustech.cs304.project.peakform.dto.GymListResponse;
 import com.sustech.cs304.project.peakform.dto.GymScheduleResponse;
 import com.sustech.cs304.project.peakform.repository.GymRepository;
-import com.sustech.cs304.project.peakform.repository.GymScheduleRepository;
+import com.sustech.cs304.project.peakform.repository.GymSessionRepository;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import com.sustech.cs304.project.peakform.repository.UserScheduleRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +25,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class GymService {
     private final GymRepository gymRepository;
-
-    private final GymScheduleService gymScheduleService;
-    private final FirebaseStorageService firebaseStorageService;
-    private final GymScheduleRepository gymScheduleRepository;
+    private final GymSessionRepository gymSessionRepository;
     private final UserRepository userRepository;
     private final UserScheduleRepository userScheduleRepository;
 
+    private final GymSessionService gymSessionService;
+    private final FirebaseStorageService firebaseStorageService;
+    
     public ResponseEntity<List<GymListResponse>> getGyms() {
         List<Gym> gyms = gymRepository.findAll();
         List<GymListResponse> gymResponses = gyms.stream()
@@ -64,15 +64,15 @@ public class GymService {
 
         Gym gym = gymOptional.get();
         ResponseEntity<List<String>> gymPhotos = firebaseStorageService.getFiles("gym-photo/" + gymId + "/");
-        List<GymSchedule> gymSchedules = gymScheduleRepository.findByGym_GymId(gymId);
+        List<GymSession> gymSessions = gymSessionRepository.findByGym_GymId(gymId);
         List<GymScheduleResponse> gymScheduleResponses = new ArrayList<>();
 
-        for (GymSchedule schedule : gymSchedules) {
+        for (GymSession schedule : gymSessions) {
             UserSchedule.Status appointmentStatus = UserSchedule.Status.NOT_AVAILABLE;
 
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
-                Optional<UserSchedule> userSchedule = userScheduleRepository.findByUser_UserUuidAndGymSchedule_GymScheduleId(user.getUserUuid(), schedule.getGymScheduleId());
+                Optional<UserSchedule> userSchedule = userScheduleRepository.findByUser_UserUuidAndGymSession_GymSessionId(user.getUserUuid(), schedule.getGymSessionId());
                 if (userSchedule.isEmpty()) {
                     appointmentStatus = UserSchedule.Status.UNRESERVED;
                 } else {

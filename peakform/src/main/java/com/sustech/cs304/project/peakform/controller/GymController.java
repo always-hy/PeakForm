@@ -14,6 +14,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/gyms")
 public class GymController {
+
     private final GymService gymService;
 
     @GetMapping("")
@@ -26,5 +27,4 @@ public class GymController {
                                                     @RequestParam(value = "userUuid", required = false) UUID userUuid) {
         return gymService.getGym(gymId, userUuid);
     }
-
 }

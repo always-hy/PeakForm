@@ -44,5 +44,5 @@ public class Gym {
     private Float sessionInterval;
 
     @OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GymSchedule> gymSchedules;
+    private List<GymSession> gymSessions;
 }

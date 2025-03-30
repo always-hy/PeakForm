@@ -27,7 +27,7 @@ public class UserSchedule {
 
     @ManyToOne
     @JoinColumn(name = "gym_schedule_id", nullable = false)
-    private GymSchedule gymSchedule;
+    private GymSession gymSession;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, columnDefinition = "ENUM('NOT_AVAILABLE' ,'UNRESERVED', 'BOOKED', 'COMPLETED', 'CANCELLED')")
