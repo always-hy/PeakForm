@@ -11,7 +11,7 @@ import lombok.*;
 @Builder
 @Table(
         uniqueConstraints = @UniqueConstraint(
-                columnNames = {"user_uuid", "gym_schedule_id"}
+                columnNames = {"user_uuid", "gym_session_id"}
         )
 )
 public class UserSchedule {
@@ -26,14 +26,14 @@ public class UserSchedule {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "gym_schedule_id", nullable = false)
+    @JoinColumn(name = "gym_session_id", nullable = false)
     private GymSession gymSession;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "ENUM('NOT_AVAILABLE' ,'UNRESERVED', 'BOOKED', 'COMPLETED', 'CANCELLED')")
+    @Column(name = "status", nullable = false, columnDefinition = "ENUM('NOT_AVAILABLE', 'UNRESERVED', 'BOOKED', 'CANCELLED', 'COMPLETED', 'MISSED')")
     private Status status;
 
     public enum Status {
-        NOT_AVAILABLE, UNRESERVED, BOOKED, COMPLETED, CANCELLED
+        NOT_AVAILABLE, UNRESERVED, BOOKED, CANCELLED, COMPLETED, MISSED
     }
 }

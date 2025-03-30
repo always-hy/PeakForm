@@ -28,4 +28,18 @@ public class UserScheduleController {
                                                    @RequestParam(value = "userUuid") UUID userUuid) {
         return userScheduleService.cancelGymSession(gymSessionId, userUuid);
     }
+
+    @Transactional
+    @PutMapping("/complete")
+    public ResponseEntity<String> markGymSessionCompleted(@RequestParam(value = "gymSessionId") Long gymSessionId,
+                                                          @RequestParam(value = "userUuid") UUID userUuid) {
+        return userScheduleService.markGymSessionCompleted(gymSessionId, userUuid);
+    }
+
+    @Transactional
+    @PutMapping("/miss")
+    public ResponseEntity<String> markGymSessionMissed(@RequestParam(value = "gymSessionId") Long gymSessionId,
+                                                       @RequestParam(value = "userUuid") UUID userUuid) {
+        return userScheduleService.markGymSessionMissed(gymSessionId, userUuid);
+    }
 }
