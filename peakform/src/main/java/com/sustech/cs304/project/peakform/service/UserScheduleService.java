@@ -3,6 +3,7 @@ package com.sustech.cs304.project.peakform.service;
 import com.sustech.cs304.project.peakform.domain.GymSession;
 import com.sustech.cs304.project.peakform.domain.User;
 import com.sustech.cs304.project.peakform.domain.UserSchedule;
+import com.sustech.cs304.project.peakform.dto.AppointmentStatsResponse;
 import com.sustech.cs304.project.peakform.repository.GymSessionRepository;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import com.sustech.cs304.project.peakform.repository.UserScheduleRepository;
@@ -131,4 +132,24 @@ public class UserScheduleService {
         return ResponseEntity.status(HttpStatus.OK).body("Gym session marked as missed for user: " + userUuid + ".");
     }
 
+    public ResponseEntity<AppointmentStatsResponse> getAppointmentStats(UUID userUuid) {
+        Optional<User> userOptional = userRepository.findById(userUuid);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        Long totalBookings = userScheduleRepository.countByUser_UserUuid(userUuid);
+        Long completedBookings = userScheduleRepository.countByUser_UserUuidAndStatus(userUuid, UserSchedule.Status.COMPLETED);
+        Long cancelledBookings = userScheduleRepository.countByUser_UserUuidAndStatus(userUuid, UserSchedule.Status.CANCELLED);
+        Long missedBookings = userScheduleRepository.countByUser_UserUuidAndStatus(userUuid, UserSchedule.Status.MISSED);
+
+        AppointmentStatsResponse statsResponse = new AppointmentStatsResponse(
+                totalBookings,
+                completedBookings,
+                cancelledBookings,
+                missedBookings
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(statsResponse);
+    }
 }

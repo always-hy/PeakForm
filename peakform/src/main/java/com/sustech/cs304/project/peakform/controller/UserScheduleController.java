@@ -1,5 +1,6 @@
 package com.sustech.cs304.project.peakform.controller;
 
+import com.sustech.cs304.project.peakform.dto.AppointmentStatsResponse;
 import com.sustech.cs304.project.peakform.service.UserScheduleService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -41,5 +42,10 @@ public class UserScheduleController {
     public ResponseEntity<String> markGymSessionMissed(@RequestParam(value = "gymSessionId") Long gymSessionId,
                                                        @RequestParam(value = "userUuid") UUID userUuid) {
         return userScheduleService.markGymSessionMissed(gymSessionId, userUuid);
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<AppointmentStatsResponse> getAppointmentStats(@RequestParam(value = "userUuid") UUID userUuid) {
+        return userScheduleService.getAppointmentStats(userUuid);
     }
 }
