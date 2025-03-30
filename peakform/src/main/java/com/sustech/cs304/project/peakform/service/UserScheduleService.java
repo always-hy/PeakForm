@@ -53,4 +53,34 @@ public class UserScheduleService {
 
         return ResponseEntity.status(HttpStatus.OK).body("Gym booked successfully for user: " + userUuid + ".");
     }
+
+    public ResponseEntity<String> cancelGymSession(Long gymSessionId, UUID userUuid) {
+        Optional<GymSession> gymSessionOptional = gymSessionRepository.findById(gymSessionId);
+        if (gymSessionOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Gym session not found.");
+        }
+
+        Optional<User> userOptional = userRepository.findById(userUuid);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+
+        GymSession gymSession = gymSessionOptional.get();
+
+        Optional<UserSchedule> userScheduleOptional = userScheduleRepository.findByUser_UserUuidAndGymSession_GymSessionId(userUuid, gymSessionId);
+
+        if (userScheduleOptional.isEmpty() || userScheduleOptional.get().getStatus() != UserSchedule.Status.BOOKED) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Booking not found for this user and session.");
+        }
+
+        UserSchedule userSchedule = userScheduleOptional.get();
+        userSchedule.setStatus(UserSchedule.Status.CANCELLED);
+        userScheduleRepository.save(userSchedule);
+
+        gymSession.setAvailableSlots(gymSession.getAvailableSlots() + 1);
+        gymSessionRepository.save(gymSession);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Gym booking canceled successfully for user: " + userUuid + ".");
+    }
+
 }
