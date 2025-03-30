@@ -43,7 +43,6 @@ public class GymScheduleService {
                     .sessionStart(currentStartTime)
                     .sessionEnd(sessionEndTime)
                     .availableSlots(gym.getSessionMaxCapacity())
-                    .status(GymSchedule.Status.AVAILABLE)
                     .build();
 
             gymSchedules.add(gymSchedule);

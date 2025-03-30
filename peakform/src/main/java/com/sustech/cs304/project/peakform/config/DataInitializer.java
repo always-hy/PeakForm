@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -32,7 +33,6 @@ public class DataInitializer {
     @Transactional
     @PostConstruct
     public void init() {
-        clearData();
         initUserData();
         initExerciseData();
         initGymData();
@@ -41,18 +41,11 @@ public class DataInitializer {
         initAchievementData();
     }
 
-    private void clearData() {
-        userRepository.deleteAll();
-        exerciseRepository.deleteAll();
-        gymRepository.deleteAll();
-        gymScheduleRepository.deleteAll();
-        achievementRepository.deleteAll();
-    }
-
     private void initUserData() {
         if (userRepository.count() == 0) {
             List<User> users = List.of(
                     User.builder()
+                            .userUuid(UUID.fromString("eea34b25-6d9d-4bd4-a2aa-688c9969e0a1"))
                             .username("Toji Fushiguro")
                             .email("fbringer99@gmail.com")
                             .password(bCryptPasswordEncoder.encode("1"))
@@ -63,6 +56,7 @@ public class DataInitializer {
                             .verificationToken(null)
                             .build(),
                     User.builder()
+                            .userUuid(UUID.fromString("9fa2fa3e-a194-4187-95a3-5c818c433973"))
                             .username("Escanor")
                             .email("prakbunlong53@gmail.com")
                             .password(bCryptPasswordEncoder.encode("1"))
@@ -73,6 +67,7 @@ public class DataInitializer {
                             .verificationToken(null)
                             .build(),
                     User.builder()
+                            .userUuid(UUID.fromString("aded6999-0e77-4710-8b61-031db5e7d456"))
                             .username("Guts")
                             .email("sussycourses@gmail.com")
                             .password(bCryptPasswordEncoder.encode("1"))
@@ -83,6 +78,7 @@ public class DataInitializer {
                             .verificationToken(null)
                             .build(),
                     User.builder()
+                            .userUuid(UUID.fromString("d137a897-d0c9-4a36-85f3-efbc83e96800"))
                             .username("Yujiro Hanma")
                             .email("bzhou@paragoniu.edu.kh")
                             .password(bCryptPasswordEncoder.encode("1"))
@@ -93,6 +89,7 @@ public class DataInitializer {
                             .verificationToken(null)
                             .build(),
                     User.builder()
+                            .userUuid(UUID.fromString("2c2134c1-d410-429f-8ea7-da0ba62534d0"))
                             .username("Broly")
                             .email("shor1@paragoniu.edu.kh")
                             .password(bCryptPasswordEncoder.encode("1"))
@@ -103,6 +100,7 @@ public class DataInitializer {
                             .verificationToken(null)
                             .build(),
                     User.builder()
+                            .userUuid(UUID.fromString("54f843ef-665c-4f9e-b4c7-414dd5495662"))
                             .username("Kenpachi Zaraki")
                             .email("esok@paragoniu.edu.kh")
                             .password(bCryptPasswordEncoder.encode("1"))
@@ -191,67 +189,6 @@ public class DataInitializer {
         }
     }
 
-//    private void initUserScheduleData() {
-//        if (userScheduleRepository.count() == 0) {
-//            List<UserSchedule> userSchedules = List.of(
-//                    UserSchedule.builder()
-//                            .user(userRepository.findByEmail("prakbunlong53@gmail.com").get())
-//                            .gymSchedule(gymScheduleRepository.findById(2L).get())
-//                            .build(),
-//                    UserSchedule.builder()
-//                            .user(userRepository.findByEmail("shor1@paragoniu.edu.kh").get())
-//                            .gymSchedule(gymScheduleRepository.findById(6L).get())
-//                            .build(),
-//                    UserSchedule.builder()
-//                            .user(userRepository.findByEmail("esok@paragoniu.edu.kh").get())
-//                            .gymSchedule(gymScheduleRepository.findById(6L).get())
-//                            .build(),
-//                    UserSchedule.builder()
-//                            .user(userRepository.findByEmail("bzhou@paragoniu.edu.kh").get())
-//                            .gymSchedule(gymScheduleRepository.findById(10L).get())
-//                            .build(),
-//                    UserSchedule.builder()
-//                            .user(userRepository.findByEmail("sussycourses@gmail.com").get())
-//                            .gymSchedule(gymScheduleRepository.findById(28L).get())
-//                            .build()
-//            );
-//            userScheduleRepository.saveAll(userSchedules);
-//
-////            for (UserSchedule userSchedule : userSchedules) {
-////                GymSchedule gymSchedule = userSchedule.getGymSchedule();
-////                System.out.println("GymScheduleId: " + gymSchedule.getGymScheduleId());
-////                System.out.println("PreAvailableSlots: " + gymSchedule.getAvailableSlots());
-////                gymSchedule.setAvailableSlots(gymSchedule.getAvailableSlots() - 1);
-////                if (gymSchedule.getAvailableSlots() == 0) {
-////                    gymSchedule.setStatus(GymSchedule.Status.FULL);
-////                }
-////                gymScheduleRepository.save(gymSchedule);
-////                System.out.println("PostAvailableSlots: " + gymSchedule.getAvailableSlots());
-////            }
-//
-//            Map<GymSchedule, Long> scheduleCounts = userSchedules.stream()
-//                    .collect(Collectors.groupingBy(UserSchedule::getGymSchedule, Collectors.counting()));
-//
-//            for (Map.Entry<GymSchedule, Long> entry : scheduleCounts.entrySet()) {
-//                GymSchedule gymSchedule = entry.getKey();
-//                long count = entry.getValue();
-//
-//                System.out.println("GymScheduleId: " + gymSchedule.getGymScheduleId());
-//                System.out.println("PreAvailableSlots: " + gymSchedule.getAvailableSlots());
-//
-//                gymSchedule.setAvailableSlots(gymSchedule.getAvailableSlots() - (int) count);
-//
-//                if (gymSchedule.getAvailableSlots() <= 0) {
-//                    gymSchedule.setAvailableSlots(0);
-//                    gymSchedule.setStatus(GymSchedule.Status.FULL);
-//                }
-//
-//                gymScheduleRepository.save(gymSchedule);
-//                System.out.println("PostAvailableSlots: " + gymSchedule.getAvailableSlots());
-//            }
-//        }
-//    }
-
     /**
      * AI-generated-content
      * tool: ChatGPT
@@ -275,22 +212,27 @@ public class DataInitializer {
                     UserSchedule.builder()
                             .user(userRepository.findByEmail("prakbunlong53@gmail.com").get())
                             .gymSchedule(gymScheduleMap.get(2L))
+                            .status(UserSchedule.Status.COMPLETED)
                             .build(),
                     UserSchedule.builder()
                             .user(userRepository.findByEmail("shor1@paragoniu.edu.kh").get())
                             .gymSchedule(gymScheduleMap.get(6L))
+                            .status(UserSchedule.Status.BOOKED)
                             .build(),
                     UserSchedule.builder()
                             .user(userRepository.findByEmail("esok@paragoniu.edu.kh").get())
                             .gymSchedule(gymScheduleMap.get(6L))
+                            .status(UserSchedule.Status.CANCELLED)
                             .build(),
                     UserSchedule.builder()
                             .user(userRepository.findByEmail("bzhou@paragoniu.edu.kh").get())
                             .gymSchedule(gymScheduleMap.get(10L))
+                            .status(UserSchedule.Status.BOOKED)
                             .build(),
                     UserSchedule.builder()
                             .user(userRepository.findByEmail("sussycourses@gmail.com").get())
                             .gymSchedule(gymScheduleMap.get(28L))
+                            .status(UserSchedule.Status.BOOKED)
                             .build()
             );
 
@@ -306,7 +248,6 @@ public class DataInitializer {
 
                 if (gymSchedule.getAvailableSlots() <= 0) {
                     gymSchedule.setAvailableSlots(0);
-                    gymSchedule.setStatus(GymSchedule.Status.FULL);
                 }
 
                 gymScheduleRepository.save(gymSchedule);

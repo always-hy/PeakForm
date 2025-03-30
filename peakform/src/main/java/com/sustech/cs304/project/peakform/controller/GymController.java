@@ -5,12 +5,10 @@ import com.sustech.cs304.project.peakform.dto.GymListResponse;
 import com.sustech.cs304.project.peakform.service.GymService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
@@ -24,7 +22,9 @@ public class GymController {
     }
 
     @GetMapping("/{gymId}")
-    public ResponseEntity<GymDetailResponse> getGym(@PathVariable("gymId") Long gymId) {
-        return gymService.getGym(gymId);
+    public ResponseEntity<GymDetailResponse> getGym(@PathVariable("gymId") Long gymId,
+                                                    @RequestParam(value = "userUuid", required = false) UUID userUuid) {
+        return gymService.getGym(gymId, userUuid);
     }
+
 }
