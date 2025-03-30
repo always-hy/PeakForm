@@ -36,15 +36,6 @@ public class GymSchedule {
     @Column(name = "available_slots", nullable = false, columnDefinition = "INT UNSIGNED")
     private Integer availableSlots;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "ENUM('AVAILABLE', 'FULL', 'BOOKED', 'COMPLETED', 'CANCELLED')")
-    private Status status;
-
     @OneToMany(mappedBy = "gymSchedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserSchedule> userSchedules;
-
-
-    public enum Status {
-        AVAILABLE, FULL, BOOKED, COMPLETED, CANCELLED
-    }
 }
