@@ -109,6 +109,28 @@ public class DataInitializer {
                             .bio("The Berserker of Soul Society")
                             .emailVerified(true)
                             .verificationToken(null)
+                            .build(),
+                    User.builder()
+                            .userUuid(UUID.fromString("5d2a7b34-3c9d-4f5a-9e2b-1f9a2d7e3c4f"))
+                            .username("Doom Slayer")
+                            .email("bprak@paragoniu.edu.kh")
+                            .password(bCryptPasswordEncoder.encode("1"))
+                            .age(30)
+                            .gender(User.Gender.MALE)
+                            .bio("The Slayer of Hell, Rip and Tear")
+                            .emailVerified(true)
+                            .verificationToken(null)
+                            .build(),
+                    User.builder()
+                            .userUuid(UUID.fromString("7e1f3a9d-2b4c-5d7e-8f3a-1c9d4e2b5a7f"))
+                            .username("Kratos")
+                            .email("pvann2@paragoniu.edu.kh")
+                            .password(bCryptPasswordEncoder.encode("1"))
+                            .age(90)
+                            .gender(User.Gender.MALE)
+                            .bio("The God of War, Ghost of Sparta")
+                            .emailVerified(true)
+                            .verificationToken(null)
                             .build()
             );
             userRepository.saveAll(users);
@@ -204,13 +226,18 @@ public class DataInitializer {
     private void initUserScheduleData() {
         if (userScheduleRepository.count() == 0) {
             // Fetch all required GymSessions in one batch
-            List<Long> gymSessionIds = List.of(2L, 6L, 10L, 18L);
+            List<Long> gymSessionIds = List.of(1L, 2L, 6L, 10L, 18L);
             Map<Long, GymSession> gymSessionMap = gymSessionRepository.findAllById(gymSessionIds)
                     .stream()
                     .collect(Collectors.toMap(GymSession::getGymSessionId, schedule -> schedule));
 
             // Create user schedules with shared GymSession references
             List<UserSchedule> userSchedules = List.of(
+                    UserSchedule.builder()
+                            .user(userRepository.findById(UUID.fromString("7e1f3a9d-2b4c-5d7e-8f3a-1c9d4e2b5a7f")).get())
+                            .gymSession(gymSessionMap.get(1L))
+                            .status(UserSchedule.Status.MISSED)
+                            .build(),
                     UserSchedule.builder()
                             .user(userRepository.findById(UUID.fromString("9fa2fa3e-a194-4187-95a3-5c818c433973")).get())
                             .gymSession(gymSessionMap.get(2L))
@@ -233,6 +260,11 @@ public class DataInitializer {
                             .build(),
                     UserSchedule.builder()
                             .user(userRepository.findById(UUID.fromString("aded6999-0e77-4710-8b61-031db5e7d456")).get())
+                            .gymSession(gymSessionMap.get(18L))
+                            .status(UserSchedule.Status.BOOKED)
+                            .build(),
+                    UserSchedule.builder()
+                            .user(userRepository.findById(UUID.fromString("5d2a7b34-3c9d-4f5a-9e2b-1f9a2d7e3c4f")).get())
                             .gymSession(gymSessionMap.get(18L))
                             .status(UserSchedule.Status.BOOKED)
                             .build()

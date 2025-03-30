@@ -70,7 +70,7 @@ public class UserScheduleService {
         Optional<UserSchedule> userScheduleOptional = userScheduleRepository.findByUser_UserUuidAndGymSession_GymSessionId(userUuid, gymSessionId);
 
         if (userScheduleOptional.isEmpty() || userScheduleOptional.get().getStatus() != UserSchedule.Status.BOOKED) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Booking not found for this user and session.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No active booking found for this user and gym session.");
         }
 
         UserSchedule userSchedule = userScheduleOptional.get();
@@ -81,6 +81,54 @@ public class UserScheduleService {
         gymSessionRepository.save(gymSession);
 
         return ResponseEntity.status(HttpStatus.OK).body("Gym booking canceled successfully for user: " + userUuid + ".");
+    }
+
+    public ResponseEntity<String> markGymSessionCompleted(Long gymSessionId, UUID userUuid) {
+        Optional<GymSession> gymSessionOptional = gymSessionRepository.findById(gymSessionId);
+        if (gymSessionOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Gym session not found.");
+        }
+
+        Optional<User> userOptional = userRepository.findById(userUuid);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+
+        Optional<UserSchedule> userScheduleOptional = userScheduleRepository.findByUser_UserUuidAndGymSession_GymSessionId(userUuid, gymSessionId);
+
+        if (userScheduleOptional.isEmpty() || userScheduleOptional.get().getStatus() != UserSchedule.Status.BOOKED) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No active booking found for this user and gym session.");
+        }
+
+        UserSchedule userSchedule = userScheduleOptional.get();
+        userSchedule.setStatus(UserSchedule.Status.COMPLETED);
+        userScheduleRepository.save(userSchedule);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Gym session marked as completed for user: " + userUuid + ".");
+    }
+
+    public ResponseEntity<String> markGymSessionMissed(Long gymSessionId, UUID userUuid) {
+        Optional<GymSession> gymSessionOptional = gymSessionRepository.findById(gymSessionId);
+        if (gymSessionOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Gym session not found.");
+        }
+
+        Optional<User> userOptional = userRepository.findById(userUuid);
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+
+        Optional<UserSchedule> userScheduleOptional = userScheduleRepository.findByUser_UserUuidAndGymSession_GymSessionId(userUuid, gymSessionId);
+
+        if (userScheduleOptional.isEmpty() || userScheduleOptional.get().getStatus() != UserSchedule.Status.BOOKED) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No active booking found for this user and gym session.");
+        }
+
+        UserSchedule userSchedule = userScheduleOptional.get();
+        userSchedule.setStatus(UserSchedule.Status.MISSED);
+        userScheduleRepository.save(userSchedule);
+
+        return ResponseEntity.status(HttpStatus.OK).body("Gym session marked as missed for user: " + userUuid + ".");
     }
 
 }
