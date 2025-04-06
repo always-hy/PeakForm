@@ -13,6 +13,8 @@ public class PeakFormApplication {
 		System.setProperty("spring.datasource.password", dotenv.get("DB_PASSWORD"));
 		System.setProperty("spring.mail.username", dotenv.get("MAIL_USERNAME"));
 		System.setProperty("spring.mail.password", dotenv.get("MAIL_PASSWORD"));
+		System.setProperty("spring.security.oauth2.client.registration.google.client-id", dotenv.get("GOOGLE_CLIENT_ID"));
+		System.setProperty("spring.security.oauth2.client.registration.google.client-secret", dotenv.get("GOOGLE_CLIENT_SECRET"));
 		SpringApplication.run(PeakFormApplication.class, args);
 	}
 }
