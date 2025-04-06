@@ -31,28 +31,28 @@ public class UserService {
      * I referred to the idea and template provided and implemented the function with different tutorials online.
      */
     public ResponseEntity<String> registerUser(RegistrationRequest registrationRequest) {
-        if (registrationRequest.getUsername() == null || registrationRequest.getEmail() == null || registrationRequest.getPassword() == null) {
+        if (registrationRequest.username() == null || registrationRequest.email() == null || registrationRequest.password() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username, email, and password are required.");
         }
 
-        if (userRepository.findByEmail(registrationRequest.getEmail()).isPresent()) {
+        if (userRepository.findByEmail(registrationRequest.email()).isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered.");
         }
 
-        String recaptchaResponse = registrationRequest.getRecaptchaResponse();
+        String recaptchaResponse = registrationRequest.recaptchaResponse();
         if (!verifyRecaptcha(recaptchaResponse)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("reCAPTCHA verification failed.");
         }
 
-        String hashedPassword = passwordEncoder.encode(registrationRequest.getPassword());
+        String hashedPassword = passwordEncoder.encode(registrationRequest.password());
         String verificationToken = UUID.randomUUID().toString();
 
         User user = User.builder()
-                .username(registrationRequest.getUsername())
-                .email(registrationRequest.getEmail())
+                .username(registrationRequest.username())
+                .email(registrationRequest.email())
                 .password(hashedPassword)
-                .age(registrationRequest.getAge() != null ? registrationRequest.getAge() : 0)
-                .gender(registrationRequest.getGender() != null ? registrationRequest.getGender() : User.Gender.OTHER)
+                .age(registrationRequest.age() != null ? registrationRequest.age() : 0)
+                .gender(registrationRequest.gender() != null ? registrationRequest.gender() : User.Gender.OTHER)
                 .emailVerified(false)
                 .verificationToken(verificationToken)
                 .build();
