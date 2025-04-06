@@ -1,7 +1,6 @@
 package com.sustech.cs304.project.peakform.service;
 
 import com.sustech.cs304.project.peakform.domain.UserTarget;
-import com.sustech.cs304.project.peakform.dto.UserStatRequest;
 import com.sustech.cs304.project.peakform.dto.UserTargetRequest;
 import com.sustech.cs304.project.peakform.dto.UserTargetResponse;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
