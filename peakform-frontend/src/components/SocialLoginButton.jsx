@@ -1,6 +1,6 @@
 import React from "react";
 
-function SocialLoginButton({ provider }) {
+function SocialLoginButton({ provider, baseUrl = "http://localhost:8080" }) {
   const getIcon = () => {
     switch (provider) {
       case "google":
@@ -115,8 +115,15 @@ function SocialLoginButton({ provider }) {
     }
   };
 
+  const handleClick = (e) => {
+    e.preventDefault();
+    window.location.href = `${baseUrl}/oauth2/authorization/${provider}`;
+    console.log(`Redirecting to ${baseUrl}/oauth2/authorization/${provider}`);
+  };
+
   return (
     <button
+      onClick={handleClick}
       className="flex flex-1 justify-center items-center px-0 py-2.5 bg-white rounded-lg border-solid cursor-pointer border-[0.711px] border-stone-300 max-sm:w-full"
       aria-label={`Sign in with ${provider}`}
     >
