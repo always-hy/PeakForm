@@ -18,7 +18,7 @@ public class User {
     @Column(name = "user_uuid", updatable = false, nullable = false, columnDefinition = "BINARY(16)")
     private UUID userUuid;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     @Column(name = "email", nullable = false, unique = true)
