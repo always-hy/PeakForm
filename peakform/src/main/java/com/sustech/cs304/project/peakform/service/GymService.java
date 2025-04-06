@@ -31,11 +31,12 @@ public class GymService {
 
     private final GymSessionService gymSessionService;
     private final FirebaseStorageService firebaseStorageService;
-    
+
     public ResponseEntity<List<GymListResponse>> getGyms() {
         List<Gym> gyms = gymRepository.findAll();
         List<GymListResponse> gymResponses = gyms.stream()
                 .map(gym -> new GymListResponse(
+                        gym.getGymId(),
                         gym.getGymName(),
                         gym.getStartTime(),
                         gym.getEndTime(),
@@ -81,6 +82,7 @@ public class GymService {
             }
 
             GymScheduleResponse gymScheduleResponse = new GymScheduleResponse(
+                    schedule.getGymSessionId(),
                     schedule.getDate(),
                     schedule.getSessionStart(),
                     schedule.getSessionEnd(),
@@ -91,6 +93,7 @@ public class GymService {
         }
 
         GymDetailResponse gymDetailResponse = new GymDetailResponse(
+                gym.getGymId(),
                 gym.getGymName(),
                 gym.getStartTime(),
                 gym.getEndTime(),
