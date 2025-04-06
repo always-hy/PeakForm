@@ -1,12 +1,16 @@
 package com.sustech.cs304.project.peakform.service;
 
 import com.sustech.cs304.project.peakform.domain.User;
+import com.sustech.cs304.project.peakform.domain.UserTarget;
 import com.sustech.cs304.project.peakform.dto.RegistrationRequest;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -16,12 +20,25 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final RestTemplate restTemplate;
     private final EmailService emailService;
+
+    // This method is used by Spring Security to load user details by email
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        return org.springframework.security.core.userdetails.User
+                .withUsername(user.getEmail())
+                .password(user.getPassword())
+                .roles("USER")
+                .disabled(!user.isEmailVerified()) // Disable if not verified
+                .build();
+    }
 
     /**
      * AI-generated-content
@@ -57,7 +74,15 @@ public class UserService {
                 .verificationToken(verificationToken)
                 .build();
 
+        UserTarget userTarget = UserTarget.builder()
+                .targetWeight(0F)
+                .targetWaterIntake(0F)
+                .targetCaloriesBurned(0)
+                .targetWorkoutDuration(0)
+                .build();
+
         userRepository.save(user);
+        userTarget.setUser(user);
         emailService.sendVerificationEmail(user.getEmail(), verificationToken);
         return ResponseEntity.status(HttpStatus.OK).body("Registration successful. Please check your email to verify your account.");
     }
