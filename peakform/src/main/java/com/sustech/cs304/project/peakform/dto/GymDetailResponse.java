@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 public record GymDetailResponse(
+        Long gymId,
         String gymName,
         LocalTime startTime,
         LocalTime endTime,
