@@ -8,19 +8,24 @@ import org.springframework.context.annotation.Configuration;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 
 @Configuration
 public class FirebaseConfig {
 
     @Bean
     public FirebaseApp firebaseApp() throws IOException {
-        FileInputStream serviceAccount = new FileInputStream("src/main/resources/serviceAccountKey.json");
+        List<FirebaseApp> firebaseApps = FirebaseApp.getApps();
+        if (firebaseApps.stream().noneMatch(app -> app.getName().equals(FirebaseApp.DEFAULT_APP_NAME))) {
+            FileInputStream serviceAccount = new FileInputStream("src/main/resources/serviceAccountKey.json");
 
-        FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .setStorageBucket("peakform-3d589.firebasestorage.app")
-                .build();
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setStorageBucket("peakform-3d589.firebasestorage.app")
+                    .build();
 
-        return FirebaseApp.initializeApp(options);
+            return FirebaseApp.initializeApp(options);
+        }
+        return FirebaseApp.getInstance(FirebaseApp.DEFAULT_APP_NAME);
     }
 }
