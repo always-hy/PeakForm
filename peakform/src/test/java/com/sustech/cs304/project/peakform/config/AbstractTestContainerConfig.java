@@ -1,6 +1,5 @@
 package com.sustech.cs304.project.peakform.config;
 
-
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
@@ -14,7 +13,9 @@ public abstract class AbstractTestContainerConfig {
     public static final MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:9.2.0")
             .withDatabaseName("peakform_test")
             .withUsername("testuser")
-            .withPassword("testpass");
+            .withPassword("testpass")
+            .withReuse(true);
+
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {

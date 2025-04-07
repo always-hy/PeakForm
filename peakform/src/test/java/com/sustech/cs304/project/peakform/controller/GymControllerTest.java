@@ -1,62 +1,113 @@
 package com.sustech.cs304.project.peakform.controller;
 
 import com.sustech.cs304.project.peakform.config.AbstractTestContainerConfig;
+import com.sustech.cs304.project.peakform.utils.LoginUtils;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.junit.jupiter.Testcontainers;
+import org.springframework.boot.test.web.server.LocalServerPort;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@Testcontainers
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class GymControllerTest extends AbstractTestContainerConfig {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @LocalServerPort
+    private Integer port;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Test
-    void selectAllFromTable() {
-        String tableName = "gym";
-
-        List<Map<String, Object>> results = jdbcTemplate.queryForList("SELECT * FROM " + tableName);
-
-        System.out.println("All records from " + tableName + ":");
-        if (results.isEmpty()) {
-            System.out.println("No records found in " + tableName);
-        } else {
-            results.forEach(row -> {
-                System.out.println("Row: ");
-                row.forEach((key, value) -> System.out.println("  " + key + ": " + value));
-            });
-        }
+    @BeforeEach
+    void setUp() {
+        RestAssured.baseURI = "http://localhost:" + port;
     }
 
     @Test
-    void testGetGyms_Success() throws Exception {
-        mockMvc.perform(get("/gyms")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+    void getGymsTest() {
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/gyms")
+                .then()
+                .statusCode(200)
+                .body(".", hasSize(3))
+                .body("[0].gymId", equalTo(1))
+                .body("[0].gymName", equalTo("AlphaLand"))
+                .body("[0].startTime", equalTo("09:00:00"))
+                .body("[0].endTime", equalTo("21:00:00"))
+                .body("[0].location", equalTo("123 Fitness St, City Center"))
+                .body("[0].description", equalTo("A gym focused on weightlifting and strength training."))
+                .body("[0].contact", equalTo("123-456-7890"))
+                .body("[0].gymCoverPhoto", matchesRegex("https://storage.googleapis.com/peakform-3d589.firebasestorage.app/gym-photo/1/1-1.webp\\?.*"));
     }
 
-//    @Test
-//    void testGetGym_Success_WithUserUuid() throws Exception {
-//        UUID userUuid = UUID.randomUUID();
-//        mockMvc.perform(get("/gyms/1")
-//                        .param("userUuid", userUuid.toString())
-//                        .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk());
-//    }
+    @Test
+    void getGymSuccessTest() {
+        List<String> loginResponse = LoginUtils.login("prakbunlong53@gmail.com", "1");
+        given()
+                .contentType(ContentType.JSON)
+                .sessionId(loginResponse.get(1))
+                .queryParam("userUuid", loginResponse.get(0))
+                .when()
+                .get("/gyms/1")
+                .then()
+                .statusCode(200)
+                .body("gymId", equalTo(1))
+                .body("gymName", equalTo("AlphaLand"))
+                .body("startTime", equalTo("09:00:00"))
+                .body("endTime", equalTo("21:00:00"))
+                .body("location", equalTo("123 Fitness St, City Center"))
+                .body("description", equalTo("A gym focused on weightlifting and strength training."))
+                .body("contact", equalTo("123-456-7890"))
+                .body("gymPhotos", hasSize(6))
+                .body("gymPhotos[0]", matchesRegex("https://storage.googleapis.com/peakform-3d589.firebasestorage.app/gym-photo/1/1-1.webp\\?.*"))
+                .body("gymSessions", hasSize(8))
+                .body("gymSessions[0].sessionId", equalTo(1))
+                .body("gymSessions[0].date", equalTo(LocalDate.now().toString()))
+                .body("gymSessions[0].sessionStart", equalTo("09:00:00"))
+                .body("gymSessions[0].sessionEnd", equalTo("10:30:00"))
+                .body("gymSessions[0].availableSlots", equalTo(14))
+                .body("gymSessions[0].appointmentStatus", equalTo("UNRESERVED"));
+    }
+
+    @Test
+    void getGymUnauthorizedTest() {
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/gyms/1?userUuid=9fa2fa3e-a194-4187-95a3-5c818c433973")
+                .then()
+                .statusCode(401)
+                .body("message", equalTo("Unauthorized"));
+    }
+
+    @Test
+    void getGymNotFoundTest() {
+        List<String> loginResponse = LoginUtils.login("prakbunlong53@gmail.com", "1");
+
+        // Valid gymId but invalid userUuid
+        given()
+                .contentType(ContentType.JSON)
+                .sessionId(loginResponse.get(1))
+                .queryParam("userUuid", UUID.randomUUID().toString())
+                .when()
+                .get("/gyms/1")
+                .then()
+                .statusCode(404);
+
+        // Valid userUuid but invalid gymId
+        given()
+                .contentType(ContentType.JSON)
+                .sessionId(loginResponse.get(1))
+                .queryParam("userUuid", loginResponse.get(0))
+                .when()
+                .get("/gyms/1000")
+                .then()
+                .statusCode(404);
+    }
 }
