@@ -66,16 +66,15 @@ public class WorkoutService {
             throw new IllegalArgumentException("User not found.");
         }
 
-        User user = userOptional.get();
-
-        Optional<Workout> workoutOptional = workoutRepository.findByUser(user);
+        Optional<Workout> workoutOptional = workoutRepository.findByUser_UserUuid(userUuid);
         if (workoutOptional.isEmpty()) {
             throw new IllegalArgumentException("No workout plan found for the user.");
         }
 
         Workout workout = workoutOptional.get();
+        Long workoutId = workout.getWorkoutId();
 
-        List<WorkoutExercise> workoutExercises = workoutExerciseRepository.findByWorkout(workout);
+        List<WorkoutExercise> workoutExercises = workoutExerciseRepository.findByWorkout_WorkoutId(workoutId);
 
         List<WorkoutPlanResponse.WorkoutExerciseResponse> exercises = new ArrayList<>();
         for (WorkoutExercise workoutExercise : workoutExercises) {
