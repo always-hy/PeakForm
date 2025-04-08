@@ -6,7 +6,7 @@ public record WorkoutPlanRequest(
         String userUuid,
         List<WorkoutExerciseRequest> exercises
 ) {
-    public static record WorkoutExerciseRequest(
+    public record WorkoutExerciseRequest(
             Long exerciseId,
             String day,
             Integer sets,
