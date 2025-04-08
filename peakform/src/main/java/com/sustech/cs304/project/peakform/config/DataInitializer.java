@@ -29,6 +29,7 @@ public class DataInitializer {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserScheduleRepository userScheduleRepository;
+    private final UserTargetRepository userTargetRepository;
 
     @Transactional
     @PostConstruct
@@ -39,6 +40,7 @@ public class DataInitializer {
         initGymSessionData();
         initUserScheduleData();
         initAchievementData();
+        initUserTargetData();
     }
 
     private void initUserData() {
@@ -301,6 +303,50 @@ public class DataInitializer {
                     Achievement.builder().achievementName("Target Weight Reached").build()
             );
             achievementRepository.saveAll(achievements);
+        }
+    }
+
+    private void initUserTargetData() {
+        if (userTargetRepository.count() == 0) {
+            List<User> users = userRepository.findAll();
+            List<UserTarget> userTargets = List.of(
+                    UserTarget.builder()
+                            .user(users.get(0))
+                            .targetWeight(75f)
+                            .targetWaterIntake(3.5f)
+                            .targetCaloriesBurned(500)
+                            .targetWorkoutDuration(60)
+                            .build(),
+                    UserTarget.builder()
+                            .user(users.get(1))
+                            .targetWeight(85f)
+                            .targetWaterIntake(4.0f)
+                            .targetCaloriesBurned(600)
+                            .targetWorkoutDuration(90)
+                            .build(),
+                    UserTarget.builder()
+                            .user(users.get(2))
+                            .targetWeight(95f)
+                            .targetWaterIntake(4.5f)
+                            .targetCaloriesBurned(700)
+                            .targetWorkoutDuration(120)
+                            .build(),
+                    UserTarget.builder()
+                            .user(users.get(3))
+                            .targetWeight(110f)
+                            .targetWaterIntake(5.0f)
+                            .targetCaloriesBurned(800)
+                            .targetWorkoutDuration(150)
+                            .build(),
+                    UserTarget.builder()
+                            .user(users.get(4))
+                            .targetWeight(120f)
+                            .targetWaterIntake(6.0f)
+                            .targetCaloriesBurned(1000)
+                            .targetWorkoutDuration(180)
+                            .build()
+            );
+            userTargetRepository.saveAll(userTargets);
         }
     }
 }
