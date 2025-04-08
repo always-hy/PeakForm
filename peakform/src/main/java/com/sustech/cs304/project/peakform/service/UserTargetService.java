@@ -21,7 +21,7 @@ public class UserTargetService {
     private final UserTargetRepository userTargetRepository;
     private final UserRepository userRepository;
 
-    public ResponseEntity<UserTargetResponse> createUserTarget(UUID userUuid, UserTargetRequest userTargetRequest) {
+   /* public ResponseEntity<UserTargetResponse> createUserTarget(UUID userUuid, UserTargetRequest userTargetRequest) {
         Optional<User> userOptional = userRepository.findById(userUuid);
 
         if (userOptional.isEmpty()) {
@@ -40,7 +40,7 @@ public class UserTargetService {
         UserTarget savedUserTarget = userTargetRepository.save(userTarget);
 
         return ResponseEntity.ok(mapToResponse(savedUserTarget));
-    }
+    }*/
 
     public ResponseEntity<UserTargetResponse> getUserTarget(UUID userUuid) {
         Optional<UserTarget> userTargetOptional = userTargetRepository.findByUser_UserUuid(userUuid);
@@ -73,9 +73,9 @@ public class UserTargetService {
         return ResponseEntity.ok(mapToResponse(updatedUserTarget));
     }
 
-    public void deleteUserTarget(Long userTargetId) {
+    /*public void deleteUserTarget(Long userTargetId) {
         userTargetRepository.deleteById(userTargetId);
-    }
+    }*/
 
     private UserTargetResponse mapToResponse(UserTarget userTarget) {
         return new UserTargetResponse(

@@ -16,11 +16,11 @@ public class UserTargetController {
 
     private final UserTargetService userTargetService;
 
-    @PostMapping("/{userUuid}")
+   /* @PostMapping("/{userUuid}")
     public ResponseEntity<UserTargetResponse> createUserTarget(@PathVariable UUID userUuid,
                                                                @RequestBody UserTargetRequest userTargetRequest) {
         return userTargetService.createUserTarget(userUuid, userTargetRequest);
-    }
+    }*/
 
     @GetMapping("/{userUuid}")
     public ResponseEntity<UserTargetResponse> getUserTarget(@PathVariable UUID userUuid) {
@@ -33,9 +33,9 @@ public class UserTargetController {
         return userTargetService.updateUserTarget(userTargetId, userTargetRequest);
     }
 
-    @DeleteMapping("/{userTargetId}")
+    /*@DeleteMapping("/{userTargetId}")
     public ResponseEntity<Void> deleteUserTarget(@PathVariable Long userTargetId) {
         userTargetService.deleteUserTarget(userTargetId);
         return ResponseEntity.noContent().build();
-    }
+    }*/
 }
