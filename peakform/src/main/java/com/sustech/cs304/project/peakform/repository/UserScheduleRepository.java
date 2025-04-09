@@ -11,6 +11,6 @@ public interface UserScheduleRepository extends JpaRepository<UserSchedule, Long
 
     Long countByUser_UserUuid(UUID userUuid);
 
-    Long countByUser_UserUuidAndStatus(UUID userUuid, UserSchedule.Status status);
+    Long countByUser_UserUuidAndAppointmentStatus(UUID userUuid, UserSchedule.AppointmentStatus appointmentStatus);
 }
 

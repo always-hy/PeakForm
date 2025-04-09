@@ -30,10 +30,10 @@ public class UserSchedule {
     private GymSession gymSession;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "ENUM('NOT_AVAILABLE', 'UNRESERVED', 'BOOKED', 'CANCELLED', 'COMPLETED', 'MISSED')")
-    private Status status;
+    @Column(name = "appointment_status", nullable = false, columnDefinition = "ENUM('NOT_AVAILABLE', 'UNRESERVED', 'BOOKED', 'CANCELLED', 'COMPLETED', 'MISSED')")
+    private AppointmentStatus appointmentStatus;
 
-    public enum Status {
+    public enum AppointmentStatus {
         NOT_AVAILABLE, UNRESERVED, BOOKED, CANCELLED, COMPLETED, MISSED
     }
 }

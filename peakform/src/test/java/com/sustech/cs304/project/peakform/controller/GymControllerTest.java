@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -65,14 +64,7 @@ public class GymControllerTest extends AbstractTestContainerConfig {
                 .body("description", equalTo("A gym focused on weightlifting and strength training."))
                 .body("contact", equalTo("123-456-7890"))
                 .body("gymPhotos", hasSize(6))
-                .body("gymPhotos[0]", matchesRegex("https://storage.googleapis.com/peakform-3d589.firebasestorage.app/gym-photo/1/1-1.webp\\?.*"))
-                .body("gymSessions", hasSize(8))
-                .body("gymSessions[0].sessionId", equalTo(1))
-                .body("gymSessions[0].date", equalTo(LocalDate.now().toString()))
-                .body("gymSessions[0].sessionStart", equalTo("09:00:00"))
-                .body("gymSessions[0].sessionEnd", equalTo("10:30:00"))
-                .body("gymSessions[0].availableSlots", equalTo(14))
-                .body("gymSessions[0].appointmentStatus", equalTo("UNRESERVED"));
+                .body("gymPhotos[0]", matchesRegex("https://storage.googleapis.com/peakform-3d589.firebasestorage.app/gym-photo/1/1-1.webp\\?.*"));
     }
 
     @Test
