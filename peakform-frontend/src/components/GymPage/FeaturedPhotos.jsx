@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 
-function FeaturedPhotos() {
+function FeaturedPhotos({ gymPhotos }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const sliderRef = useRef(null);
@@ -9,27 +9,27 @@ function FeaturedPhotos() {
   const photos = [
     {
       id: 1,
-      src: "/image 1.png",
+      src: `${gymPhotos[1]}`,
       alt: "Gym Photo 1",
     },
     {
       id: 2,
-      src: "/image 1.png",
+      src: `${gymPhotos[2]}`,
       alt: "Gym Photo 2",
     },
     {
       id: 3,
-      src: "/image 1.png",
+      src: `${gymPhotos[3]}`,
       alt: "Gym Photo 3",
     },
     {
       id: 4,
-      src: "/image 1.png",
+      src: `${gymPhotos[4]}`,
       alt: "Gym Photo 4",
     },
     {
       id: 5,
-      src: "/image 1.png",
+      src: `${gymPhotos[5]}`,
       alt: "Gym Photo 5",
     },
   ];
