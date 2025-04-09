@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -30,6 +31,7 @@ public class DataInitializer {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserScheduleRepository userScheduleRepository;
     private final UserTargetRepository userTargetRepository;
+    private final UserStatRepository userStatRepository;
 
     @Transactional
     @PostConstruct
@@ -41,6 +43,7 @@ public class DataInitializer {
         initUserScheduleData();
         initAchievementData();
         initUserTargetData();
+        initUserStatData();
     }
 
     private void initUserData() {
@@ -347,6 +350,63 @@ public class DataInitializer {
                             .build()
             );
             userTargetRepository.saveAll(userTargets);
+        }
+    }
+
+    private void initUserStatData() {
+        if (userStatRepository.count() == 0) {
+            List<User> users = userRepository.findAll();
+            LocalDate today = LocalDate.now();
+
+            List<UserStat> userStats = List.of(
+                    UserStat.builder()
+                            .user(users.get(0))
+                            .date(today)
+                            .weight(80f)
+                            .height(180f)
+                            .waterIntake(2.5f)
+                            .caloriesBurned(300)
+                            .workoutDuration(45)
+                            .build(),
+                    UserStat.builder()
+                            .user(users.get(1))
+                            .date(today)
+                            .weight(85f)
+                            .height(185f)
+                            .waterIntake(3.0f)
+                            .caloriesBurned(400)
+                            .workoutDuration(60)
+                            .build(),
+                    UserStat.builder()
+                            .user(users.get(2))
+                            .date(today)
+                            .weight(90f)
+                            .height(190f)
+                            .waterIntake(3.5f)
+                            .caloriesBurned(500)
+                            .workoutDuration(75)
+                            .build(),
+                    UserStat.builder()
+                            .user(users.get(3))
+                            .date(today)
+                            .weight(100f)
+                            .height(195f)
+                            .waterIntake(4.0f)
+                            .caloriesBurned(600)
+                            .workoutDuration(90)
+                            .build(),
+                    UserStat.builder()
+                            .user(users.get(4))
+                            .date(today)
+                            .weight(110f)
+                            .height(200f)
+                            .waterIntake(4.5f)
+                            .caloriesBurned(750)
+                            .workoutDuration(120)
+                            .build()
+            );
+
+            userStatRepository.saveAll(userStats);
         }
     }
 }
