@@ -1,28 +1,119 @@
 package com.sustech.cs304.project.peakform.config;
 
+import com.sustech.cs304.project.peakform.domain.User;
+import com.sustech.cs304.project.peakform.repository.UserRepository;
+import com.sustech.cs304.project.peakform.service.UserService;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.UUID;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final UserRepository userRepository;
+    private final UserService userService;
+    private final BCryptPasswordEncoder passwordEncoder;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Temporarily disable CSRF protection
-        http.csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                    .anyRequest().permitAll()
-            );
+        http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/login", "/user/register", "/user/verify-email", "/gyms").permitAll() // Public endpoints
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                        .loginProcessingUrl("/login")
+                        .successHandler((request, response, authentication) -> {
+                            response.setStatus(HttpStatus.OK.value());
+                            response.setContentType("application/json");
+                            User user = userRepository.findByEmail(authentication.getName())
+                                    .orElseThrow(() -> new RuntimeException("User not found"));
+                            response.getWriter().write("{\"message\": \"Login successful\", \"userUuid\": \"" + user.getUserUuid() + "\"}");
+                        })
+                        .failureHandler((request, response, exception) -> {
+                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"message\": \"Login failed: " + exception.getMessage() + "\"}");
+                        })
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .permitAll()
+                        .addLogoutHandler((request, response, auth) -> {
+                            HttpSession session = request.getSession(false);
+                            System.out.println("Logout handler triggered for session: " + session);
+                            if (session != null) {
+                                session.invalidate();
+                                System.out.println("Session invalidated");
+                            }
+                        })
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")
+                        .successHandler((request, response, authentication) -> {
+                            OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
+                            String email = oauthUser.getAttribute("email");
+                            if (email == null) {
+                                response.sendError(HttpStatus.BAD_REQUEST.value(), "Email not provided by Google");
+                                return;
+                            }
+                            String name = oauthUser.getAttribute("name");
+                            User user = userRepository.findByEmail(email)
+                                    .orElseGet(() -> {
+                                        User newUser = new User();
+                                        newUser.setEmail(email);
+                                        newUser.setUsername(name != null ? name : email.split("@")[0]); // Default username from name or email
+                                        newUser.setPassword("");
+                                        newUser.setAge(99);
+                                        newUser.setGender(User.Gender.OTHER);
+                                        newUser.setEmailVerified(true);
+                                        newUser.setVerificationToken(null);
+                                        return userRepository.save(newUser);
+                                    });
+                            response.setStatus(HttpStatus.OK.value());
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"message\": \"Login successful\", \"userUuid\": \"" + user.getUserUuid() + "\"}");
+                        })
+                        .failureHandler((request, response, exception) -> {
+                            System.out.println("OAuth2 Failure - Exception: " + exception.getMessage());
+                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"message\": \"OAuth login failed: " + exception.getMessage() + "\"}");
+                        })
+                        .permitAll()
+                )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"message\": \"Unauthorized\"}");
+                        })
+                );
+
         return http.build();
     }
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
     }
 }

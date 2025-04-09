@@ -2,7 +2,6 @@ package com.sustech.cs304.project.peakform.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,8 +15,6 @@ import java.util.UUID;
 public class User {
 
     @Id
-    @GeneratedValue(generator = "UUID")
-    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "user_uuid", updatable = false, nullable = false, columnDefinition = "BINARY(16)")
     private UUID userUuid;
 
@@ -39,9 +36,6 @@ public class User {
 
     @Column(name = "bio", columnDefinition = "TEXT")
     private String bio;
-
-//    @Column(name = "profile_picture")
-//    private String profilePicture;
 
     @Column(name = "email_verified", nullable = false)
     private boolean emailVerified;
@@ -67,4 +61,12 @@ public class User {
     public enum Gender {
         MALE, FEMALE, OTHER
     }
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.userUuid == null) {
+            this.userUuid = UUID.randomUUID();
+        }
+    }
+
 }

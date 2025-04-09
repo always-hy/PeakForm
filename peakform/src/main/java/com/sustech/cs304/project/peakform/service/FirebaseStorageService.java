@@ -56,7 +56,7 @@ public class FirebaseStorageService {
         }
     }
 
-    public ResponseEntity<List<String>> listFiles(String folderPath) {
+    public ResponseEntity<List<String>> getFiles(String folderPath) {
         try {
             Bucket bucket = StorageClient.getInstance().bucket();
             Page<Blob> blobs = bucket.list(Storage.BlobListOption.prefix(folderPath));
@@ -72,7 +72,7 @@ public class FirebaseStorageService {
                 String signedUrl = blob.signUrl(7, TimeUnit.DAYS).toString();
                 fileUrls.add(signedUrl);
             }
-            
+
             return ResponseEntity.status(HttpStatus.OK).body(fileUrls);
         } catch (StorageException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonList("Firebase Storage error: " + e.getMessage()));

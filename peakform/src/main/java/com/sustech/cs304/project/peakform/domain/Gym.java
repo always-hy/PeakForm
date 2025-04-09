@@ -19,8 +19,8 @@ public class Gym {
     @Column(name = "gym_id", updatable = false, nullable = false)
     private Long gymId;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "gym_name", nullable = false)
+    private String gymName;
 
     @Column(name = "location", nullable = false, columnDefinition = "TEXT")
     private String location;
@@ -44,5 +44,5 @@ public class Gym {
     private Float sessionInterval;
 
     @OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Schedule> schedules;
+    private List<GymSession> gymSessions;
 }
