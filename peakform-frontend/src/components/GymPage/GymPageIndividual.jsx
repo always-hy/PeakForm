@@ -13,10 +13,10 @@ function GymPageIndividual() {
   const [gymData, setGymData] = useState(null);
 
   useEffect(() => {
-    const loginAndFetchGym = async () => {
+    const FetchGym = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8080/gyms/1?userUuid=9fa2fa3e-a194-4187-95a3-5c818c433973"
+          "http://localhost:8080/gyms/1?userUuid=ba103f6e-4f5e-47d6-9eb8-4cf084fb79cf"
         );
 
         setGymData(response.data);
@@ -26,7 +26,7 @@ function GymPageIndividual() {
       }
     };
 
-    loginAndFetchGym();
+    FetchGym();
   }, []);
 
   if (!gymData) {
@@ -38,7 +38,7 @@ function GymPageIndividual() {
       <Header />
       <GymHero gymData={gymData} />
       <FeaturesSection />
-      <FeaturedPhotos />
+      <FeaturedPhotos gymPhotos={gymData.gymPhotos} />
       <BookingSection />
       <RelatedGyms />
       <Footer />

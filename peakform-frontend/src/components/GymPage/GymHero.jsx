@@ -35,7 +35,7 @@ function InfoItem({ icon, title, description }) {
  */
 function GymHero({ gymData }) {
   // Gym amenities
-  location = gymData.location;
+  // location = gymData.location;
   const amenities = [
     { id: 1, name: "Sauna" },
     { id: 2, name: "Restaurant" },
@@ -74,13 +74,13 @@ function GymHero({ gymData }) {
       id: 2,
       icon: "/opening_hours.png",
       title: "OPENING HOURS",
-      description: "6am - 10pm",
+      description: `${gymData.startTime} - ${gymData.endTime}`,
     },
     {
       id: 3,
       icon: "/location.png",
       title: "LOCATION",
-      description: { location },
+      description: `${gymData.location}`,
     },
   ];
 
@@ -88,7 +88,7 @@ function GymHero({ gymData }) {
     <section className="w-full min-h-[889px] max-md:max-w-full">
       {/* Hero Image */}
       <img
-        src="/image 1.png"
+        src={gymData.gymPhotos[0]}
         alt="Equinox Gym"
         className="object-contain w-full aspect-[3.6] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] max-md:max-w-full"
       />
@@ -107,15 +107,12 @@ function GymHero({ gymData }) {
 
             {/* Gym Name */}
             <h2 className="mt-2.5 text-6xl leading-none max-md:max-w-full max-md:text-4xl">
-              EQUINOX
+              {gymData.gymName}
             </h2>
 
             {/* Gym Description */}
             <p className="mt-2.5 text-lg leading-7 max-md:max-w-full">
-              Equinox is expensive because they have a lot of amenities (steam
-              rooms, saunas, plenty of equipment and class options) plus a ton
-              of staff constantly cleaning, stocking towels, refilling supplies,
-              etc at multiple convenient locations.
+              {gymData.description}
             </p>
           </div>
 
