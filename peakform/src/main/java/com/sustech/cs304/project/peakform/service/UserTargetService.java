@@ -3,11 +3,8 @@ package com.sustech.cs304.project.peakform.service;
 import com.sustech.cs304.project.peakform.domain.UserTarget;
 import com.sustech.cs304.project.peakform.dto.UserTargetRequest;
 import com.sustech.cs304.project.peakform.dto.UserTargetResponse;
-import com.sustech.cs304.project.peakform.repository.UserRepository;
 import com.sustech.cs304.project.peakform.repository.UserTargetRepository;
-import com.sustech.cs304.project.peakform.domain.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +16,7 @@ import java.util.Optional;
 public class UserTargetService {
 
     private final UserTargetRepository userTargetRepository;
-    private final UserRepository userRepository;
+    //private final UserRepository userRepository;
 
    /* public ResponseEntity<UserTargetResponse> createUserTarget(UUID userUuid, UserTargetRequest userTargetRequest) {
         Optional<User> userOptional = userRepository.findById(userUuid);
