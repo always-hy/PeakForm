@@ -44,7 +44,7 @@ public class UserScheduleController {
         return userScheduleService.markGymSessionMissed(gymSessionId, userUuid);
     }
 
-    @GetMapping("/stats")
+    @GetMapping("/records")
     public ResponseEntity<AppointmentStatsResponse> getAppointmentStats(@RequestParam(value = "userUuid") UUID userUuid) {
         return userScheduleService.getAppointmentStats(userUuid);
     }

@@ -4,6 +4,7 @@ import com.sustech.cs304.project.peakform.domain.GymSession;
 import com.sustech.cs304.project.peakform.domain.User;
 import com.sustech.cs304.project.peakform.domain.UserSchedule;
 import com.sustech.cs304.project.peakform.dto.AppointmentStatsResponse;
+import com.sustech.cs304.project.peakform.dto.BookingRecordResponse;
 import com.sustech.cs304.project.peakform.repository.GymSessionRepository;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import com.sustech.cs304.project.peakform.repository.UserScheduleRepository;
@@ -12,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -102,6 +105,12 @@ public class UserScheduleService {
         }
 
         UserSchedule userSchedule = userScheduleOptional.get();
+        LocalDateTime sessionStartDateTime = LocalDateTime.of(userSchedule.getGymSession().getDate(), userSchedule.getGymSession().getSessionStart());
+
+        if (LocalDateTime.now().isBefore(sessionStartDateTime)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot mark session as completed before it starts.");
+        }
+
         userSchedule.setAppointmentStatus(UserSchedule.AppointmentStatus.COMPLETED);
         userScheduleRepository.save(userSchedule);
 
@@ -142,12 +151,24 @@ public class UserScheduleService {
         Long completedBookings = userScheduleRepository.countByUser_UserUuidAndAppointmentStatus(userUuid, UserSchedule.AppointmentStatus.COMPLETED);
         Long cancelledBookings = userScheduleRepository.countByUser_UserUuidAndAppointmentStatus(userUuid, UserSchedule.AppointmentStatus.CANCELLED);
         Long missedBookings = userScheduleRepository.countByUser_UserUuidAndAppointmentStatus(userUuid, UserSchedule.AppointmentStatus.MISSED);
+        List<BookingRecordResponse> bookingRecords = userScheduleRepository.findByUser_UserUuid(userUuid)
+                .stream()
+                .map(booking -> new BookingRecordResponse(
+                        booking.getGymSession().getGymSessionId(),
+                        booking.getGymSession().getGym().getGymName(),
+                        booking.getGymSession().getDate(),
+                        booking.getGymSession().getSessionStart(),
+                        booking.getGymSession().getSessionEnd(),
+                        booking.getAppointmentStatus()
+                ))
+                .toList();
 
         AppointmentStatsResponse statsResponse = new AppointmentStatsResponse(
                 totalBookings,
                 completedBookings,
                 cancelledBookings,
-                missedBookings
+                missedBookings,
+                bookingRecords
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(statsResponse);
