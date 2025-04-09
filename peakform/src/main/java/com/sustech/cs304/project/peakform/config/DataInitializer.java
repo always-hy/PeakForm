@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalTime;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -213,7 +213,8 @@ public class DataInitializer {
         if (gymSessionRepository.count() == 0) {
             List<Gym> gyms = gymRepository.findAll();
             for (Gym gym : gyms) {
-                gymSessionRepository.saveAll(gymSessionService.generateGymSessions(gym.getGymId()));
+                gymSessionRepository.saveAll(gymSessionService.generateGymSessions(gym.getGymId(), LocalDate.now()));
+                gymSessionRepository.saveAll(gymSessionService.generateGymSessions(gym.getGymId(), LocalDate.now().plusDays(1)));
             }
         }
     }
@@ -241,37 +242,37 @@ public class DataInitializer {
                     UserSchedule.builder()
                             .user(userRepository.findById(UUID.fromString("7e1f3a9d-2b4c-5d7e-8f3a-1c9d4e2b5a7f")).get())
                             .gymSession(gymSessionMap.get(1L))
-                            .status(UserSchedule.Status.MISSED)
+                            .appointmentStatus(UserSchedule.AppointmentStatus.MISSED)
                             .build(),
                     UserSchedule.builder()
                             .user(userRepository.findById(UUID.fromString("9fa2fa3e-a194-4187-95a3-5c818c433973")).get())
                             .gymSession(gymSessionMap.get(2L))
-                            .status(UserSchedule.Status.COMPLETED)
+                            .appointmentStatus(UserSchedule.AppointmentStatus.COMPLETED)
                             .build(),
                     UserSchedule.builder()
                             .user(userRepository.findById(UUID.fromString("2c2134c1-d410-429f-8ea7-da0ba62534d0")).get())
                             .gymSession(gymSessionMap.get(6L))
-                            .status(UserSchedule.Status.BOOKED)
+                            .appointmentStatus(UserSchedule.AppointmentStatus.BOOKED)
                             .build(),
                     UserSchedule.builder()
                             .user(userRepository.findById(UUID.fromString("54f843ef-665c-4f9e-b4c7-414dd5495662")).get())
                             .gymSession(gymSessionMap.get(6L))
-                            .status(UserSchedule.Status.CANCELLED)
+                            .appointmentStatus(UserSchedule.AppointmentStatus.CANCELLED)
                             .build(),
                     UserSchedule.builder()
                             .user(userRepository.findById(UUID.fromString("d137a897-d0c9-4a36-85f3-efbc83e96800")).get())
                             .gymSession(gymSessionMap.get(10L))
-                            .status(UserSchedule.Status.BOOKED)
+                            .appointmentStatus(UserSchedule.AppointmentStatus.BOOKED)
                             .build(),
                     UserSchedule.builder()
                             .user(userRepository.findById(UUID.fromString("aded6999-0e77-4710-8b61-031db5e7d456")).get())
                             .gymSession(gymSessionMap.get(18L))
-                            .status(UserSchedule.Status.BOOKED)
+                            .appointmentStatus(UserSchedule.AppointmentStatus.BOOKED)
                             .build(),
                     UserSchedule.builder()
                             .user(userRepository.findById(UUID.fromString("5d2a7b34-3c9d-4f5a-9e2b-1f9a2d7e3c4f")).get())
                             .gymSession(gymSessionMap.get(18L))
-                            .status(UserSchedule.Status.BOOKED)
+                            .appointmentStatus(UserSchedule.AppointmentStatus.BOOKED)
                             .build()
             );
 

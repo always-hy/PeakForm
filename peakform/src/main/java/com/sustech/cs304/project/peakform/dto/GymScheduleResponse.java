@@ -11,6 +11,6 @@ public record GymScheduleResponse(
         LocalTime sessionStart,
         LocalTime sessionEnd,
         Integer availableSlots,
-        UserSchedule.Status appointmentStatus
+        UserSchedule.AppointmentStatus appointmentStatus
 ) {
 }

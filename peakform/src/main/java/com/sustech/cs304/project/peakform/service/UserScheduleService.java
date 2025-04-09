@@ -44,7 +44,7 @@ public class UserScheduleService {
         UserSchedule userSchedule = UserSchedule.builder()
                 .user(user)
                 .gymSession(gymSession)
-                .status(UserSchedule.Status.BOOKED)
+                .appointmentStatus(UserSchedule.AppointmentStatus.BOOKED)
                 .build();
 
         userScheduleRepository.save(userSchedule);
@@ -70,12 +70,12 @@ public class UserScheduleService {
 
         Optional<UserSchedule> userScheduleOptional = userScheduleRepository.findByUser_UserUuidAndGymSession_GymSessionId(userUuid, gymSessionId);
 
-        if (userScheduleOptional.isEmpty() || userScheduleOptional.get().getStatus() != UserSchedule.Status.BOOKED) {
+        if (userScheduleOptional.isEmpty() || userScheduleOptional.get().getAppointmentStatus() != UserSchedule.AppointmentStatus.BOOKED) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No active booking found for this user and gym session.");
         }
 
         UserSchedule userSchedule = userScheduleOptional.get();
-        userSchedule.setStatus(UserSchedule.Status.CANCELLED);
+        userSchedule.setAppointmentStatus(UserSchedule.AppointmentStatus.CANCELLED);
         userScheduleRepository.save(userSchedule);
 
         gymSession.setAvailableSlots(gymSession.getAvailableSlots() + 1);
@@ -97,12 +97,12 @@ public class UserScheduleService {
 
         Optional<UserSchedule> userScheduleOptional = userScheduleRepository.findByUser_UserUuidAndGymSession_GymSessionId(userUuid, gymSessionId);
 
-        if (userScheduleOptional.isEmpty() || userScheduleOptional.get().getStatus() != UserSchedule.Status.BOOKED) {
+        if (userScheduleOptional.isEmpty() || userScheduleOptional.get().getAppointmentStatus() != UserSchedule.AppointmentStatus.BOOKED) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No active booking found for this user and gym session.");
         }
 
         UserSchedule userSchedule = userScheduleOptional.get();
-        userSchedule.setStatus(UserSchedule.Status.COMPLETED);
+        userSchedule.setAppointmentStatus(UserSchedule.AppointmentStatus.COMPLETED);
         userScheduleRepository.save(userSchedule);
 
         return ResponseEntity.status(HttpStatus.OK).body("Gym session marked as completed for user: " + userUuid + ".");
@@ -121,12 +121,12 @@ public class UserScheduleService {
 
         Optional<UserSchedule> userScheduleOptional = userScheduleRepository.findByUser_UserUuidAndGymSession_GymSessionId(userUuid, gymSessionId);
 
-        if (userScheduleOptional.isEmpty() || userScheduleOptional.get().getStatus() != UserSchedule.Status.BOOKED) {
+        if (userScheduleOptional.isEmpty() || userScheduleOptional.get().getAppointmentStatus() != UserSchedule.AppointmentStatus.BOOKED) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No active booking found for this user and gym session.");
         }
 
         UserSchedule userSchedule = userScheduleOptional.get();
-        userSchedule.setStatus(UserSchedule.Status.MISSED);
+        userSchedule.setAppointmentStatus(UserSchedule.AppointmentStatus.MISSED);
         userScheduleRepository.save(userSchedule);
 
         return ResponseEntity.status(HttpStatus.OK).body("Gym session marked as missed for user: " + userUuid + ".");
@@ -139,9 +139,9 @@ public class UserScheduleService {
         }
 
         Long totalBookings = userScheduleRepository.countByUser_UserUuid(userUuid);
-        Long completedBookings = userScheduleRepository.countByUser_UserUuidAndStatus(userUuid, UserSchedule.Status.COMPLETED);
-        Long cancelledBookings = userScheduleRepository.countByUser_UserUuidAndStatus(userUuid, UserSchedule.Status.CANCELLED);
-        Long missedBookings = userScheduleRepository.countByUser_UserUuidAndStatus(userUuid, UserSchedule.Status.MISSED);
+        Long completedBookings = userScheduleRepository.countByUser_UserUuidAndAppointmentStatus(userUuid, UserSchedule.AppointmentStatus.COMPLETED);
+        Long cancelledBookings = userScheduleRepository.countByUser_UserUuidAndAppointmentStatus(userUuid, UserSchedule.AppointmentStatus.CANCELLED);
+        Long missedBookings = userScheduleRepository.countByUser_UserUuidAndAppointmentStatus(userUuid, UserSchedule.AppointmentStatus.MISSED);
 
         AppointmentStatsResponse statsResponse = new AppointmentStatsResponse(
                 totalBookings,

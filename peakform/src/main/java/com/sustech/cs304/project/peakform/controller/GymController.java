@@ -23,8 +23,7 @@ public class GymController {
     }
 
     @GetMapping("/{gymId}")
-    public ResponseEntity<GymDetailResponse> getGym(@PathVariable("gymId") Long gymId,
-                                                    @RequestParam(value = "userUuid", required = false) UUID userUuid) {
+    public ResponseEntity<GymDetailResponse> getGym(@PathVariable("gymId") Long gymId, @RequestParam(value = "userUuid") UUID userUuid) {
         return gymService.getGym(gymId, userUuid);
     }
 }
