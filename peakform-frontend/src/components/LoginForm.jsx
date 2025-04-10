@@ -1,10 +1,50 @@
 "use client";
-import React from "react";
+import React, { useState }from "react";
 import InputField from "./InputField";
 import PasswordInput from "./PasswordInput";
 import SocialLoginButton from "./SocialLoginButton";
 
 function LoginForm() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("http://localhost:8080/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          username: email, 
+          password: password, 
+        }).toString(),
+        credentials: "include", // Include cookies for session management
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Login successful:", data);
+        // Redirect or update app state (e.g., to dashboard)
+        // Example: window.location.href = "/dashboard";
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || "Login failed");
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+      console.error("Login error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section className="flex relative justify-center items-center p-5 h-screen bg-black overflow-hidden">
       {/* Green radial glow that overlays everything */}
@@ -16,22 +56,47 @@ function LoginForm() {
         <div className="flex flex-col gap-6 w-[250px] max-sm:w-full">
           <h2 className="text-2xl font-semibold text-white">Login</h2>
 
-          <InputField
-            label="Email"
-            type="email"
-            placeholder="username@gmail.com"
-          />
+          {/* Form with onSubmit handler */}
+          <form onSubmit={handleSubmit}>
+            <InputField
+              label="Email"
+              type="email"
+              placeholder="username@gmail.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
 
-          <div className="flex flex-col gap-2">
-            <PasswordInput label="Password" placeholder="Password" />
-            <button className="mt-4 text-sm font-semibold text-white cursor-pointer text-left">
-              Forgot Password?
+            <div className="flex flex-col gap-2">
+              <PasswordInput
+                label="Password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="mt-4 text-sm font-semibold text-white cursor-pointer text-left"
+              >
+                Forgot Password?
+              </button>
+            </div>
+
+            {/* Sign In Button */}
+            <button
+              type="submit"
+              className="w-full h-10 text-base font-semibold text-white bg-green-500 rounded-lg cursor-pointer border-[none] disabled:opacity-50"
+              disabled={loading}
+            >
+              {loading ? "Signing in..." : "Sign in"}
             </button>
-          </div>
+          </form>
 
-          <button className="w-full h-10 text-base font-semibold text-white bg-green-500 rounded-lg cursor-pointer border-[none]">
-            Sign in
-          </button>
+          {/* Error Message */}
+          {error && (
+            <p className="text-sm font-semibold text-center text-red-500">
+              {error}
+            </p>
+          )}
 
           <p className="text-sm font-semibold text-center text-white">
             or continue with

@@ -30,14 +30,8 @@ public class UserService implements UserDetailsService {
     // This method is used by Spring Security to load user details by email
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-        return org.springframework.security.core.userdetails.User
-                .withUsername(user.getEmail())
-                .password(user.getPassword())
-                .roles("USER")
-                .disabled(!user.isEmailVerified()) // Disable if not verified
-                .build();
     }
 
     /**

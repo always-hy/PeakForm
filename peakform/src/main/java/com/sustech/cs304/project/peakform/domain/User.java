@@ -2,7 +2,12 @@ package com.sustech.cs304.project.peakform.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User implements UserDetails {
 
     @Id
     @Column(name = "user_uuid", updatable = false, nullable = false, columnDefinition = "BINARY(16)")
@@ -69,4 +74,19 @@ public class User {
         }
     }
 
+    // UserDetails implementation
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+    @Override
+    public String getUsername() {
+        return email; // Use email as the username for authentication
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
 }
