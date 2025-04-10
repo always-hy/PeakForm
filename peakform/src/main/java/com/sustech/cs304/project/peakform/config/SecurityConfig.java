@@ -16,8 +16,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.UUID;
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -33,6 +36,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/user/register", "/user/verify-email", "/gyms").permitAll() // Public endpoints
@@ -73,7 +77,7 @@ public class SecurityConfig {
                             OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
                             String email = oauthUser.getAttribute("email");
                             if (email == null) {
-                                response.sendError(HttpStatus.BAD_REQUEST.value(), "Email not provided by Google");
+                                response.sendError(HttpStatus.BAD_REQUEST.value(), "Email not provided by provider");
                                 return;
                             }
                             String name = oauthUser.getAttribute("name");
@@ -115,5 +119,17 @@ public class SecurityConfig {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Content-Type"));
+        configuration.setAllowCredentials(true); // Required for cookies/session
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

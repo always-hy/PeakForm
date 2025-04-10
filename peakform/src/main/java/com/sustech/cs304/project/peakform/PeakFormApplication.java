@@ -17,6 +17,8 @@ public class PeakFormApplication {
 		System.setProperty("spring.mail.password", dotenv.get("MAIL_PASSWORD"));
 		System.setProperty("spring.security.oauth2.client.registration.google.client-id", dotenv.get("GOOGLE_CLIENT_ID"));
 		System.setProperty("spring.security.oauth2.client.registration.google.client-secret", dotenv.get("GOOGLE_CLIENT_SECRET"));
+		System.setProperty("spring.security.oauth2.client.registration.facebook.client-id", dotenv.get("FB_CLIENT_ID"));
+		System.setProperty("spring.security.oauth2.client.registration.facebook.client-secret", dotenv.get("FB_CLIENT_SECRET"));
 		SpringApplication.run(PeakFormApplication.class, args);
 	}
 }
