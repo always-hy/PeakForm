@@ -6,6 +6,7 @@ import com.sustech.cs304.project.peakform.service.UserTargetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.UUID;
 
@@ -23,13 +24,13 @@ public class UserTargetController {
     }*/
 
     @GetMapping("/{userUuid}")
+    @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
     public ResponseEntity<UserTargetResponse> getUserTarget(@PathVariable UUID userUuid) {
         return userTargetService.getUserTarget(userUuid);
     }
 
     @PutMapping("/{userTargetId}")
-    public ResponseEntity<UserTargetResponse> updateUserTarget(@PathVariable Long userTargetId,
-                                                               @RequestBody UserTargetRequest userTargetRequest) {
+    public ResponseEntity<String> updateUserTarget(@PathVariable Long userTargetId, @RequestBody UserTargetRequest userTargetRequest) {
         return userTargetService.updateUserTarget(userTargetId, userTargetRequest);
     }
 

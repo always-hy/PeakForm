@@ -7,6 +7,7 @@ import com.sustech.cs304.project.peakform.repository.UserTargetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
 
 import java.util.UUID;
 import java.util.Optional;
@@ -51,11 +52,11 @@ public class UserTargetService {
         return ResponseEntity.ok(mapToResponse(userTarget));
     }
 
-    public ResponseEntity<UserTargetResponse> updateUserTarget(Long userTargetId, UserTargetRequest userTargetRequest) {
+    public ResponseEntity<String> updateUserTarget(Long userTargetId, UserTargetRequest userTargetRequest) {
         Optional<UserTarget> userTargetOptional = userTargetRepository.findById(userTargetId);
 
         if (userTargetOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User target not found.");
         }
 
         UserTarget userTarget = userTargetOptional.get();
@@ -65,10 +66,11 @@ public class UserTargetService {
         userTarget.setTargetCaloriesBurned(userTargetRequest.targetCaloriesBurned());
         userTarget.setTargetWorkoutDuration(userTargetRequest.targetWorkoutDuration());
 
-        UserTarget updatedUserTarget = userTargetRepository.save(userTarget);
+        userTargetRepository.save(userTarget);
 
-        return ResponseEntity.ok(mapToResponse(updatedUserTarget));
+        return ResponseEntity.status(HttpStatus.OK).body("User target updated successfully.");
     }
+
 
     /*public void deleteUserTarget(Long userTargetId) {
         userTargetRepository.deleteById(userTargetId);
