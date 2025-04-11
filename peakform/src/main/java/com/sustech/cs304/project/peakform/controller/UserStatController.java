@@ -6,6 +6,7 @@ import com.sustech.cs304.project.peakform.service.UserStatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.UUID;
 
@@ -17,6 +18,7 @@ public class UserStatController {
     private final UserStatService userStatService;
 
     @PutMapping("/{userUuid}")
+    @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
     public ResponseEntity<String> updateUserStat(
             @PathVariable UUID userUuid,
             @RequestBody UserStatRequest request) {
@@ -24,11 +26,13 @@ public class UserStatController {
     }
 
     @GetMapping("/{userUuid}")
+    @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
     public UserStatResponse getUserStat(@PathVariable UUID userUuid) {
         return userStatService.getUserStat(userUuid);
     }
 
     @DeleteMapping("/{userUuid}")
+    @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
     public ResponseEntity<String> deleteUserStat(@PathVariable UUID userUuid) {
         return userStatService.deleteUserStat(userUuid);
     }
