@@ -15,12 +15,25 @@ function GymPageIndividual() {
   useEffect(() => {
     const FetchGym = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8080/gyms/1?userUuid=ba103f6e-4f5e-47d6-9eb8-4cf084fb79cf"
+        const uuid = localStorage.getItem("user_uuid");
+        const statsResponse = await fetch(
+          // "http://localhost:8080/user-schedules/records?userUuid=" + data.userUuid,
+          `http://localhost:8080/gyms/1?userUuid=${uuid}`,
+
+          {
+            method: "GET",
+            credentials: "include", // Include session cookies
+          }
         );
 
-        setGymData(response.data);
-        console.log("Gym data:", response.data);
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setGymData(statsData);
+          console.log("Gym Data:", statsData);
+        } else {
+          const statsError = await statsResponse.text();
+          console.error("Gym stats failed:", statsError);
+        }
       } catch (error) {
         console.error("Error during login or fetching gym data:", error);
       }
@@ -39,7 +52,7 @@ function GymPageIndividual() {
       <GymHero gymData={gymData} />
       <FeaturesSection />
       <FeaturedPhotos gymPhotos={gymData.gymPhotos} />
-      <BookingSection />
+      <BookingSection gymSessions={gymData.gymSessions} />
       <RelatedGyms />
       <Footer />
     </main>
