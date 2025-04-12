@@ -1,15 +1,24 @@
 package com.sustech.cs304.project.peakform.service;
 
-import com.sustech.cs304.project.peakform.domain.*;
+import com.sustech.cs304.project.peakform.domain.Exercise;
+import com.sustech.cs304.project.peakform.domain.User;
+import com.sustech.cs304.project.peakform.domain.Workout;
+import com.sustech.cs304.project.peakform.domain.WorkoutExercise;
 import com.sustech.cs304.project.peakform.dto.WorkoutPlanRequest;
 import com.sustech.cs304.project.peakform.dto.WorkoutPlanResponse;
-import com.sustech.cs304.project.peakform.repository.*;
+import com.sustech.cs304.project.peakform.repository.ExerciseRepository;
+import com.sustech.cs304.project.peakform.repository.UserRepository;
+import com.sustech.cs304.project.peakform.repository.WorkoutExerciseRepository;
+import com.sustech.cs304.project.peakform.repository.WorkoutRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -20,9 +29,7 @@ public class WorkoutService {
     private final ExerciseRepository exerciseRepository;
     private final WorkoutExerciseRepository workoutExerciseRepository;
 
-    public ResponseEntity<String> createWorkoutPlan(WorkoutPlanRequest request) {
-        UUID userUuid = UUID.fromString(request.userUuid());
-
+    public ResponseEntity<String> createWorkoutPlan(UUID userUuid, WorkoutPlanRequest request) {
         Optional<User> userOptional = userRepository.findById(userUuid);
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");

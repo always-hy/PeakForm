@@ -3,7 +3,6 @@ package com.sustech.cs304.project.peakform.dto;
 import java.util.List;
 
 public record WorkoutPlanRequest(
-        String userUuid,
         List<WorkoutExerciseRequest> exercises
 ) {
     public record WorkoutExerciseRequest(
@@ -11,5 +10,6 @@ public record WorkoutPlanRequest(
             String day,
             Integer sets,
             String reps
-    ) {}
+    ) {
+    }
 }
