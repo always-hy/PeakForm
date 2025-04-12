@@ -52,8 +52,8 @@ public class UserTargetService {
         return ResponseEntity.ok(mapToResponse(userTarget));
     }
 
-    public ResponseEntity<String> updateUserTarget(Long userTargetId, UserTargetRequest userTargetRequest) {
-        Optional<UserTarget> userTargetOptional = userTargetRepository.findById(userTargetId);
+    public ResponseEntity<String> updateUserTarget(UUID userUuid, UserTargetRequest userTargetRequest) {
+        Optional<UserTarget> userTargetOptional = userTargetRepository.findByUser_UserUuid(userUuid);
 
         if (userTargetOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User target not found.");

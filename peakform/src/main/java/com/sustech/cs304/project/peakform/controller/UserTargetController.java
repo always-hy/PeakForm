@@ -3,6 +3,7 @@ package com.sustech.cs304.project.peakform.controller;
 import com.sustech.cs304.project.peakform.dto.UserTargetRequest;
 import com.sustech.cs304.project.peakform.dto.UserTargetResponse;
 import com.sustech.cs304.project.peakform.service.UserTargetService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,15 +24,17 @@ public class UserTargetController {
         return userTargetService.createUserTarget(userUuid, userTargetRequest);
     }*/
 
-    @GetMapping("/{userUuid}")
+    @GetMapping
     @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
-    public ResponseEntity<UserTargetResponse> getUserTarget(@PathVariable UUID userUuid) {
+    public ResponseEntity<UserTargetResponse> getUserTarget(@RequestParam("userUuid") UUID userUuid) {
         return userTargetService.getUserTarget(userUuid);
     }
 
-    @PutMapping("/{userTargetId}")
-    public ResponseEntity<String> updateUserTarget(@PathVariable Long userTargetId, @RequestBody UserTargetRequest userTargetRequest) {
-        return userTargetService.updateUserTarget(userTargetId, userTargetRequest);
+    @PutMapping("/update")
+    @Transactional
+    @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
+    public ResponseEntity<String> updateUserTarget(@RequestParam("userUuid") UUID userUuid, @RequestBody UserTargetRequest userTargetRequest) {
+        return userTargetService.updateUserTarget(userUuid, userTargetRequest);
     }
 
     /*@DeleteMapping("/{userTargetId}")
