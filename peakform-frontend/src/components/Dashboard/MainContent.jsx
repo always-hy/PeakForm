@@ -1,10 +1,65 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import StatCard from "./StatCard";
 import ActivityCard from "./ActivityCard";
 import ProgressCard from "./ProgressCard";
 import Calendar from "./Calendar";
+import CaloriesBurnedGraph from "./d3Graphs/CaloriesBurnedGraph";
+import UserStatsModal from "./UserStatsModal";
+import axios from "axios";
 
-const MainContent = () => {
+const MainContent = ({ userData, userUuid, userTarget }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [gymBookings, setGymBookings] = useState([]);
+  // Function to open the modal
+  const openModal = () => setIsModalOpen(true);
+
+  // Function to close the modal
+  const closeModal = () => setIsModalOpen(false);
+
+  // Function to handle modal form submission
+  const handleModalSubmit = (updatedValues) => {
+    // Here you could call the API to update the stats with the updated values
+    // For example:
+    // callApiToUpdateStats(updatedValues);
+
+    // In this example, we'll just log the updated values
+    console.log(updatedValues);
+  };
+
+  useEffect(() => {
+    const fetchActivity = async () => {
+      try {
+        const statsResponse = await fetch(
+          // "http://localhost:8080/user-schedules/records?userUuid=" + data.userUuid,
+          `http://localhost:8080/user-schedules/records?userUuid=${userUuid}`,
+
+          {
+            method: "GET",
+            credentials: "include", // Include session cookies
+          }
+        );
+
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setGymBookings(statsData);
+          console.log("Gym Bookings:", statsData);
+        } else {
+          const statsError = await statsResponse.text();
+          console.error("User stats failed:", statsError);
+        }
+      } catch (error) {
+        console.error("Error during login or fetching gym data:", error);
+      }
+    };
+    if (userUuid) {
+      fetchActivity();
+    }
+  }, [userUuid]);
+
+  if (!userData | !userTarget) {
+    return "Loading";
+  }
+
   return (
     <section class="self-stretch mt-24 min-w-60 w-[882px] max-md:max-w-full md:flex-1">
       <header className="flex flex-wrap gap-10 justify-between items-start w-full max-md:max-w-full">
@@ -24,16 +79,35 @@ const MainContent = () => {
         </div>
       </header>
 
-      <div className="mt-8 w-full max-md:max-w-full">
+      <div className="mt-8 w-full max-md:max-w-full relative">
         <div className="w-full max-md:max-w-full">
           <div className="flex flex-wrap gap-7 items-center w-full max-md:max-w-full">
             <StatCard
               title="Workout Duration"
               icon="/workout-duration.png"
               type="duration"
+              value={userData.workoutDuration}
             />
-            <StatCard title="Water" icon="/Water.png" type="water" />
-            <StatCard title="Calories" icon="/Cal.png" type="calories" />
+            <StatCard
+              title="Water"
+              icon="/Water.png"
+              type="water"
+              value={userData.waterIntake}
+              target={userTarget.targetWaterIntake}
+            />
+            <StatCard
+              title="Calories"
+              icon="/Cal.png"
+              type="calories"
+              value={userData.caloriesBurned}
+              target={userTarget.targetCaloriesBurned}
+              chart={
+                <CaloriesBurnedGraph
+                  value={userData.caloriesBurned}
+                  target={userTarget.targetCaloriesBurned}
+                />
+              }
+            />
             <StatCard
               title="Streak"
               icon="/streak.png"
@@ -43,9 +117,15 @@ const MainContent = () => {
               chart="/streak_line.png"
             />
           </div>
+          <button
+            onClick={openModal}
+            className="absolute top-0 right-0 bg-green-500 p-4 rounded-full text-white shadow-xl"
+          >
+            +
+          </button>
 
           <div className="flex flex-wrap gap-7 items-center mt-8 w-full max-md:max-w-full">
-            <ActivityCard />
+            <ActivityCard userUuid={userUuid} gymBookings={gymBookings} />
             <ProgressCard />
           </div>
         </div>
@@ -53,6 +133,15 @@ const MainContent = () => {
           <Calendar />
         </div>
       </div>
+
+      {/* Modal */}
+      <UserStatsModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        userData={userData} // Pass the current stats values
+        onSubmit={handleModalSubmit} // Handle the form submission
+        userUuid={userUuid} // Pass the userUuid to the Modal
+      />
     </section>
   );
 };

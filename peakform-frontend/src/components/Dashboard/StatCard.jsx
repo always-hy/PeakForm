@@ -1,6 +1,6 @@
 import React from "react";
 
-const StatCard = ({ title, icon, type, value, unit, chart }) => {
+const StatCard = ({ title, icon, type, value, target, unit, chart }) => {
   // For the streak card which has a different layout
   if (type === "streak") {
     return (
@@ -32,30 +32,43 @@ const StatCard = ({ title, icon, type, value, unit, chart }) => {
 
   // For other stat cards (workout duration, water, calories)
   return (
-    <article className="flex overflow-hidden flex-col grow shrink items-center self-stretch px-4 pt-5 pb-32 my-auto w-40 text-base font-bold text-white rounded-xl bg-zinc-900 min-h-[170px] max-md:pb-24">
-      <div className="flex flex-wrap gap-2 items-end max-w-full w-[165px]">
-        {type === "duration" ? (
-          <>
+    <article
+      className="flex flex-col items-center justify-center px-4 pt-5 pb-5 text-base font-bold text-white rounded-xl bg-zinc-900 w-full max-w-[165px]"
+      style={{ height: "170px" }}
+    >
+      {type === "duration" ? (
+        <div className="flex flex-col items-center justify-between h-full w-full">
+          {/* Icon + Title */}
+          <div className="flex items-center justify-center gap-2">
             <img
               src={icon}
-              className="object-contain shrink-0 aspect-square w-[22px]"
+              className="object-contain aspect-square w-[22px]"
               alt={title}
             />
-            <h3>{title}</h3>
-          </>
-        ) : (
-          <div className="flex flex-col grow shrink justify-center items-center w-[132px]">
-            <div className="flex gap-1.5 items-end max-w-full w-[104px]">
-              <img
-                src={icon}
-                className="object-contain shrink-0 aspect-square w-[22px]"
-                alt={title}
-              />
-              <h3>{title}</h3>
-            </div>
+            <h3 className="text-center">{title}</h3>
           </div>
-        )}
-      </div>
+          <div>{value} minutes</div>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-between h-full w-full">
+          {/* Icon + Title */}
+          <div className="flex items-center justify-center gap-2">
+            <img
+              src={icon}
+              className="object-contain aspect-square w-[22px]"
+              alt={title}
+            />
+            <h3 className="text-center">{title}</h3>
+          </div>
+          {/* Chart */}
+          <div className="flex justify-center items-center w-full h-full">
+            {chart}
+          </div>
+          <div>
+            {value} / {target}
+          </div>
+        </div>
+      )}
     </article>
   );
 };

@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import GoalCard from "./GoalCard";
 import AchievementCard from "./AchievementCard";
 
-const UserProfile = ({ isOpen, toggleOpen }) => {
+const UserProfile = ({ isOpen, toggleOpen, userData }) => {
   // Prevent scrolling when mobile menu is open on mobile only
   useEffect(() => {
     const isMobile = window.innerWidth < 768; // md breakpoint
@@ -18,6 +18,10 @@ const UserProfile = ({ isOpen, toggleOpen }) => {
       document.body.style.overflow = "auto";
     };
   }, [isOpen]);
+
+  if (!userData) {
+    return "Loading";
+  }
 
   return (
     <>
@@ -47,7 +51,9 @@ const UserProfile = ({ isOpen, toggleOpen }) => {
 
           <div className="flex z-0 flex-col justify-center items-center self-stretch my-auto">
             <div className="text-xl font-semibold text-white">
-              <span style={{ fontWeight: 700, fontSize: "24px" }}>71</span>
+              <span style={{ fontWeight: 700, fontSize: "24px" }}>
+                {userData.weight}
+              </span>
               <span style={{ fontSize: "14px", color: "rgba(157,172,193,1)" }}>
                 kg
               </span>
@@ -57,7 +63,7 @@ const UserProfile = ({ isOpen, toggleOpen }) => {
 
           <div className="flex z-0 flex-col justify-center self-stretch my-auto w-[58px]">
             <div className="text-2xl font-bold text-white">
-              188
+              {userData.height}
               <span
                 style={{
                   fontWeight: 600,

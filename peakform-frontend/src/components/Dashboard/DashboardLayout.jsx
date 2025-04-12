@@ -5,11 +5,84 @@ import MainContent from "./MainContent";
 import UserProfile from "./UserProfile";
 import MobileMenuButton from "./MobileMenuButton";
 import SidebarMenuButton from "./SidebarMenuButton";
+import axios from "axios";
 
 const DashboardLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [userTarget, setUserTarget] = useState(null);
+  const [storedUuid, setStoredUuid] = useState(null);
+
+  useEffect(() => {
+    const uuid = localStorage.getItem("user_uuid");
+    setStoredUuid(uuid);
+  }, []);
+
+  useEffect(() => {
+    console.log("storedUuid state updated:", storedUuid);
+  }, [storedUuid]);
+
+  useEffect(() => {
+    const uuid = localStorage.getItem("user_uuid");
+    const FetchUserData = async () => {
+      try {
+        const statsResponse = await fetch(
+          // "http://localhost:8080/user-schedules/records?userUuid=" + data.userUuid,
+          `http://localhost:8080/user-stats?userUuid=${uuid}`,
+
+          {
+            method: "GET",
+            credentials: "include", // Include session cookies
+          }
+        );
+
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setUserData(statsData);
+          console.log("User stats:", statsData);
+        } else {
+          const statsError = await statsResponse.text();
+          console.error("User stats failed:", statsError);
+        }
+      } catch (error) {
+        console.error("Error during login or fetching gym data:", error);
+      }
+    };
+
+    FetchUserData();
+  }, []);
+
+  useEffect(() => {
+    const uuid = localStorage.getItem("user_uuid");
+    const FetchUserTarget = async () => {
+      try {
+        const statsResponse = await fetch(
+          // "http://localhost:8080/user-schedules/records?userUuid=" + data.userUuid,
+          `http://localhost:8080/user-target?userUuid=${uuid}`,
+
+          {
+            method: "GET",
+            credentials: "include", // Include session cookies
+          }
+        );
+
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setUserTarget(statsData);
+          console.log("User target:", statsData);
+        } else {
+          const statsError = await statsResponse.text();
+          console.error("User stats failed:", statsError);
+        }
+      } catch (error) {
+        console.error("Error during login or fetching gym data:", error);
+      }
+    };
+
+    FetchUserTarget();
+  }, []);
 
   // Check if we're on mobile
   useEffect(() => {
@@ -52,8 +125,16 @@ const DashboardLayout = () => {
   return (
     <main className="flex flex-wrap gap-9 items-start self-stretch my-auto min-w-60 max-md:max-w-full relative">
       <Sidebar isOpen={isMobileSidebarOpen} toggleOpen={toggleMobileSidebar} />
-      <MainContent />
-      <UserProfile isOpen={isMobileMenuOpen} toggleOpen={toggleMobileMenu} />
+      <MainContent
+        userData={userData}
+        userUuid={storedUuid}
+        userTarget={userTarget}
+      />
+      <UserProfile
+        isOpen={isMobileMenuOpen}
+        toggleOpen={toggleMobileMenu}
+        userData={userData}
+      />
       {isMobile && (
         <>
           <MobileMenuButton
