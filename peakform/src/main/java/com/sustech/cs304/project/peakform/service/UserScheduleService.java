@@ -1,19 +1,23 @@
 package com.sustech.cs304.project.peakform.service;
 
+import com.sustech.cs304.project.peakform.config.RabbitMQConfig;
 import com.sustech.cs304.project.peakform.domain.GymSession;
 import com.sustech.cs304.project.peakform.domain.User;
 import com.sustech.cs304.project.peakform.domain.UserSchedule;
+import com.sustech.cs304.project.peakform.dto.AppointmentNotification;
 import com.sustech.cs304.project.peakform.dto.AppointmentStatsResponse;
 import com.sustech.cs304.project.peakform.dto.BookingRecordResponse;
 import com.sustech.cs304.project.peakform.repository.GymSessionRepository;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import com.sustech.cs304.project.peakform.repository.UserScheduleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,6 +30,9 @@ public class UserScheduleService {
     private final GymSessionRepository gymSessionRepository;
     private final UserRepository userRepository;
 
+    private final RabbitTemplate rabbitTemplate;
+
+    // Existing methods remain unchanged
     public ResponseEntity<String> bookGymSession(Long gymSessionId, UUID userUuid) {
         Optional<GymSession> gymSessionOptional = gymSessionRepository.findById(gymSessionId);
         if (gymSessionOptional.isEmpty()) {
@@ -50,7 +57,7 @@ public class UserScheduleService {
                 .appointmentStatus(UserSchedule.AppointmentStatus.BOOKED)
                 .build();
 
-        userScheduleRepository.save(userSchedule);
+        saveSchedule(userSchedule);
 
         gymSession.setAvailableSlots(gymSession.getAvailableSlots() - 1);
         gymSessionRepository.save(gymSession);
@@ -172,5 +179,25 @@ public class UserScheduleService {
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(statsResponse);
+    }
+
+    private void saveSchedule(UserSchedule userSchedule) {
+        UserSchedule savedSchedule = userScheduleRepository.save(userSchedule);
+        LocalDateTime sessionStartDateTime = LocalDateTime.of(savedSchedule.getGymSession().getDate(), savedSchedule.getGymSession().getSessionStart());
+
+        LocalDateTime notificationTime = sessionStartDateTime.minusHours(5);
+        long delay = ChronoUnit.MILLIS.between(LocalDateTime.now(), notificationTime);
+
+        if (delay > 0) {
+            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.DELAYED_QUEUE_NAME,
+                    new AppointmentNotification(savedSchedule.getUser().getEmail(), sessionStartDateTime),
+                    message -> {
+                        message.getMessageProperties().setExpiration(String.valueOf(delay));
+                        return message;
+                    });
+        } else {
+            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.DEAD_LETTER_ROUTING_KEY,
+                    new AppointmentNotification(savedSchedule.getUser().getEmail(), sessionStartDateTime));
+        }
     }
 }
