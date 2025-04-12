@@ -5,6 +5,7 @@ import com.sustech.cs304.project.peakform.dto.GymListResponse;
 import com.sustech.cs304.project.peakform.service.GymService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class GymController {
     }
 
     @GetMapping("/{gymId}")
+    @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
     public ResponseEntity<GymDetailResponse> getGym(@PathVariable("gymId") Long gymId, @RequestParam(value = "userUuid") UUID userUuid) {
         return gymService.getGym(gymId, userUuid);
     }

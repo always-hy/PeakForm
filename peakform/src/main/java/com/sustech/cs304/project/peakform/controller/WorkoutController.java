@@ -6,8 +6,8 @@ import com.sustech.cs304.project.peakform.service.WorkoutService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -19,10 +19,10 @@ public class WorkoutController {
     private final WorkoutService workoutService;
 
     @PostMapping("/create")
+    @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
     @Transactional
-    @PreAuthorize("#request.userUuid() == authentication.principal.userUuid.toString()")
-    public ResponseEntity<String> createWorkoutPlan(@RequestBody WorkoutPlanRequest request) {
-        return workoutService.createWorkoutPlan(request);
+    public ResponseEntity<String> createWorkoutPlan(@RequestParam("userUuid") UUID userUuid, @RequestBody WorkoutPlanRequest request) {
+        return workoutService.createWorkoutPlan(userUuid, request);
     }
 
     @GetMapping
