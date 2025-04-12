@@ -348,6 +348,27 @@ public class DataInitializer {
                             .targetWaterIntake(6.0f)
                             .targetCaloriesBurned(1000)
                             .targetWorkoutDuration(180)
+                            .build(),
+                    UserTarget.builder()
+                            .user(users.get(5))  
+                            .targetWeight(110f)
+                            .targetWaterIntake(4.0f)
+                            .targetCaloriesBurned(600)
+                            .targetWorkoutDuration(90)
+                            .build(),
+                    UserTarget.builder()
+                            .user(users.get(6))
+                            .targetWeight(120f)
+                            .targetWaterIntake(4.2f)
+                            .targetCaloriesBurned(750)
+                            .targetWorkoutDuration(100)
+                            .build(),
+                    UserTarget.builder()
+                            .user(users.get(7))
+                            .targetWeight(150f)
+                            .targetWaterIntake(5.5f)
+                            .targetCaloriesBurned(950)
+                            .targetWorkoutDuration(130)
                             .build()
             );
             userTargetRepository.saveAll(userTargets);
@@ -404,6 +425,33 @@ public class DataInitializer {
                             .waterIntake(4.5f)
                             .caloriesBurned(750)
                             .workoutDuration(120)
+                            .build(),
+                    UserStat.builder()
+                            .user(users.get(5))
+                            .date(today)
+                            .weight(100f)
+                            .height(195f)
+                            .waterIntake(4.0f)
+                            .caloriesBurned(600)
+                            .workoutDuration(80)
+                            .build(),
+                    UserStat.builder()
+                            .user(users.get(6))
+                            .date(today)
+                            .weight(110f)
+                            .height(200f)
+                            .waterIntake(4.2f)
+                            .caloriesBurned(750)
+                            .workoutDuration(100)
+                            .build(),
+                    UserStat.builder()
+                            .user(users.get(7))
+                            .date(today)
+                            .weight(150f)
+                            .height(210f)
+                            .waterIntake(5.5f)
+                            .caloriesBurned(950)
+                            .workoutDuration(130)
                             .build()
             );
 
