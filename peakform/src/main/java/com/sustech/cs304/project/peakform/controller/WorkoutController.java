@@ -3,6 +3,7 @@ package com.sustech.cs304.project.peakform.controller;
 import com.sustech.cs304.project.peakform.dto.WorkoutPlanRequest;
 import com.sustech.cs304.project.peakform.dto.WorkoutPlanResponse;
 import com.sustech.cs304.project.peakform.service.WorkoutService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,8 @@ public class WorkoutController {
 
     private final WorkoutService workoutService;
 
-    @PostMapping
+    @PostMapping("/create")
+    @Transactional
     @PreAuthorize("#request.userUuid() == authentication.principal.userUuid.toString()")
     public ResponseEntity<String> createWorkoutPlan(@RequestBody WorkoutPlanRequest request) {
         return workoutService.createWorkoutPlan(request);

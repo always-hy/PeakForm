@@ -69,7 +69,7 @@ public class UserStatService {
         );
     }
 
-    public ResponseEntity<String> deleteUserStat(UUID userUuid) {
+    public ResponseEntity<String> resetUserStat(UUID userUuid) {
         Optional<User> userOptional = userRepository.findById(userUuid);
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
