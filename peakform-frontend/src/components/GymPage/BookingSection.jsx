@@ -30,7 +30,7 @@ const TimeSlotSelector = ({ selectedSlot, onSelectSlot }) => {
           key={slot}
           className={`px-4 py-2 rounded-lg text-lg font-semibold transition ${
             selectedSlot === slot
-              ? "bg-[#05A31D] text-white"
+              ? "bg-green-600 text-white"
               : "bg-black text-white border border-[#05A31D] hover:bg-[#05A31D] hover:text-white"
           }`}
           onClick={() => onSelectSlot(slot)}
