@@ -39,4 +39,4 @@ From the backend root directory, run:
 
 ---
 
-_Last updated: 7 April, 22:21 PM by Hok Layheng_
+_Last updated: 7 April, 22:21 by Hok Layheng_
