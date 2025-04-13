@@ -80,6 +80,12 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
       </header>
 
       <div className="mt-8 w-full max-md:max-w-full relative">
+        <button
+          onClick={openModal}
+          className="relative top-0 right-0 bg-green-500 p-4 rounded-full text-white shadow-xl"
+        >
+          Update Stats
+        </button>
         <div className="w-full max-md:max-w-full">
           <div className="flex flex-wrap gap-7 items-center w-full max-md:max-w-full">
             <StatCard
@@ -117,12 +123,6 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
               chart="/streak_line.png"
             />
           </div>
-          <button
-            onClick={openModal}
-            className="absolute top-0 right-0 bg-green-500 p-4 rounded-full text-white shadow-xl"
-          >
-            +
-          </button>
 
           <div className="flex flex-wrap gap-7 items-center mt-8 w-full max-md:max-w-full">
             <ActivityCard userUuid={userUuid} gymBookings={gymBookings} />

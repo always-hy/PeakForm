@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 
-const UserStatsModal = ({ isOpen, onClose, values, onSubmit, userUuid }) => {
+const UserStatsModal = ({
+  isOpen,
+  onClose,
+  userData,
+  onSubmit,
+  userUuid,
+  profile,
+}) => {
   const [weight, setWeight] = useState(0);
   const [height, setHeight] = useState(0);
   const [waterIntake, setWaterIntake] = useState(0);
@@ -8,14 +15,14 @@ const UserStatsModal = ({ isOpen, onClose, values, onSubmit, userUuid }) => {
   const [workoutDuration, setWorkoutDuration] = useState(0);
 
   useEffect(() => {
-    if (isOpen && values) {
-      setWeight(values.weight || 0);
-      setHeight(values.height || 0);
-      setWaterIntake(values.waterIntake || 0);
-      setCaloriesBurned(values.caloriesBurned || 0);
-      setWorkoutDuration(values.workoutDuration || 0);
+    if (isOpen && userData) {
+      setWeight(userData.weight || 0);
+      setHeight(userData.height || 0);
+      setWaterIntake(userData.waterIntake || 0);
+      setCaloriesBurned(userData.caloriesBurned || 0);
+      setWorkoutDuration(userData.workoutDuration || 0);
     }
-  }, [isOpen, values]);
+  }, [isOpen, userData]);
 
   const handleSubmit = async () => {
     const body = {
@@ -33,20 +40,24 @@ const UserStatsModal = ({ isOpen, onClose, values, onSubmit, userUuid }) => {
 
         {
           method: "PUT",
-          credentials: "include", // Include session cookies
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify(body),
         }
       );
 
       if (statsResponse.ok) {
-        const statsData = await statsResponse.json();
-        console.log(body);
+        const statsData = await statsResponse.text();
+        console.log(statsData);
+        onClose();
       } else {
         const statsError = await statsResponse.text();
-        console.error("User stats failed:", statsError);
+        console.error("User stats failed:", JSON.stringify(body));
       }
     } catch (error) {
-      console.error("Error during login or fetching gym data:", error);
+      console.error("Error Updating User Stats:", error);
     }
   };
 
@@ -57,50 +68,58 @@ const UserStatsModal = ({ isOpen, onClose, values, onSubmit, userUuid }) => {
       <div className="bg-black text-white border border-[#05A31D] p-6 rounded-lg w-1/3">
         <h2 className="text-xl font-semibold mb-4">Update Your Stats</h2>
         <form className="flex flex-col">
-          <label className="mb-2">Weight</label>
-          <input
-            type="number"
-            value={weight}
-            onChange={(e) => setWeight(e.target.value)}
-            className="bg-black text-white border border-[#05A31D] p-2 mb-4"
-            placeholder="Weight"
-          />
+          {profile && (
+            <>
+              <label className="mb-2">Weight</label>
+              <input
+                type="number"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+                className="bg-black text-white border border-[#05A31D] p-2 mb-4"
+                placeholder="Weight"
+              />
 
-          <label className="mb-2">Height</label>
-          <input
-            type="number"
-            value={height}
-            onChange={(e) => setHeight(e.target.value)}
-            className="bg-black text-white border border-[#05A31D] p-2 mb-4"
-            placeholder="Height"
-          />
+              <label className="mb-2">Height</label>
+              <input
+                type="number"
+                value={height}
+                onChange={(e) => setHeight(e.target.value)}
+                className="bg-black text-white border border-[#05A31D] p-2 mb-4"
+                placeholder="Height"
+              />
+            </>
+          )}
 
-          <label className="mb-2">Water Intake</label>
-          <input
-            type="number"
-            value={waterIntake}
-            onChange={(e) => setWaterIntake(e.target.value)}
-            className="bg-black text-white border border-[#05A31D] p-2 mb-4"
-            placeholder="Water Intake"
-          />
+          {!profile && (
+            <>
+              <label className="mb-2">Water Intake</label>
+              <input
+                type="number"
+                value={waterIntake}
+                onChange={(e) => setWaterIntake(e.target.value)}
+                className="bg-black text-white border border-[#05A31D] p-2 mb-4"
+                placeholder="Water Intake"
+              />
 
-          <label className="mb-2">Calories Burned</label>
-          <input
-            type="number"
-            value={caloriesBurned}
-            onChange={(e) => setCaloriesBurned(e.target.value)}
-            className="bg-black text-white border border-[#05A31D] p-2 mb-4"
-            placeholder="Calories Burned"
-          />
+              <label className="mb-2">Calories Burned</label>
+              <input
+                type="number"
+                value={caloriesBurned}
+                onChange={(e) => setCaloriesBurned(e.target.value)}
+                className="bg-black text-white border border-[#05A31D] p-2 mb-4"
+                placeholder="Calories Burned"
+              />
 
-          <label className="mb-2">Workout Duration (mins)</label>
-          <input
-            type="number"
-            value={workoutDuration}
-            onChange={(e) => setWorkoutDuration(e.target.value)}
-            className="bg-black text-white border border-[#05A31D] p-2 mb-4"
-            placeholder="Workout Duration"
-          />
+              <label className="mb-2">Workout Duration (mins)</label>
+              <input
+                type="number"
+                value={workoutDuration}
+                onChange={(e) => setWorkoutDuration(e.target.value)}
+                className="bg-black text-white border border-[#05A31D] p-2 mb-4"
+                placeholder="Workout Duration"
+              />
+            </>
+          )}
 
           <div className="flex justify-between">
             <button
