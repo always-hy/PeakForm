@@ -39,6 +39,7 @@ out/
 ### Environments and Cache ###
 .env
 cache
+conf-mysql.cnf
 
 ### Firebase Service Account Key  ###
 src/main/resources/serviceAccountKey.json
