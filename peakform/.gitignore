@@ -36,8 +36,9 @@ out/
 ### VS Code ###
 .vscode/
 
-### Environments ###
+### Environments and Cache ###
 .env
+cache
 
-# Ignore Firebase service account key
+### Firebase Service Account Key  ###
 src/main/resources/serviceAccountKey.json
