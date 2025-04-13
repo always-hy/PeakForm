@@ -60,13 +60,13 @@ jacocoTestReport {
 tasks.register('startDockerCompose', Exec) {
     group = 'Docker'
     description = 'Start Docker Compose services'
-    commandLine 'docker-compose', 'up', '-d'
+    commandLine 'docker', 'compose', 'up', '-d'
 }
 
 tasks.register('stopDockerCompose', Exec) {
     group = 'Docker'
     description = 'Stop Docker Compose services'
-    commandLine 'docker-compose', 'down'
+    commandLine 'docker', 'compose', 'down'
 }
 
 tasks.named('bootRun') {

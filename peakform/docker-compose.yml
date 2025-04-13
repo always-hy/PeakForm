@@ -1,5 +1,24 @@
-version: '3.8'
 services:
+  mysql:
+    image: mysql:9.2.0
+    container_name: peakform-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_USERNAME}
+      - MYSQL_DATABASE=peakform_db
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    networks:
+      - peakform-network
+    volumes:
+      - ./cache/mysql:/var/lib/mysql
+      - ./conf-mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -27,17 +46,14 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
-    environment:
-      - SPRING_RABBITMQ_HOST=rabbitmq
-      - SPRING_RABBITMQ_PORT=5672
-      - SPRING_RABBITMQ_USERNAME=guest
-      - SPRING_RABBITMQ_PASSWORD=guest
-      - SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/peakform_db
-      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
+      mysql:
+        condition: service_healthy
     networks:
       - peakform-network
 
 networks:
   peakform-network:
     driver: bridge
+
+volumes:
+  mysql-data:

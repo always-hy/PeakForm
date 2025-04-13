@@ -50,7 +50,7 @@ public class DataInitializer {
         if (userRepository.count() == 0) {
             List<User> users = List.of(
                     User.builder()
-                            .userUuid(UUID.fromString("eea34b25-6d9d-4bd4-a2aa-688c9969e0a1"))
+                            .userUuid(UUID.fromString("9fa2fa3e-a194-4187-95a3-5c818c433973"))
                             .username("Toji Fushiguro")
                             .email("fbringer99@gmail.com")
                             .password(bCryptPasswordEncoder.encode("1"))
@@ -61,7 +61,7 @@ public class DataInitializer {
                             .verificationToken(null)
                             .build(),
                     User.builder()
-                            .userUuid(UUID.fromString("9fa2fa3e-a194-4187-95a3-5c818c433973"))
+                            .userUuid(UUID.fromString("eea34b25-6d9d-4bd4-a2aa-688c9969e0a1"))
                             .username("Escanor")
                             .email("prakbunlong53@gmail.com")
                             .password(bCryptPasswordEncoder.encode("1"))
@@ -350,7 +350,7 @@ public class DataInitializer {
                             .targetWorkoutDuration(180)
                             .build(),
                     UserTarget.builder()
-                            .user(users.get(5))  
+                            .user(users.get(5))
                             .targetWeight(110f)
                             .targetWaterIntake(4.0f)
                             .targetCaloriesBurned(600)
