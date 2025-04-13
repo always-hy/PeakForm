@@ -26,15 +26,15 @@
 
 1. Click **Edit Configurations...**
 
-   ![Step 1: Edit Configurations](/Users/layhenghok/Desktop/SUSTech/Year3Semester2/CS304-Software-Engineering/Project/Codebase/team-project-25spring-86/docs/assets/img/gui1.png)
+   ![Step 1: Edit Configurations](./assets/img/gui1.png)
 
 2. Add a new Gradle configuration.
 
-   ![Step 2: Add New Gradle Config](/Users/layhenghok/Desktop/SUSTech/Year3Semester2/CS304-Software-Engineering/Project/Codebase/team-project-25spring-86/docs/assets/img/gui2.png)
+   ![Step 2: Add New Gradle Config](./assets/img/gui2.png)
 
 3. Fill in the required fields as shown, then click **Apply**.
 
-   ![Step 3: Configuration Details](/Users/layhenghok/Desktop/SUSTech/Year3Semester2/CS304-Software-Engineering/Project/Codebase/team-project-25spring-86/docs/assets/img/gui3.png)
+   ![Step 3: Configuration Details](./assets/img/gui3.png)
 
 4. Click the **Run** button to start the backend.
 
