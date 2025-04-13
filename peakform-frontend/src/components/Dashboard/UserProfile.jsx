@@ -1,9 +1,25 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import GoalCard from "./GoalCard";
 import AchievementCard from "./AchievementCard";
+import UserStatsModal from "./UserStatsModal";
+const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
+  // Function to open the modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openModal = () => setIsModalOpen(true);
 
-const UserProfile = ({ isOpen, toggleOpen, userData }) => {
+  // Function to close the modal
+  const closeModal = () => setIsModalOpen(false);
+
+  // Function to handle modal form submission
+  const handleModalSubmit = (updatedValues) => {
+    // Here you could call the API to update the stats with the updated values
+    // For example:
+    // callApiToUpdateStats(updatedValues);
+
+    // In this example, we'll just log the updated values
+    console.log(updatedValues);
+  };
   // Prevent scrolling when mobile menu is open on mobile only
   useEffect(() => {
     const isMobile = window.innerWidth < 768; // md breakpoint
@@ -46,47 +62,62 @@ const UserProfile = ({ isOpen, toggleOpen, userData }) => {
           </div>
         </div>
 
-        <div className="flex relative gap-10 items-center py-3 pr-6 pl-8 mt-7 max-w-full min-h-[78px] w-[296px] max-md:px-5">
-          <div className="flex absolute bottom-0 z-0 shrink-0 self-start rounded-xl bg-zinc-900 h-[78px] min-w-60 right-[-9px] w-[305px]" />
+        <div className="flex flex-col items-end gap-4 mt-8 max-w-full">
+          {/* Top-right Button */}
+          <button
+            onClick={openModal}
+            className="bg-green-500 p-4 rounded-full text-white shadow-xl"
+          >
+            +
+          </button>
 
-          <div className="flex z-0 flex-col justify-center items-center self-stretch my-auto">
-            <div className="text-xl font-semibold text-white">
-              <span style={{ fontWeight: 700, fontSize: "24px" }}>
-                {userData.weight}
-              </span>
-              <span style={{ fontSize: "14px", color: "rgba(157,172,193,1)" }}>
-                kg
-              </span>
-            </div>
-            <div className="text-base font-medium text-gray-500">Weight</div>
-          </div>
+          {/* Weight and Height Card */}
+          <div className="flex relative gap-10 items-center py-3 pr-6 pl-8 max-w-full min-h-[78px] w-[296px] max-md:px-5">
+            <div className="flex absolute bottom-0 z-0 shrink-0 self-start rounded-xl bg-zinc-900 h-[78px] min-w-60 right-[-9px] w-[305px]" />
 
-          <div className="flex z-0 flex-col justify-center self-stretch my-auto w-[58px]">
-            <div className="text-2xl font-bold text-white">
-              {userData.height}
-              <span
-                style={{
-                  fontWeight: 600,
-                  fontSize: "14px",
-                  color: "rgba(157,172,193,1)",
-                }}
-              >
-                cm
-              </span>
+            <div className="flex z-0 flex-col justify-center items-center self-stretch my-auto">
+              <div className="text-xl font-semibold text-white">
+                <span style={{ fontWeight: 700, fontSize: "24px" }}>
+                  {userData.weight}
+                </span>
+                <span
+                  style={{ fontSize: "14px", color: "rgba(157,172,193,1)" }}
+                >
+                  kg
+                </span>
+              </div>
+              <div className="text-base font-medium text-gray-500">Weight</div>
             </div>
-            <div className="self-center text-base font-medium text-gray-500">
-              Height
-            </div>
-          </div>
 
-          <div className="flex z-0 flex-col justify-center self-stretch my-auto">
-            <div className="text-xl font-semibold text-white">
-              <span style={{ fontWeight: 700, fontSize: "24px" }}>22</span>
-              <span style={{ fontSize: "14px", color: "rgba(157,172,193,1)" }}>
-                yrs
-              </span>
+            <div className="flex z-0 flex-col justify-center self-stretch my-auto w-[58px]">
+              <div className="text-2xl font-bold text-white">
+                {userData.height}
+                <span
+                  style={{
+                    fontWeight: 600,
+                    fontSize: "14px",
+                    color: "rgba(157,172,193,1)",
+                  }}
+                >
+                  cm
+                </span>
+              </div>
+              <div className="self-center text-base font-medium text-gray-500">
+                Height
+              </div>
             </div>
-            <div className="text-base font-medium text-gray-500">Age</div>
+
+            <div className="flex z-0 flex-col justify-center self-stretch my-auto">
+              <div className="text-xl font-semibold text-white">
+                <span style={{ fontWeight: 700, fontSize: "24px" }}>22</span>
+                <span
+                  style={{ fontSize: "14px", color: "rgba(157,172,193,1)" }}
+                >
+                  yrs
+                </span>
+              </div>
+              <div className="text-base font-medium text-gray-500">Age</div>
+            </div>
           </div>
         </div>
 
@@ -247,6 +278,16 @@ const UserProfile = ({ isOpen, toggleOpen, userData }) => {
           aria-hidden="true"
         />
       )}
+
+      {/* Modal */}
+      <UserStatsModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        userData={userData} // Pass the current stats values
+        onSubmit={handleModalSubmit} // Handle the form submission
+        userUuid={userUuid} // Pass the userUuid to the Modal
+        profile={true}
+      />
     </>
   );
 };

@@ -134,6 +134,7 @@ const DashboardLayout = () => {
         isOpen={isMobileMenuOpen}
         toggleOpen={toggleMobileMenu}
         userData={userData}
+        userUuid={storedUuid}
       />
       {isMobile && (
         <>
