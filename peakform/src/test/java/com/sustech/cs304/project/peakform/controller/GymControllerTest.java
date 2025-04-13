@@ -90,7 +90,7 @@ public class GymControllerTest extends AbstractTestContainerConfig {
                 .when()
                 .get("/gyms/1")
                 .then()
-                .statusCode(404);
+                .statusCode(403);
 
         // Valid userUuid but invalid gymId
         given()
