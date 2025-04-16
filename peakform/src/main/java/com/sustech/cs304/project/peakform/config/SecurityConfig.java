@@ -24,6 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 
 @Configuration
@@ -152,7 +153,9 @@ public class SecurityConfig {
 
         UserStat userStat = UserStat.builder()
                 .user(newUser)
+                .date(LocalDate.now())
                 .weight(0F)
+                .height(0F)
                 .waterIntake(0F)
                 .caloriesBurned(0)
                 .workoutDuration(0)
@@ -161,6 +164,7 @@ public class SecurityConfig {
         userRepository.save(newUser);
         userTargetRepository.save(userTarget);
         userStatRepository.save(userStat);
+
         return newUser;
     }
 }
