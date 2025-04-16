@@ -37,8 +37,15 @@ public class WorkoutService {
 
         User user = userOptional.get();
 
+        List<Workout> existingPlans = workoutRepository.findByUser_UserUuidOrderByIsActiveDesc(userUuid);
+        for (Workout w : existingPlans) {
+            w.setIsActive(false);
+        }
+        workoutRepository.saveAll(existingPlans);
+
         Workout workout = Workout.builder()
                 .user(user)
+                .isActive(true)
                 .build();
         workoutRepository.save(workout);
 
@@ -64,27 +71,52 @@ public class WorkoutService {
 
         workoutExerciseRepository.saveAll(workoutExercises);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Workout plan created successfully.");
+        return ResponseEntity.status(HttpStatus.OK).body("New active workout plan created.");
     }
 
-    public WorkoutPlanResponse getWorkoutPlan(UUID userUuid) {
+    public ResponseEntity<List<WorkoutPlanResponse>> getWorkoutPlan(UUID userUuid) {
         Optional<User> userOptional = userRepository.findById(userUuid);
         if (userOptional.isEmpty()) {
-            throw new IllegalArgumentException("User not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ArrayList<>());
         }
 
-        Optional<Workout> workoutOptional = workoutRepository.findByUser_UserUuid(userUuid);
-        if (workoutOptional.isEmpty()) {
-            throw new IllegalArgumentException("No workout plan found for the user.");
+        List<Workout> workouts = workoutRepository.findByUser_UserUuidOrderByIsActiveDesc(userUuid);
+        if (workouts.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(new ArrayList<>());
         }
 
-        Workout workout = workoutOptional.get();
-        Long workoutId = workout.getWorkoutId();
+        List<WorkoutPlanResponse> workoutPlanResponses = new ArrayList<>();
 
-        List<WorkoutExercise> workoutExercises = workoutExerciseRepository.findByWorkout_WorkoutId(workoutId);
+        for (Workout workout : workouts) {
+            workoutPlanResponses.add(mapToWorkoutPlanResponse(workout));
+        }
 
+        return ResponseEntity.status(HttpStatus.OK).body(workoutPlanResponses);
+    }
+
+    public ResponseEntity<String> activateWorkout(Long workoutId, UUID userUuid) {
+        Optional<Workout> workoutOptional = workoutRepository.findById(workoutId);
+
+        if (workoutOptional.isEmpty() || !workoutOptional.get().getUser().getUserUuid().equals(userUuid)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Workout not found or doesn't belong to user.");
+        }
+
+        Workout toActivate = workoutOptional.get();
+
+        List<Workout> workouts = workoutRepository.findByUser_UserUuidOrderByIsActiveDesc(userUuid);
+        for (Workout w : workouts) {
+            w.setIsActive(w.getWorkoutId().equals(toActivate.getWorkoutId()));
+        }
+
+        workoutRepository.saveAll(workouts);
+
+        return ResponseEntity.ok("Workout plan activated.");
+    }
+
+    private WorkoutPlanResponse mapToWorkoutPlanResponse(Workout workout) {
         List<WorkoutPlanResponse.WorkoutExerciseResponse> exercises = new ArrayList<>();
-        for (WorkoutExercise workoutExercise : workoutExercises) {
+
+        for (WorkoutExercise workoutExercise : workout.getWorkoutExercises()) {
             exercises.add(new WorkoutPlanResponse.WorkoutExerciseResponse(
                     workoutExercise.getExercise().getExerciseId(),
                     workoutExercise.getExercise().getExerciseName(),
@@ -95,7 +127,6 @@ public class WorkoutService {
                     workoutExercise.getReps()
             ));
         }
-
-        return new WorkoutPlanResponse(userUuid.toString(), exercises);
+        return new WorkoutPlanResponse(workout.getWorkoutId(), workout.getIsActive(), exercises);
     }
 }

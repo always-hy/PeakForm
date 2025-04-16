@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -27,7 +28,13 @@ public class WorkoutController {
 
     @GetMapping
     @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
-    public WorkoutPlanResponse getWorkoutPlan(@RequestParam("userUuid") UUID userUuid) {
+    public ResponseEntity<List<WorkoutPlanResponse>> getWorkoutPlan(@RequestParam("userUuid") UUID userUuid) {
         return workoutService.getWorkoutPlan(userUuid);
+    }
+
+    @PutMapping("/{workoutId}/activate")
+    @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
+    public ResponseEntity<String> activateWorkoutPlan(@PathVariable Long workoutId, @RequestParam UUID userUuid) {
+        return workoutService.activateWorkout(workoutId, userUuid);
     }
 }

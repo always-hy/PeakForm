@@ -24,4 +24,7 @@ public class Workout {
 
     @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WorkoutExercise> workoutExercises;
+
+    @Column(name = "is_active")
+    private Boolean isActive;
 }
