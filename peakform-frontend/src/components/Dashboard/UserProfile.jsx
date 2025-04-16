@@ -1,141 +1,297 @@
+"use client";
 import React, { useEffect, useState } from "react";
+import GoalCard from "./GoalCard";
+import AchievementCard from "./AchievementCard";
+import UserStatsModal from "./UserStatsModal";
+const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
+  // Function to open the modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openModal = () => setIsModalOpen(true);
 
-const dayOptions = [
-  "MONDAY",
-  "TUESDAY",
-  "WEDNESDAY",
-  "THURSDAY",
-  "FRIDAY",
-  "SATURDAY",
-  "SUNDAY",
-];
+  // Function to close the modal
+  const closeModal = () => setIsModalOpen(false);
 
-const staticWorkoutData = [
-  {
-    exerciseId: 1,
-    exerciseName: "Push-Up",
-    description:
-      "A basic bodyweight exercise to strengthen the chest, shoulders, and triceps.",
-    targetMuscleGroup: "Chest, Shoulders, Triceps",
-    day: "MONDAY",
-    sets: 3,
-    reps: "10",
-  },
-  {
-    exerciseId: 2,
-    exerciseName: "Squat",
-    description:
-      "A lower-body exercise that primarily targets the quadriceps, hamstrings, and glutes.",
-    targetMuscleGroup: "Legs, Glutes",
-    day: "MONDAY",
-    sets: 4,
-    reps: "12",
-  },
-  {
-    exerciseId: 3,
-    exerciseName: "Plank",
-    description:
-      "An isometric core strength exercise that involves maintaining a position.",
-    targetMuscleGroup: "Core",
-    day: "MONDAY",
-    sets: 3,
-    reps: "60 sec",
-  },
-  {
-    exerciseId: 4,
-    exerciseName: "Burpees",
-    description:
-      "A full-body exercise used in strength training and aerobic exercise.",
-    targetMuscleGroup: "Full Body",
-    day: "MONDAY",
-    sets: 3,
-    reps: "15",
-  },
-];
+  // Function to handle modal form submission
+  const handleModalSubmit = (updatedValues) => {
+    // Here you could call the API to update the stats with the updated values
+    // For example:
+    // callApiToUpdateStats(updatedValues);
 
-const ProgressCard = () => {
-  const [selectedDay, setSelectedDay] = useState("MONDAY");
-  const [exercises, setExercises] = useState([]);
-
+    // In this example, we'll just log the updated values
+    console.log(updatedValues);
+  };
+  // Prevent scrolling when mobile menu is open on mobile only
   useEffect(() => {
-    // Fetch workout plan
-    const fetchWorkout = async () => {
-      try {
-        const uuid = localStorage.getItem("user_uuid");
-        const statsResponse = await fetch(
-          // "http://localhost:8080/user-schedules/records?userUuid=" + data.userUuid,
-          `http://localhost:8080/workout-plan?userUuid=${uuid}`,
+    const isMobile = window.innerWidth < 768; // md breakpoint
 
-          {
-            method: "GET",
-            credentials: "include", // Include session cookies
-          }
-        );
-        const data = await statsResponse.json();
-        setExercises(data.exercises || []);
-        console.log(data);
-        // setExercises(staticWorkoutData);
-      } catch (err) {
-        console.error("Failed to fetch workout data:", err);
-      }
+    if (isOpen && isMobile) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+
+    return () => {
+      document.body.style.overflow = "auto";
     };
+  }, [isOpen]);
 
-    fetchWorkout();
-  }, []);
-
-  const filteredExercises = exercises.filter(
-    (exercise) => exercise.day === selectedDay
-  );
+  if (!userData) {
+    return "Loading";
+  }
 
   return (
-    <article className="flex flex-col gap-5 p-5 rounded-xl bg-zinc-900 text-white min-w-60 w-full max-h-[400px] overflow-hidden">
-      <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold">Workout Plan</h3>
-        <select
-          value={selectedDay}
-          onChange={(e) => setSelectedDay(e.target.value)}
-          className="bg-zinc-800 text-white p-2 rounded-lg text-sm"
-        >
-          {dayOptions.map((day) => (
-            <option key={day} value={day}>
-              {day}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="overflow-y-auto pr-2 custom-scrollbar">
-        {filteredExercises.length === 0 ? (
-          <p className="text-sm text-gray-400">
-            No exercises for {selectedDay}.
-          </p>
-        ) : (
-          <div className="flex flex-col gap-4 pb-1">
-            {filteredExercises.map((exercise) => (
-              <div
-                key={exercise.exerciseId}
-                className="p-4 rounded-xl bg-green-600"
-              >
-                <h4 className="font-semibold text-lg">
-                  {exercise.exerciseName}
-                </h4>
-                <p className="text-sm text-gray-200">{exercise.description}</p>
-                <p className="text-sm mt-1">
-                  <span className="font-medium">Target:</span>{" "}
-                  {exercise.targetMuscleGroup}
-                </p>
-                <p className="text-sm mt-1">
-                  <span className="font-medium">Sets:</span> {exercise.sets}{" "}
-                  &nbsp;
-                  <span className="font-medium">Reps:</span> {exercise.reps}
-                </p>
-              </div>
-            ))}
+    <>
+      {/* Desktop version - always visible */}
+      <aside className="hidden md:flex flex-col items-center self-stretch my-auto bg-stone-950 min-h-[1543px] min-w-60 w-[388px]">
+        <div className="flex gap-3.5 items-center py-10 max-w-full w-[284px]">
+          <div className="flex overflow-hidden flex-col items-center self-stretch my-auto bg-white rounded-xl h-[46px] w-[46px]">
+            <div className="flex w-full min-h-[46px]" />
           </div>
-        )}
-      </div>
-    </article>
+          <div className="self-stretch my-auto w-[136px]">
+            <h2 className="text-lg font-bold text-white">Harrold Tok</h2>
+            <div className="flex gap-px items-start">
+              <div className="flex justify-between items-center px-1 py-0.5 w-5">
+                <img
+                  src="/location.png"
+                  className="object-contain self-stretch my-auto w-3.5 aspect-[0.82]"
+                  alt="Location"
+                />
+              </div>
+              <p className="text-sm text-gray-400">Shenzhen, China</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col items-end gap-4 mt-8 max-w-full">
+          {/* Top-right Button */}
+          <button
+            onClick={openModal}
+            className="bg-green-500 p-4 rounded-full text-white shadow-xl"
+          >
+            +
+          </button>
+
+          {/* Weight and Height Card */}
+          <div className="flex relative gap-10 items-center py-3 pr-6 pl-8 max-w-full min-h-[78px] w-[296px] max-md:px-5">
+            <div className="flex absolute bottom-0 z-0 shrink-0 self-start rounded-xl bg-zinc-900 h-[78px] min-w-60 right-[-9px] w-[305px]" />
+
+            <div className="flex z-0 flex-col justify-center items-center self-stretch my-auto">
+              <div className="text-xl font-semibold text-white">
+                <span style={{ fontWeight: 700, fontSize: "24px" }}>
+                  {userData.weight}
+                </span>
+                <span
+                  style={{ fontSize: "14px", color: "rgba(157,172,193,1)" }}
+                >
+                  kg
+                </span>
+              </div>
+              <div className="text-base font-medium text-gray-500">Weight</div>
+            </div>
+
+            <div className="flex z-0 flex-col justify-center self-stretch my-auto w-[58px]">
+              <div className="text-2xl font-bold text-white">
+                {userData.height}
+                <span
+                  style={{
+                    fontWeight: 600,
+                    fontSize: "14px",
+                    color: "rgba(157,172,193,1)",
+                  }}
+                >
+                  cm
+                </span>
+              </div>
+              <div className="self-center text-base font-medium text-gray-500">
+                Height
+              </div>
+            </div>
+
+            <div className="flex z-0 flex-col justify-center self-stretch my-auto">
+              <div className="text-xl font-semibold text-white">
+                <span style={{ fontWeight: 700, fontSize: "24px" }}>22</span>
+                <span
+                  style={{ fontSize: "14px", color: "rgba(157,172,193,1)" }}
+                >
+                  yrs
+                </span>
+              </div>
+              <div className="text-base font-medium text-gray-500">Age</div>
+            </div>
+          </div>
+        </div>
+
+        <h3 className="mt-7 text-lg font-semibold text-white">Your Goals</h3>
+
+        {/* Repeat the same goal card 3 times */}
+        {[1, 2, 3].map((index) => (
+          <GoalCard key={index} />
+        ))}
+
+        <h3 className="mt-7 text-lg font-semibold text-white">Goal Progress</h3>
+
+        <div className="px-14 py-5 mt-7 text-sm leading-5 text-center text-white rounded-xl bg-zinc-900 max-md:px-5">
+          You have achieved{" "}
+          <span style={{ color: "rgba(10,222,30,1)" }}>80%</span> of your
+          <br />
+          goals. Keep going!
+        </div>
+
+        <h3 className="self-stretch mt-7 text-lg font-semibold text-white">
+          Achievements
+        </h3>
+
+        {/* Repeat the same achievement card 3 times */}
+        {[1, 2, 3].map((index) => (
+          <AchievementCard key={index} />
+        ))}
+      </aside>
+
+      {/* Mobile version - slides in */}
+      <aside
+        className={`md:hidden flex flex-col items-center fixed top-0 right-0 h-full z-40
+          bg-stone-950 min-h-[100vh] w-[85%] max-w-[388px]
+          transform transition-transform duration-300 ease-in-out overflow-y-auto
+          ${isOpen ? "translate-x-0" : "translate-x-full"}
+        `}
+        style={{
+          paddingBottom: "100px",
+        }} /* Ensure space at bottom for scrolling */
+      >
+        <div className="w-full flex justify-end p-4">
+          <button
+            onClick={toggleOpen}
+            className="text-white p-2"
+            aria-label="Close menu"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div className="flex gap-3.5 items-center py-6 max-w-full w-[284px]">
+          <div className="flex overflow-hidden flex-col items-center self-stretch my-auto bg-white rounded-xl h-[46px] w-[46px]">
+            <div className="flex w-full min-h-[46px]" />
+          </div>
+          <div className="self-stretch my-auto w-[136px]">
+            <h2 className="text-lg font-bold text-white">Harrold Tok</h2>
+            <div className="flex gap-px items-start">
+              <div className="flex justify-between items-center px-1 py-0.5 w-5">
+                <img
+                  src="/location.png"
+                  className="object-contain self-stretch my-auto w-3.5 aspect-[0.82]"
+                  alt="Location"
+                />
+              </div>
+              <p className="text-sm text-gray-400">Shenzhen, China</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex relative gap-10 items-center py-3 pr-6 pl-8 mt-5 max-w-full min-h-[78px] w-[296px] max-md:px-5">
+          <div className="flex absolute bottom-0 z-0 shrink-0 self-start rounded-xl bg-zinc-900 h-[78px] min-w-60 right-[-9px] w-[305px]" />
+
+          <div className="flex z-0 flex-col justify-center items-center self-stretch my-auto">
+            <div className="text-xl font-semibold text-white">
+              <span style={{ fontWeight: 700, fontSize: "24px" }}>
+                {userData.weight}
+              </span>
+              <span style={{ fontSize: "14px", color: "rgba(157,172,193,1)" }}>
+                kg
+              </span>
+            </div>
+            <div className="text-base font-medium text-gray-500">Weight</div>
+          </div>
+
+          <div className="flex z-0 flex-col justify-center self-stretch my-auto w-[58px]">
+            <div className="text-2xl font-bold text-white">
+              {userData.height}
+              <span
+                style={{
+                  fontWeight: 600,
+                  fontSize: "14px",
+                  color: "rgba(157,172,193,1)",
+                }}
+              >
+                cm
+              </span>
+            </div>
+            <div className="self-center text-base font-medium text-gray-500">
+              Height
+            </div>
+          </div>
+
+          <div className="flex z-0 flex-col justify-center self-stretch my-auto">
+            <div className="text-xl font-semibold text-white">
+              <span style={{ fontWeight: 700, fontSize: "24px" }}>22</span>
+              <span style={{ fontSize: "14px", color: "rgba(157,172,193,1)" }}>
+                yrs
+              </span>
+            </div>
+            <div className="text-base font-medium text-gray-500">Age</div>
+          </div>
+        </div>
+
+        <h3 className="mt-7 text-lg font-semibold text-white">Your Goals</h3>
+
+        {/* Repeat the same goal card 3 times */}
+        {[1, 2, 3].map((index) => (
+          <GoalCard key={`mobile-goal-${index}`} />
+        ))}
+
+        <h3 className="mt-7 text-lg font-semibold text-white">Goal Progress</h3>
+
+        <div className="px-14 py-5 mt-7 text-sm leading-5 text-center text-white rounded-xl bg-zinc-900 max-md:px-5">
+          You have achieved{" "}
+          <span style={{ color: "rgba(10,222,30,1)" }}>80%</span> of your
+          <br />
+          goals. Keep going!
+        </div>
+
+        <h3 className="self-stretch mt-7 text-lg font-semibold text-white pb-4">
+          Achievements
+        </h3>
+
+        {/* Repeat the same achievement card 3 times */}
+        <div className="w-full flex flex-col items-center pb-20">
+          {[1, 2, 3].map((index) => (
+            <AchievementCard key={`mobile-achievement-${index}`} />
+          ))}
+        </div>
+      </aside>
+
+      {/* Backdrop overlay for mobile */}
+      {isOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={toggleOpen}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Modal */}
+      <UserStatsModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        userData={userData} // Pass the current stats values
+        onSubmit={handleModalSubmit} // Handle the form submission
+        userUuid={userUuid} // Pass the userUuid to the Modal
+        profile={true}
+      />
+    </>
   );
 };
 
-export default ProgressCard;
+export default UserProfile;

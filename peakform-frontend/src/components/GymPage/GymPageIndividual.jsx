@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Header from "./Header";
 import GymHero from "./GymHero";
 import FeaturesSection from "./FeaturesSection";
@@ -48,7 +47,23 @@ function GymPageIndividual() {
 
   return (
     <main className="overflow-hidden bg-black shadow-[0px_3px_6px_rgba(18,15,40,0.12)]">
-      <Header />
+      <button
+        onClick={() =>
+          (window.location.href = "http://localhost:3000/dashboard")
+        }
+        className="gap-2 self-stretch px-3 py-2 my-auto text-base font-semibold text-white whitespace-nowrap bg-green-500 rounded-md"
+      >
+        Back to dashboard
+      </button>
+
+      <button
+        onClick={() =>
+          (window.location.href = "http://localhost:3000/workoutplanner")
+        }
+        className="gap-2 self-stretch px-3 py-2 my-auto text-base font-semibold text-white whitespace-nowrap bg-green-500 rounded-md"
+      >
+        Create workout
+      </button>
       <GymHero gymData={gymData} />
       <FeaturesSection />
       <FeaturedPhotos gymPhotos={gymData.gymPhotos} />

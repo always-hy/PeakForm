@@ -20,11 +20,11 @@ function NavLink({ href, width, children }) {
  */
 function Header() {
   const navItems = [
-    { text: "Home", width: "w-[66px]" },
-    { text: "Gyms", width: "w-[57px]" },
-    { text: "Dashboard", width: "w-[107px]" },
-    { text: "Notifications", width: "w-[122px]" },
-    { text: "Pricing", width: "w-[73px]" },
+    { text: "Home", href: "/", width: "w-[66px]" },
+    { text: "Gyms", href: "/gyms", width: "w-[57px]" },
+    { text: "Dashboard", href: "/dashboard", width: "w-[107px]" }, // ✅ updated here
+    { text: "Notifications", href: "/notifications", width: "w-[122px]" },
+    { text: "Pricing", href: "/pricing", width: "w-[73px]" },
   ];
 
   return (
@@ -50,7 +50,7 @@ function Header() {
           {/* Navigation Links */}
           <nav className="flex gap-2 justify-center items-center self-stretch p-1 my-auto text-lg leading-none whitespace-nowrap min-w-60 rounded-[64px] text-neutral-400 max-md:max-w-full">
             {navItems.map((item, index) => (
-              <NavLink key={index} width={item.width}>
+              <NavLink key={index} href={item.href} width={item.width}>
                 {item.text}
               </NavLink>
             ))}
@@ -62,7 +62,24 @@ function Header() {
               href="#"
               className="flex overflow-hidden relative justify-center items-start px-6 py-4 bg-stone-900 rounded-[64px] max-md:px-5 hover:bg-stone-800 transition-colors"
             >
-              <span className="z-0 my-auto">Get started</span>
+              <button
+                onClick={() =>
+                  (window.location.href = "http://localhost:3000/dashboard")
+                }
+                className="gap-2 self-stretch px-3 py-2 my-auto text-base font-semibold text-white whitespace-nowrap bg-green-500 rounded-md"
+              >
+                Back to dashboard
+              </button>
+
+              <button
+                onClick={() =>
+                  (window.location.href =
+                    "http://localhost:3000/workoutplanner")
+                }
+                className="gap-2 self-stretch px-3 py-2 my-auto text-base font-semibold text-white whitespace-nowrap bg-green-500 rounded-md"
+              >
+                Create workout
+              </button>
               <div className="flex absolute inset-0 z-0 shrink-0 self-start border border-solid border-[color:var(--prestige-framer-website-mine-shaft,#3B3B3B)] h-[52px] rounded-[64px] w-[136px]"></div>
             </a>
           </div>

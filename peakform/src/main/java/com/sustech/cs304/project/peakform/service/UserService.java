@@ -91,7 +91,9 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
         userTargetRepository.save(userTarget);
         userStatRepository.save(userStat);
+      
         emailService.sendVerificationEmail(user.getEmail(), verificationToken);
+      
         return ResponseEntity.status(HttpStatus.OK).body("Registration successful. Please check your email to verify your account.");
     }
 
