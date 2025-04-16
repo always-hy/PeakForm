@@ -75,6 +75,7 @@ public class UserService implements UserDetailsService {
                 .targetWorkoutDuration(0)
                 .build();
 
+        
         userRepository.save(user);
         userTarget.setUser(user);
         emailService.sendVerificationEmail(user.getEmail(), verificationToken);
