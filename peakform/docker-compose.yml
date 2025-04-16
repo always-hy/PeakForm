@@ -7,7 +7,7 @@ services:
       - MYSQL_DATABASE=peakform_db
       - MYSQL_PASSWORD=${DB_PASSWORD}
     ports:
-      - "3306:3306"
+      - "3307:3307"
     networks:
       - peakform-network
     volumes:

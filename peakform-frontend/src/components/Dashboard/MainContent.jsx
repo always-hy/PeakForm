@@ -68,8 +68,11 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
           <h1 className="text-3xl font-bold text-white">Welcome Back 🎉</h1>
         </div>
         <div className="flex gap-8 items-center">
-          <button className="gap-2 self-stretch px-3 py-2 my-auto text-base font-semibold text-white whitespace-nowrap bg-green-500 rounded-md">
-            Subscribe
+          <button
+            onClick={() => (window.location.href = "http://localhost:3000/gym")}
+            className="gap-2 self-stretch px-3 py-2 my-auto text-base font-semibold text-white whitespace-nowrap bg-green-500 rounded-md"
+          >
+            Book a gym session
           </button>
           <img
             src="/notification.png"
@@ -129,9 +132,9 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
             <ProgressCard />
           </div>
         </div>
-        <div className="mt-8">
+        {/* <div className="mt-8">
           <Calendar />
-        </div>
+        </div> */}
       </div>
 
       {/* Modal */}

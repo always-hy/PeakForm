@@ -1,5 +1,5 @@
 "use client";
-import React, { useState }from "react";
+import React, { useState } from "react";
 import InputField from "./InputField";
 import PasswordInput from "./PasswordInput";
 import SocialLoginButton from "./SocialLoginButton";
@@ -22,8 +22,8 @@ function LoginForm() {
           "Content-Type": "application/x-www-form-urlencoded",
         },
         body: new URLSearchParams({
-          username: email, 
-          password: password, 
+          username: email,
+          password: password,
         }).toString(),
         credentials: "include", // Include cookies for session management
       });
@@ -110,7 +110,12 @@ function LoginForm() {
 
           <p className="text-xs font-semibold text-center text-white">
             Don't have an account yet?{" "}
-            <button className="font-bold text-white cursor-pointer">
+            <button
+              onClick={() =>
+                (window.location.href = "http://localhost:3000/register")
+              }
+              className="font-bold text-white cursor-pointer"
+            >
               Register for free
             </button>
           </p>
