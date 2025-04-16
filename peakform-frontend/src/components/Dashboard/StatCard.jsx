@@ -47,7 +47,9 @@ const StatCard = ({ title, icon, type, value, target, unit, chart }) => {
             />
             <h3 className="text-center">{title}</h3>
           </div>
-          <div>{value} minutes</div>
+          <div>
+            {value} / {target} minutes
+          </div>
         </div>
       ) : (
         <div className="flex flex-col items-center justify-between h-full w-full">
@@ -65,7 +67,7 @@ const StatCard = ({ title, icon, type, value, target, unit, chart }) => {
             {chart}
           </div>
           <div>
-            {value} / {target}
+            {value} / {target} {unit}
           </div>
         </div>
       )}
