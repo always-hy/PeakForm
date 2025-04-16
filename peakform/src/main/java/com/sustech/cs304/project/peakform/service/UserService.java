@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -84,7 +85,9 @@ public class UserService implements UserDetailsService {
 
         UserStat userStat = UserStat.builder()
                 .user(user)
+                .date(LocalDate.now())
                 .weight(0F)
+                .height(0F)
                 .waterIntake(0F)
                 .caloriesBurned(0)
                 .workoutDuration(0)
