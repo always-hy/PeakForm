@@ -1,40 +1,51 @@
 # CS304: Software Engineering - Project Proposal
 
+## Team Information
+
+- **Team Number**: 86
+- **Team Members**:
+  1. Jaouhara Zerhouni Khal (12211456)
+  2. Hok Layheng (12210736)
+  3. Tan Hao Yang (12212027)
+  4. Harrold Tok Kwan Hang (122102025)
+
+## Overview
+
 **PeakForm: Personal Fitness Assistance Web App**—This project aims to bridge the gap between technology and fitness by creating an intelligent, user-centric platform that enhances workout routines and helps users achieve their fitness goals more effectively. In today’s fast-paced world, staying consistent with fitness routines can be challenging. By offering personalized AI-powered workouts, seamless scheduling, and detailed performance tracking, this application provides an all-in-one solution to make fitness management both easier and more engaging. Additionally, integrating social features and a leaderboard fosters motivation through friendly competition, making the fitness journey more enjoyable and rewarding. This project not only leverages advanced technologies to streamline fitness but also promotes healthier lifestyles, empowering users to stay committed and achieve lasting results.
 
 ## **I. Functional Requirements**
 
 ### 1. **Training Task Management**
 
-- Users can organize their weekly workout plans by selecting exercises from a predefined list for each workout day.
-- Users can establish training goals, such as workout consistency, body weight targets, water intake streaks, and strength progress in compound exercises.
-- Users can input, delete, or update their water intake, workout duration, and calories burned daily. These metrics reset at the start of each new day.
-- Users receive reminders for their scheduled workout plans.
+- [ ] Users can organize their weekly workout plans by selecting exercises from a predefined list for each workout day.
+- [ ] Users can establish training goals, such as workout consistency, body weight targets, water intake streaks, and strength progress in compound exercises.
+- [ ] Users can input, delete, or update their water intake, workout duration, and calories burned daily. These metrics reset at the start of each new day.
+- [ ] Users receive reminders for their scheduled workout plans.
 
 ### **2. Training Statistics Dashboard**
 
-- Users can monitor their current water intake, calories burned, and workout duration for the day.
-- Users can track fitness progress through historical records of weights, heights, workout duration, training streaks, water intake, average calories burned, and personal records in compound exercises.
-- Users can view a list of their earned achievement badges.
+- [ ] Users can monitor their current water intake, calories burned, and workout duration for the day.
+- [ ] Users can track fitness progress through historical records of weights, heights, workout duration, training streaks, water intake, average calories burned, and personal records in compound exercises.
+- [ ] Users can view a list of their earned achievement badges.
 
 ### **3. Gym Appointment System**
 
-- Users can book gym sessions based on available slots.
-- Users can cancel appointments if necessary.
-- Users can access a list of both their upcoming and past appointments.
-- Users receive reminders for upcoming gym appointments.
+- [x] Users can book gym sessions based on available slots.
+- [x] Users can cancel appointments if necessary.
+- [x] Users can access a list of both their upcoming and past appointments.
+- [ ] Users receive reminders for upcoming gym appointments.
 
 ### **4. Paid AI-Powered Personalized Workouts**
 
-- Users can input personal details such as age, gender, weight, height, and fitness goals (e.g., stay fit, lose weight, build muscle, achieve definition, or improve mental health).
-- The AI system generates a personalized workout plan based on user input, including the number of workout days per week and preferred workout duration.
-- This is a paid feature for only premium users.
+- [ ] Users can input personal details such as age, gender, weight, height, and fitness goals (e.g., stay fit, lose weight, build muscle, achieve definition, or improve mental health).
+- [ ] The AI system generates a personalized workout plan based on user input, including the number of workout days per week and preferred workout duration.
+- [ ] This is a paid feature for only premium users.
 
 ### **5. Social Sharing and Leaderboard**
 
-- Users can follow other users to stay connected and motivated.
-- Users can view other users’ basic information and their earned achievement badges.
-- A leaderboard ranks users based on various fitness metrics to encourage friendly competition.
+- [ ] Users can follow other users to stay connected and motivated.
+- [ ] Users can view other users’ basic information and their earned achievement badges.
+- [ ] A leaderboard ranks users based on various fitness metrics to encourage friendly competition.
 
 ## **II. Non-functional Requirements**
 
