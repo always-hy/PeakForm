@@ -5,7 +5,6 @@ import ProgressCard from "./ProgressCard";
 import Calendar from "./Calendar";
 import CaloriesBurnedGraph from "./d3Graphs/CaloriesBurnedGraph";
 import UserStatsModal from "./UserStatsModal";
-import axios from "axios";
 
 const MainContent = ({ userData, userUuid, userTarget }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);

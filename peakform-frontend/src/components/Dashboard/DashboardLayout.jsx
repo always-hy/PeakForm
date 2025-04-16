@@ -5,7 +5,6 @@ import MainContent from "./MainContent";
 import UserProfile from "./UserProfile";
 import MobileMenuButton from "./MobileMenuButton";
 import SidebarMenuButton from "./SidebarMenuButton";
-import axios from "axios";
 
 const DashboardLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
