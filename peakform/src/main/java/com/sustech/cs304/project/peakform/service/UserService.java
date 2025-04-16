@@ -75,6 +75,7 @@ public class UserService implements UserDetailsService {
                 .build();
 
         UserTarget userTarget = UserTarget.builder()
+                .user(user)
                 .targetWeight(0F)
                 .targetWaterIntake(0F)
                 .targetCaloriesBurned(0)
@@ -82,6 +83,7 @@ public class UserService implements UserDetailsService {
                 .build();
 
         UserStat userStat = UserStat.builder()
+                .user(user)
                 .weight(0F)
                 .waterIntake(0F)
                 .caloriesBurned(0)
@@ -91,9 +93,7 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
         userTargetRepository.save(userTarget);
         userStatRepository.save(userStat);
-      
         emailService.sendVerificationEmail(user.getEmail(), verificationToken);
-      
         return ResponseEntity.status(HttpStatus.OK).body("Registration successful. Please check your email to verify your account.");
     }
 
