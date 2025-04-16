@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const ActivityCard = ({ userUuid, gymBookings }) => {
-  const [bookings, setBookings] = useState(gymBookings.bookingRecords);
+  const [bookings, setBookings] = useState(gymBookings?.bookingRecords || []);
+
+  // Update bookings whenever gymBookings changes
+  useEffect(() => {
+    setBookings(gymBookings?.bookingRecords || []);
+  }, [gymBookings]);
 
   // Function to update the status of a booking and send the API request
   const handleStatusChange = async (gymSessionId, newStatus) => {
@@ -27,13 +32,17 @@ const ActivityCard = ({ userUuid, gymBookings }) => {
 
       if (response.ok) {
         // Update the booking status in the local state
-        setBookings((prevBookings) =>
-          prevBookings.map((booking) =>
+        setBookings((prevBookings) => {
+          if (!Array.isArray(prevBookings)) {
+            return [];
+          }
+
+          return prevBookings.map((booking) =>
             booking.gymSessionId === gymSessionId
               ? { ...booking, appointmentStatus: newStatus }
               : booking
-          )
-        );
+          );
+        });
       } else {
         console.error("Failed to update the status");
       }
@@ -49,10 +58,10 @@ const ActivityCard = ({ userUuid, gymBookings }) => {
       </div>
 
       <div className="overflow-y-auto max-h-[200px] pr-2 space-y-4">
-        {gymBookings.length === 0 ? (
+        {bookings.length === 0 ? (
           <p className="text-gray-400">No bookings available.</p>
         ) : (
-          gymBookings.bookingRecords.map((record, index) => (
+          bookings.map((record, index) => (
             <div
               key={index}
               className="flex flex-col gap-1 p-3 bg-zinc-800 rounded-lg text-sm leading-tight"
