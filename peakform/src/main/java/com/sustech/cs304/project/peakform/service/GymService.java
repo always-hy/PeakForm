@@ -31,7 +31,6 @@ public class GymService {
     private final UserRepository userRepository;
     private final UserScheduleRepository userScheduleRepository;
 
-    private final GymSessionService gymSessionService;
     private final FirebaseStorageService firebaseStorageService;
 
     public ResponseEntity<List<GymListResponse>> getGyms() {
