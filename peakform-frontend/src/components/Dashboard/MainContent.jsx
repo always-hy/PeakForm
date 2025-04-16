@@ -142,6 +142,7 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
         isOpen={isModalOpen}
         onClose={closeModal}
         userData={userData} // Pass the current stats values
+        targetData={userTarget}
         onSubmit={handleModalSubmit} // Handle the form submission
         userUuid={userUuid} // Pass the userUuid to the Modal
       />

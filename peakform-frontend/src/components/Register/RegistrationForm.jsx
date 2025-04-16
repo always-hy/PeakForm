@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import SocialLoginButton from "./SocialLoginButton";
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -103,6 +104,16 @@ const RegistrationForm = () => {
               Register
             </button>
           </form>
+
+          <p className="text-sm font-semibold text-center text-white">
+            or continue with
+          </p>
+
+          <div className="flex gap-4 w-full max-sm:flex-col">
+            <SocialLoginButton provider="google" />
+            <SocialLoginButton provider="github" />
+            <SocialLoginButton provider="facebook" />
+          </div>
 
           <p className="text-xs font-semibold text-center text-white">
             Have an account?{" "}
