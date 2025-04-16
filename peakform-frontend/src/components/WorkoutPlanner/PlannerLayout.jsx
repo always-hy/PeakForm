@@ -91,8 +91,9 @@ const WorkoutPlanner = () => {
     console.log("Final Workout Payload:", JSON.stringify(finalWorkoutPayload));
 
     const storedUuid = localStorage.getItem("user_uuid");
-    const url = `http://localhost:8080/workout-plan/create?userUuid=${storedUuid}`;
-
+    console.log(storedUuid);
+    const url = `http://localhost:8080/workout-plans/create?userUuid=${storedUuid}`;
+    console.log(url);
     try {
       const response = await fetch(url, {
         method: "POST",

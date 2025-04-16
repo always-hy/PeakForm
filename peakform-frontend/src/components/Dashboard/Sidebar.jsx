@@ -1,22 +1,28 @@
 "use client";
 import React from "react";
-
+import Link from "next/link";
 const Sidebar = ({ isOpen, toggleOpen }) => {
   // Common sidebar content
   const sidebarContent = (
     <div className="flex flex-col items-center mt-12 w-11 max-md:mt-10">
-      <div className="flex gap-2.5 justify-center items-center self-stretch px-2.5 w-full h-11 bg-green-500 rounded-xl shadow-[0px_3px_9px_rgba(255,132,75,0.25)]">
-        <img
-          src="/home.png"
-          className="object-contain flex-1 shrink self-stretch my-auto w-full aspect-square basis-0"
-          alt="Dashboard icon"
-        />
+      <div className="flex gap-2.5a justify-center items-center self-stretch px-2.5 w-full h-11 bg-green-500 rounded-xl shadow-[0px_3px_9px_rgba(255,132,75,0.25)]">
+        {/* First image links to `/` */}
+        <Link href="/">
+          <img
+            src="/home.png"
+            className="object-contain flex-1 shrink self-stretch my-auto w-full aspect-square basis-0 cursor-pointer"
+            alt="Dashboard icon"
+          />
+        </Link>
       </div>
-      <img
-        src="/activity.png"
-        className="object-contain mt-10 w-full aspect-square"
-        alt="Navigation icon"
-      />
+      {/* Second image links to `/workoutplanner` */}
+      <Link href="/workoutplanner">
+        <img
+          src="/activity.png"
+          className="object-contain mt-10 w-full aspect-square cursor-pointer"
+          alt="Navigation icon"
+        />
+      </Link>
       <img
         src="/exercise.png"
         className="object-contain mt-10 w-full aspect-square"
