@@ -1,7 +1,11 @@
 package com.sustech.cs304.project.peakform.config;
 
 import com.sustech.cs304.project.peakform.domain.User;
+import com.sustech.cs304.project.peakform.domain.UserStat;
+import com.sustech.cs304.project.peakform.domain.UserTarget;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
+import com.sustech.cs304.project.peakform.repository.UserStatRepository;
+import com.sustech.cs304.project.peakform.repository.UserTargetRepository;
 import com.sustech.cs304.project.peakform.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +35,8 @@ public class SecurityConfig {
     private final UserRepository userRepository;
     private final UserService userService;
     private final BCryptPasswordEncoder passwordEncoder;
-
+    private final UserTargetRepository userTargetRepository;
+    private final UserStatRepository userStatRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -83,15 +88,8 @@ public class SecurityConfig {
                             String name = oauthUser.getAttribute("name");
                             User user = userRepository.findByEmail(email)
                                     .orElseGet(() -> {
-                                        User newUser = new User();
-                                        newUser.setEmail(email);
-                                        newUser.setUsername(name != null ? name : email.split("@")[0]); // Default username from name or email
-                                        newUser.setPassword("");
-                                        newUser.setAge(99);
-                                        newUser.setGender(User.Gender.OTHER);
-                                        newUser.setEmailVerified(true);
-                                        newUser.setVerificationToken(null);
-                                        return userRepository.save(newUser);
+                                        System.out.println("Creating new user with email: " + email);
+                                        return createNewUserWithDefaults(email, name);
                                     });
                             response.setStatus(HttpStatus.OK.value());
                             response.setContentType("application/json");
@@ -131,5 +129,38 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    private User createNewUserWithDefaults(String email, String name) {
+        User newUser = User.builder()
+                .username(name != null ? name : email.split("@")[0])
+                .email(email)
+                .password("")
+                .age(99)
+                .gender(User.Gender.OTHER)
+                .emailVerified(true)
+                .verificationToken(null)
+                .build();
+
+        UserTarget userTarget = UserTarget.builder()
+                .user(newUser)
+                .targetWeight(0F)
+                .targetWaterIntake(0F)
+                .targetCaloriesBurned(0)
+                .targetWorkoutDuration(0)
+                .build();
+
+        UserStat userStat = UserStat.builder()
+                .user(newUser)
+                .weight(0F)
+                .waterIntake(0F)
+                .caloriesBurned(0)
+                .workoutDuration(0)
+                .build();
+
+        userRepository.save(newUser);
+        userTargetRepository.save(userTarget);
+        userStatRepository.save(userStat);
+        return newUser;
     }
 }
