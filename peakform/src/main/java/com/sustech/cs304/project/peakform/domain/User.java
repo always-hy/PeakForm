@@ -63,6 +63,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserSchedule> userSchedules;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notification> notifications;
+
     public enum Gender {
         MALE, FEMALE, OTHER
     }
@@ -74,7 +77,6 @@ public class User implements UserDetails {
         }
     }
 
-    // UserDetails implementation
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
@@ -82,7 +84,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email; // Use email as the username for authentication
+        return email;
     }
 
     @Override

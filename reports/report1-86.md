@@ -17,14 +17,14 @@
 
 ### 1. **Training Task Management**
 
-- [ ] Users can organize their weekly workout plans by selecting exercises from a predefined list for each workout day.
-- [ ] Users can establish training goals, such as workout consistency, body weight targets, water intake streaks, and strength progress in compound exercises.
-- [ ] Users can input, delete, or update their water intake, workout duration, and calories burned daily. These metrics reset at the start of each new day.
+- [x] Users can organize their weekly workout plans by selecting exercises from a predefined list for each workout day.
+- [x] Users can establish training goals, such as workout consistency, body weight targets, water intake streaks, and strength progress in compound exercises.
+- [x] Users can input, delete, or update their water intake, workout duration, and calories burned daily. These metrics reset at the start of each new day.
 - [ ] Users receive reminders for their scheduled workout plans.
 
 ### **2. Training Statistics Dashboard**
 
-- [ ] Users can monitor their current water intake, calories burned, and workout duration for the day.
+- [x] Users can monitor their current water intake, calories burned, and workout duration for the day.
 - [ ] Users can track fitness progress through historical records of weights, heights, workout duration, training streaks, water intake, average calories burned, and personal records in compound exercises.
 - [ ] Users can view a list of their earned achievement badges.
 
