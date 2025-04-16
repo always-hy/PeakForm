@@ -1,9 +1,12 @@
 package com.sustech.cs304.project.peakform.service;
 
 import com.sustech.cs304.project.peakform.domain.User;
+import com.sustech.cs304.project.peakform.domain.UserStat;
 import com.sustech.cs304.project.peakform.domain.UserTarget;
 import com.sustech.cs304.project.peakform.dto.RegistrationRequest;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
+import com.sustech.cs304.project.peakform.repository.UserStatRepository;
+import com.sustech.cs304.project.peakform.repository.UserTargetRepository;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,6 +30,8 @@ public class UserService implements UserDetailsService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final RestTemplate restTemplate;
     private final EmailService emailService;
+    private final UserTargetRepository userTargetRepository;
+    private final UserStatRepository userStatRepository;
 
     // This method is used by Spring Security to load user details by email
     @Override
@@ -75,8 +81,16 @@ public class UserService implements UserDetailsService {
                 .targetWorkoutDuration(0)
                 .build();
 
+        UserStat userStat = UserStat.builder()
+                .weight(0F)
+                .waterIntake(0F)
+                .caloriesBurned(0)
+                .workoutDuration(0)
+                .build();
+
         userRepository.save(user);
-        userTarget.setUser(user);
+        userTargetRepository.save(userTarget);
+        userStatRepository.save(userStat);
         emailService.sendVerificationEmail(user.getEmail(), verificationToken);
         return ResponseEntity.status(HttpStatus.OK).body("Registration successful. Please check your email to verify your account.");
     }
@@ -101,5 +115,13 @@ public class UserService implements UserDetailsService {
             System.err.println("reCAPTCHA verification error: " + e.getMessage());
         }
         return false;
+    }
+
+    public ResponseEntity<String> getUserA(UUID userUuid) {
+        return ResponseEntity.status(HttpStatus.OK).body(userRepository.findByUserUuid(userUuid).toString());
+    }
+
+    public Optional<User> getUserB(UUID userUuid) {
+        return userRepository.findByUserUuid(userUuid);
     }
 }
