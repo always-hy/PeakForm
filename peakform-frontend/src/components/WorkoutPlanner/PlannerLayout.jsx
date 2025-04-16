@@ -147,6 +147,14 @@ const WorkoutPlanner = () => {
 
   return (
     <div className="min-h-screen bg-black text-white p-6">
+      <button
+        onClick={() =>
+          (window.location.href = "http://localhost:3000/dashboard")
+        }
+        className="gap-2 self-stretch px-3 py-2 my-auto text-base font-semibold text-white whitespace-nowrap bg-green-500 rounded-md"
+      >
+        Back to dashboard
+      </button>
       <h1 className="text-3xl font-bold text-green-400 mb-6">
         Workout Planner
       </h1>

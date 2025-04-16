@@ -72,7 +72,8 @@ const ProgressCard = () => {
           }
         );
         const data = await statsResponse.json();
-        setExercises(data.exercises || []);
+        // active exercises
+        setExercises(data[0].exercises || []);
         console.log(data);
         // setExercises(staticWorkoutData);
       } catch (err) {
