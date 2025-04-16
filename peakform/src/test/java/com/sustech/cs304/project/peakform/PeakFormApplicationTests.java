@@ -33,6 +33,7 @@ class PeakFormApplicationTests extends AbstractTestContainerConfig {
                 "exercise",
                 "gym",
                 "gym_session",
+                "notification",
                 "social",
                 "user",
                 "user_achievement",
@@ -47,7 +48,7 @@ class PeakFormApplicationTests extends AbstractTestContainerConfig {
         List<String> actualTables = jdbcTemplate.queryForList(
                 "SHOW TABLES FROM peakform_test", String.class);
 
-        assertEquals(13, actualTables.size(), "Expected exactly 13 tables");
+        assertEquals(14, actualTables.size(), "Expected exactly 13 tables");
         assertTrue(new HashSet<>(actualTables).containsAll(expectedTables),
                 "All expected tables should be present: " + expectedTables);
     }

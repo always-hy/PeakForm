@@ -25,33 +25,22 @@ This report outlines the work completed during **Sprint 1** of our team project.
 - **Description**:  
   The architecture of the system is designed to handle various aspects of a fitness application, focusing on managing users, workouts, gym sessions, achievements, and other fitness-related data. The key components of the system include:
 
-  - **User**: Represents the user of the system, storing information such as personal details, authentication credentials, and user-specific data.
-    - Attributes: `user_uuid`, `age`, `bio`, `email`, `password`, `username`, etc.
+  - **achievement**: Stores predefined fitness achievements that users can unlock through progress or milestones.
+    
+    - **exercise**: Contains a list of exercises, including their name, category, and description.
+    - **gym**: Represents individual gym locations, including details like name, address, and facilities.
+    - **gym_session**: Tracks user bookings and attendance for scheduled gym sessions at specific times.
+    - **notification**: Stores system-generated notifications to be sent to users (e.g., reminders, updates).
+    - **social**: Manages social interactions between users, such as followers, friends, or shared activities.
+    - **user**: Holds account credentials and personal information for all users of the system.
+    - **user_achievement**: Logs the achievements unlocked by users, including the date earned.
+    - **user_record**: Tracks personal bests or historical data like max weights, longest runs, etc.
+    - **user_schedule**: Maintains users’ scheduled gym visits or planned workouts by date and time.
+    - **user_stat**: Stores daily or periodic fitness statistics like calories burned, water intake, and steps taken.
+    - **user_target**: Contains personalized fitness goals set by users, such as target weight or workout frequency.
+    - **workout**: Represents a full workout session logged by a user, including total time and calories burned.
+    - **workout_exercise**: Links individual exercises to a specific workout with details like sets, reps, and weight used.
   
-  - **Workout**: Stores workout-related data for each user, including calories burned, weight, height, and workout duration.
-    - Attributes: `workout_id`, `user_uuid`, `workout_duration`, `calories_burned`, `workout_type`, etc.
-
-  - **Achievement**: Tracks the achievements users earn based on specific milestones or goals.
-    - Attributes: `achievement_id`, `achievement_name`, `user_achievement_id`.
-
-  - **Gym**: Represents gyms where users may participate in sessions or workouts.
-    - Attributes: `gym_id`, `location`, `contact`, `max_capacity`, etc.
-
-  - **Exercise**: Represents exercises in the system, targeting specific muscle groups.
-    - Attributes: `exercise_id`, `exercise_name`, `target_muscle_group`, etc.
-
-  - **User Schedule**: Keeps track of user appointments and their statuses in relation to gym sessions.
-    - Attributes: `user_schedule_id`, `gym_session_id`, `appointment_status`, etc.
-
-  - **User Target**: Represents user-specific goals such as weight target, workout duration, and others.
-    - Attributes: `user_target_id`, `target_weight`, `target_duration`, etc.
-
-  - **User Stat**: Stores statistical data related to the user's fitness, such as calories burned, height, weight, and workout statistics.
-    - Attributes: `user_stat_id`, `calories_burned`, `height`, `weight`, etc.
-
-  - **User Achievement**: Stores records of achievements tied to a specific user.
-    - Attributes: `user_achievement_id`, `achievement_id`, `user_uuid`, `achieved_at`.
-
   The interactions between these components allow the system to track and manage user fitness data, achievements, gym sessions, and progress toward goals. The structure ensures modularity and flexibility, supporting future enhancements.
 
 - **Reasons for Choosing This Architecture**:  
