@@ -37,12 +37,6 @@ public class WorkoutService {
 
         User user = userOptional.get();
 
-        List<Workout> existingPlans = workoutRepository.findByUser_UserUuidOrderByIsActiveDesc(userUuid);
-        for (Workout w : existingPlans) {
-            w.setIsActive(false);
-        }
-        workoutRepository.saveAll(existingPlans);
-
         Workout workout = Workout.builder()
                 .user(user)
                 .isActive(true)
@@ -70,6 +64,8 @@ public class WorkoutService {
         }
 
         workoutExerciseRepository.saveAll(workoutExercises);
+
+        activateWorkout(workout.getWorkoutId(), userUuid);
 
         return ResponseEntity.status(HttpStatus.OK).body("New active workout plan created.");
     }
@@ -104,8 +100,8 @@ public class WorkoutService {
         Workout toActivate = workoutOptional.get();
 
         List<Workout> workouts = workoutRepository.findByUser_UserUuidOrderByIsActiveDesc(userUuid);
-        for (Workout w : workouts) {
-            w.setIsActive(w.getWorkoutId().equals(toActivate.getWorkoutId()));
+        for (Workout workout : workouts) {
+            workout.setIsActive(workout.getWorkoutId().equals(toActivate.getWorkoutId()));
         }
 
         workoutRepository.saveAll(workouts);

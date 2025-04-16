@@ -14,7 +14,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/workout-plan")
+@RequestMapping("/workout-plans")
 public class WorkoutController {
 
     private final WorkoutService workoutService;
