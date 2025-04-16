@@ -88,7 +88,7 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
             onClick={() => (window.location.href = "http://localhost:3000/gym")}
             className="gap-2 self-stretch px-3 py-2 my-auto text-base font-semibold text-white whitespace-nowrap bg-green-500 rounded-md"
           >
-            Login
+            Book a session
           </button>
           <img
             src="/notification.png"
@@ -111,12 +111,14 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
               title="Workout Duration"
               icon="/workout-duration.png"
               type="duration"
+              target={userTarget.targetWorkoutDuration}
               value={userData.workoutDuration}
             />
             <StatCard
               title="Water"
               icon="/Water.png"
               type="water"
+              unit="Litres"
               value={userData.waterIntake}
               target={userTarget.targetWaterIntake}
             />
@@ -126,6 +128,7 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
               type="calories"
               value={userData.caloriesBurned}
               target={userTarget.targetCaloriesBurned}
+              unit="kCal"
               chart={
                 <CaloriesBurnedGraph
                   value={userData.caloriesBurned}
