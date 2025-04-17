@@ -26,22 +26,12 @@ public class UserController {
     private final UserRepository userRepository;
     private final FirebaseStorageService firebaseStorageService;
 
-    @GetMapping("/a")
-    @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
-    public ResponseEntity<String> getUserA(@RequestParam("userUuid") UUID userUuid) {
-        return userService.getUserA(userUuid);
-    }
-
-    @GetMapping("/b")
-    @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
-    public Optional<User> getUserB(@RequestParam("userUuid") UUID userUuid) {
-        return userService.getUserB(userUuid);
-    }
-
     @GetMapping("/details")
     @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
     public ResponseEntity<UserResponse> getUser(@RequestParam("userUuid") UUID userUuid) {
-        return userService.getUser(userUuid);
+        Optional<UserResponse> userResponse = userService.getUser(userUuid);
+        return userResponse.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
     @Transactional
