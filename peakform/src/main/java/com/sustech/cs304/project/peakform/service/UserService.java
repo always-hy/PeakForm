@@ -11,6 +11,9 @@ import com.sustech.cs304.project.peakform.repository.UserStatRepository;
 import com.sustech.cs304.project.peakform.repository.UserTargetRepository;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,6 +39,7 @@ public class UserService implements UserDetailsService {
     private final UserTargetRepository userTargetRepository;
     private final UserStatRepository userStatRepository;
     private final FirebaseStorageService firebaseStorageService;
+    private final CacheManager cacheManager;
 
     // This method is used by Spring Security to load user details by email
     @Override
@@ -126,32 +130,28 @@ public class UserService implements UserDetailsService {
         return false;
     }
 
-    public ResponseEntity<String> getUserA(UUID userUuid) {
-        return ResponseEntity.status(HttpStatus.OK).body(userRepository.findByUserUuid(userUuid).toString());
-    }
-
-    public Optional<User> getUserB(UUID userUuid) {
-        return userRepository.findByUserUuid(userUuid);
-    }
-
-    public ResponseEntity<UserResponse> getUser(UUID userUuid)  {
+    @Cacheable(value = "user", key = "#userUuid")
+    public Optional<UserResponse> getUser(UUID userUuid) {
         Optional<User> userOptional = userRepository.findById(userUuid);
 
         if (userOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return Optional.empty();
         }
 
         User user = userOptional.get();
+        String profilePictureUrl = firebaseStorageService.getFileUrl("user-profile/" + userUuid + ".jpg")
+                .getBody();
+
         UserResponse userResponse = new UserResponse(
                 user.getUsername(),
                 user.getEmail(),
                 user.getAge(),
                 user.getGender(),
                 user.getBio(),
-                firebaseStorageService.getFileUrl("user-profile/" + userUuid + ".jpg").getBody()
+                profilePictureUrl
         );
 
-        return ResponseEntity.status(HttpStatus.OK).body(userResponse);
+        return Optional.of(userResponse);
     }
 
     public ResponseEntity<String> updateUser(UUID userUuid, UserRequest userRequest) {
