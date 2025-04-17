@@ -7,6 +7,6 @@ public record RegistrationRequest (
      String email,
      String password,
      Integer age,
-     User.Gender gender,
-     String recaptchaResponse
+     User.Gender gender
+//     String recaptchaResponse
 ){}

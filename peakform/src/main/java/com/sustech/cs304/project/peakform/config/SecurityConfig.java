@@ -26,6 +26,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.UUID;
 
 @Configuration
 @EnableWebSecurity
@@ -135,6 +136,7 @@ public class SecurityConfig {
 
     private User createNewUserWithDefaults(String email, String name) {
         User newUser = User.builder()
+                .userUuid(UUID.randomUUID())
                 .username(name != null ? name : email.split("@")[0])
                 .email(email)
                 .password("")
