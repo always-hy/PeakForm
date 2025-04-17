@@ -95,8 +95,8 @@ public class SecurityConfig {
                                     });
                             response.setStatus(HttpStatus.OK.value());
                             response.setContentType("application/json");
-                            response.sendRedirect("http://localhost:3000/dashboard");
                             response.getWriter().write("{\"message\": \"Login successful\", \"userUuid\": \"" + user.getUserUuid() + "\"}");
+//                            response.sendRedirect("http://localhost:3000/dashboard");
                         })
                         .failureHandler((request, response, exception) -> {
                             System.out.println("OAuth2 Failure - Exception: " + exception.getMessage());
