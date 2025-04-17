@@ -5,40 +5,18 @@ import com.sustech.cs304.project.peakform.dto.UserTargetRequest;
 import com.sustech.cs304.project.peakform.dto.UserTargetResponse;
 import com.sustech.cs304.project.peakform.repository.UserTargetRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.http.HttpStatus;
 
-import java.util.UUID;
 import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
 public class UserTargetService {
 
     private final UserTargetRepository userTargetRepository;
-    //private final UserRepository userRepository;
-
-   /* public ResponseEntity<UserTargetResponse> createUserTarget(UUID userUuid, UserTargetRequest userTargetRequest) {
-        Optional<User> userOptional = userRepository.findById(userUuid);
-
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-        User user = userOptional.get();
-
-        UserTarget userTarget = UserTarget.builder()
-                .user(user)
-                .targetWeight(userTargetRequest.targetWeight())
-                .targetWaterIntake(userTargetRequest.targetWaterIntake())
-                .targetCaloriesBurned(userTargetRequest.targetCaloriesBurned())
-                .targetWorkoutDuration(userTargetRequest.targetWorkoutDuration())
-                .build();
-
-        UserTarget savedUserTarget = userTargetRepository.save(userTarget);
-
-        return ResponseEntity.ok(mapToResponse(savedUserTarget));
-    }*/
 
     public ResponseEntity<UserTargetResponse> getUserTarget(UUID userUuid) {
         Optional<UserTarget> userTargetOptional = userTargetRepository.findByUser_UserUuid(userUuid);
@@ -70,11 +48,6 @@ public class UserTargetService {
 
         return ResponseEntity.status(HttpStatus.OK).body("User target updated successfully.");
     }
-
-
-    /*public void deleteUserTarget(Long userTargetId) {
-        userTargetRepository.deleteById(userTargetId);
-    }*/
 
     private UserTargetResponse mapToResponse(UserTarget userTarget) {
         return new UserTargetResponse(
