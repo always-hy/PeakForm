@@ -16,7 +16,7 @@ const RegistrationForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const response = await fetch("http://localhost:8080/user/register", {
         method: "POST",
@@ -26,10 +26,12 @@ const RegistrationForm = () => {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
+      const data = await response.text();
+      console.log(data);
       setMessage(data.message || "Registration successful!");
+      localStorage.setItem("user_uuid", data.userUuid);
       console.log("Registration successful:", data);
-      
+      window.location.href = "/";
     } catch (error) {
       console.error("Registration error:", error);
       setMessage(error.response?.data || "Registration failed.");
