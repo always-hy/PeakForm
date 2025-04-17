@@ -57,15 +57,16 @@ public class UserService implements UserDetailsService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email is already registered.");
         }
 
-        String recaptchaResponse = registrationRequest.recaptchaResponse();
-        if (!verifyRecaptcha(recaptchaResponse)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("reCAPTCHA verification failed.");
-        }
+//        String recaptchaResponse = registrationRequest.recaptchaResponse();
+//        if (!verifyRecaptcha(recaptchaResponse)) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("reCAPTCHA verification failed.");
+//        }
 
         String hashedPassword = passwordEncoder.encode(registrationRequest.password());
         String verificationToken = UUID.randomUUID().toString();
 
         User user = User.builder()
+                .userUuid(UUID.randomUUID())
                 .username(registrationRequest.username())
                 .email(registrationRequest.email())
                 .password(hashedPassword)

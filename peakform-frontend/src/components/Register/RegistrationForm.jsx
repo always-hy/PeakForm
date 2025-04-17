@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import SocialLoginButton from "./SocialLoginButton";
 
 const RegistrationForm = () => {
@@ -8,27 +8,7 @@ const RegistrationForm = () => {
     email: "",
     password: "",
   });
-  const [recaptchaToken, setRecaptchaToken] = useState("");
   const [message, setMessage] = useState("");
-
-  // Define the callback function and attach it to the window object
-  useEffect(() => {
-    window.handleRecaptcha = (token) => {
-      setRecaptchaToken(token);
-    };
-
-    // Load reCAPTCHA script
-    const script = document.createElement("script");
-    script.src = "https://www.google.com/recaptcha/api.js";
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-      delete window.handleRecaptcha; // Clean up the global function
-    };
-  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -36,18 +16,22 @@ const RegistrationForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!recaptchaToken) {
-      setMessage("Please complete the reCAPTCHA.");
-      return;
-    }
-
+    
     try {
-      const response = await axios.post("http://localhost:8080/user/register", {
-        ...formData,
-        recaptchaResponse: recaptchaToken,
+      const response = await fetch("http://localhost:8080/user/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
-      setMessage(response.data);
+
+      const data = await response.json();
+      setMessage(data.message || "Registration successful!");
+      console.log("Registration successful:", data);
+      
     } catch (error) {
+      console.error("Registration error:", error);
       setMessage(error.response?.data || "Registration failed.");
     }
   };
@@ -91,11 +75,6 @@ const RegistrationForm = () => {
               required
               className="px-3 py-2 text-white bg-transparent border rounded-md border-zinc-700 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
-            <div
-              className="g-recaptcha"
-              data-sitekey="6LfyBfwqAAAAANLziwcCpULcsp-DvI3xGZQZD8Ci"
-              data-callback="handleRecaptcha"
-            ></div>
             <button
               type="submit"
               className="w-full h-10 text-base font-semibold text-white bg-green-500 rounded-lg cursor-pointer border-[none] disabled:opacity-50"
