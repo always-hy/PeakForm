@@ -2,7 +2,10 @@ package com.sustech.cs304.project.peakform.controller;
 
 import com.sustech.cs304.project.peakform.domain.User;
 import com.sustech.cs304.project.peakform.dto.RegistrationRequest;
+import com.sustech.cs304.project.peakform.dto.UserRequest;
+import com.sustech.cs304.project.peakform.dto.UserResponse;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
+import com.sustech.cs304.project.peakform.service.FirebaseStorageService;
 import com.sustech.cs304.project.peakform.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -20,6 +24,7 @@ import java.util.UUID;
 public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
+    private final FirebaseStorageService firebaseStorageService;
 
     @GetMapping("/a")
     @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
@@ -31,6 +36,28 @@ public class UserController {
     @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
     public Optional<User> getUserB(@RequestParam("userUuid") UUID userUuid) {
         return userService.getUserB(userUuid);
+    }
+
+    @GetMapping("/details")
+    @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
+    public ResponseEntity<UserResponse> getUser(@RequestParam("userUuid") UUID userUuid) {
+        return userService.getUser(userUuid);
+    }
+
+    @Transactional
+    @PutMapping("/update")
+    @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
+    public ResponseEntity<String> updateUser(@RequestParam("userUuid") UUID userUuid, @RequestBody UserRequest userRequest) {
+        return userService.updateUser(userUuid, userRequest);
+    }
+
+    @Transactional
+    @PostMapping("/upload-profile")
+    @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
+    public ResponseEntity<String> uploadUserProfile(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("userId") UUID userUuid) {
+        return firebaseStorageService.uploadFile(file, "user-profile/" + userUuid.toString() + ".jpg");
     }
 
     @Transactional

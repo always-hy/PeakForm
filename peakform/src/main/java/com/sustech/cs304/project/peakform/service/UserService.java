@@ -4,6 +4,8 @@ import com.sustech.cs304.project.peakform.domain.User;
 import com.sustech.cs304.project.peakform.domain.UserStat;
 import com.sustech.cs304.project.peakform.domain.UserTarget;
 import com.sustech.cs304.project.peakform.dto.RegistrationRequest;
+import com.sustech.cs304.project.peakform.dto.UserRequest;
+import com.sustech.cs304.project.peakform.dto.UserResponse;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import com.sustech.cs304.project.peakform.repository.UserStatRepository;
 import com.sustech.cs304.project.peakform.repository.UserTargetRepository;
@@ -33,6 +35,7 @@ public class UserService implements UserDetailsService {
     private final EmailService emailService;
     private final UserTargetRepository userTargetRepository;
     private final UserStatRepository userStatRepository;
+    private final FirebaseStorageService firebaseStorageService;
 
     // This method is used by Spring Security to load user details by email
     @Override
@@ -129,5 +132,42 @@ public class UserService implements UserDetailsService {
 
     public Optional<User> getUserB(UUID userUuid) {
         return userRepository.findByUserUuid(userUuid);
+    }
+
+    public ResponseEntity<UserResponse> getUser(UUID userUuid)  {
+        Optional<User> userOptional = userRepository.findById(userUuid);
+
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        User user = userOptional.get();
+        UserResponse userResponse = new UserResponse(
+                user.getUsername(),
+                user.getEmail(),
+                user.getAge(),
+                user.getGender(),
+                user.getBio(),
+                firebaseStorageService.getFileUrl("user-profile/" + userUuid + ".jpg").getBody()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(userResponse);
+    }
+
+    public ResponseEntity<String> updateUser(UUID userUuid, UserRequest userRequest) {
+        Optional<User> userOptional = userRepository.findById(userUuid);
+
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        User user = userOptional.get();
+        user.setUsername(userRequest.username());
+        user.setAge(userRequest.age());
+        user.setGender(userRequest.gender());
+        user.setBio(userRequest.bio());
+
+        userRepository.save(user);
+        return ResponseEntity.status(HttpStatus.OK).body("User updated successfully.");
     }
 }

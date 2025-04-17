@@ -24,10 +24,8 @@ public class FirebaseStorageService {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File is empty.");
             }
 
-            String fileName = filePath.endsWith("/") ? filePath + file.getOriginalFilename() : filePath + "/" + file.getOriginalFilename();
-
             Bucket bucket = StorageClient.getInstance().bucket();
-            Blob blob = bucket.create(fileName, file.getBytes(), file.getContentType());
+            Blob blob = bucket.create(filePath, file.getBytes(), file.getContentType());
 
             blob.createAcl(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
 
