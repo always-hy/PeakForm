@@ -94,6 +94,7 @@ public class SecurityConfig {
                                     });
                             response.setStatus(HttpStatus.OK.value());
                             response.setContentType("application/json");
+                            response.sendRedirect("http://localhost:3000/dashboard");
                             response.getWriter().write("{\"message\": \"Login successful\", \"userUuid\": \"" + user.getUserUuid() + "\"}");
                         })
                         .failureHandler((request, response, exception) -> {

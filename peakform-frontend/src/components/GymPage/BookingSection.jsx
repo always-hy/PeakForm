@@ -1,17 +1,5 @@
 import React, { useState } from "react";
 
-// Date Picker Component
-const DatePicker = ({ selectedDate, onSelectDate }) => {
-  return (
-    <input
-      type="date"
-      value={selectedDate.toISOString().split("T")[0]}
-      onChange={(e) => onSelectDate(new Date(e.target.value))}
-      className="p-2 text-lg border border-gray-300 rounded-lg text-white"
-    />
-  );
-};
-
 // Time Slot Selector Component
 const TimeSlotSelector = ({ selectedSlot, onSelectSlot, sessions }) => {
   return (
@@ -44,6 +32,36 @@ const BookingSection = ({ gymSessions, userUuid }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [bookingStatus, setBookingStatus] = useState(""); // To show success or error message
+  const availableDates = [
+    ...new Set(gymSessions.map((session) => session.date)),
+  ].map((d) => new Date(d));
+  const DatePicker = ({ selectedDate, onSelectDate, availableDates }) => {
+    const formattedDates = availableDates.map(
+      (d) => d.toISOString().split("T")[0]
+    );
+
+    return (
+      <select
+        value={selectedDate.toISOString().split("T")[0]}
+        onChange={(e) => onSelectDate(new Date(e.target.value))}
+        className="p-2 text-lg border border-gray-300 rounded-lg text-white bg-black"
+      >
+        {formattedDates.map((date) => (
+          <option key={date} value={date}>
+            {date}
+          </option>
+        ))}
+      </select>
+    );
+  };
+
+  // Convert Date object to 'YYYY-MM-DD' format
+  const formatDate = (date) => date.toISOString().split("T")[0];
+
+  // Filter sessions by selected date
+  const sessionsForSelectedDate = gymSessions.filter(
+    (session) => session.date === formatDate(selectedDate)
+  );
 
   // Handle Booking Request
   const handleBooking = async () => {
@@ -66,10 +84,11 @@ const BookingSection = ({ gymSessions, userUuid }) => {
         `http://localhost:8080/user-schedules/book?gymSessionId=${selectedSession.sessionId}&userUuid=${storedUuid}`,
         {
           method: "POST",
+          credentials: "include",
         }
       );
 
-      const data = await response.json();
+      const data = await response.text();
 
       if (response.ok) {
         setBookingStatus("Booking successful!");
@@ -87,22 +106,23 @@ const BookingSection = ({ gymSessions, userUuid }) => {
 
       <h2 className="text-3xl font-bold text-white">Book a Gym Slot</h2>
 
-      {/* Date Picker Section */}
-      <div className="mt-10">
-        <h3 className="text-xl text-white mb-4">Select a Date</h3>
+      {/* Date Picker */}
+      <div className="mt-6 mb-4">
+        <h3 className="text-xl text-white mb-2">Select a Date</h3>
         <DatePicker
           selectedDate={selectedDate}
           onSelectDate={setSelectedDate}
+          availableDates={availableDates}
         />
       </div>
 
       {/* Time Slot Selection */}
-      <div className="mt-10">
+      <div className="mt-6">
         <h3 className="text-xl text-white mb-4">Select a Time Slot</h3>
         <TimeSlotSelector
           selectedSlot={selectedSlot}
           onSelectSlot={setSelectedSlot}
-          sessions={gymSessions}
+          sessions={sessionsForSelectedDate}
         />
       </div>
 
