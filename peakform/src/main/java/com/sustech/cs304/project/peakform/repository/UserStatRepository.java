@@ -8,9 +8,13 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface UserStatRepository extends JpaRepository<UserStat, Long> {
     Optional<UserStat> findByUserAndDate(User user, LocalDate date);
+
     List<UserStat> findAllByDate(LocalDate date);
+
+    List<UserStat> findAllByUser_UserUuidOrderByDateAsc(UUID userUuid);
 }

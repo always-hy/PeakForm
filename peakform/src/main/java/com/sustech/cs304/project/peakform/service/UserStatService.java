@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -108,5 +109,18 @@ public class UserStatService {
 
         userStatRepository.saveAll(stats);
         System.out.println("User statistics have been reset for today: " + today);
+    }
+
+    public List<UserStatResponse> getUserStatHistory(UUID userUuid) {
+        List<UserStat> stats = userStatRepository.findAllByUser_UserUuidOrderByDateAsc(userUuid);
+        return stats.stream().map(stat -> new UserStatResponse(
+                stat.getUserStatId(),
+                stat.getDate(),
+                stat.getWeight(),
+                stat.getHeight(),
+                stat.getWaterIntake(),
+                stat.getCaloriesBurned(),
+                stat.getWorkoutDuration()
+        )).toList();
     }
 }
