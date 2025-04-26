@@ -1,5 +1,6 @@
 package com.sustech.cs304.project.peakform.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 public record UserStatResponse(
@@ -10,5 +11,5 @@ public record UserStatResponse(
         Float waterIntake,
         Integer caloriesBurned,
         Integer workoutDuration
-) {
+) implements Serializable {
 }

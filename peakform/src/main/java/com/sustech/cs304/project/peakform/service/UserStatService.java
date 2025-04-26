@@ -7,6 +7,8 @@ import com.sustech.cs304.project.peakform.dto.UserStatResponse;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import com.sustech.cs304.project.peakform.repository.UserStatRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,6 +26,7 @@ public class UserStatService {
     private final UserRepository userRepository;
     private final UserStatRepository userStatRepository;
 
+    @CacheEvict(value = "userStat", key = "#userUuid")
     public ResponseEntity<String> updateUserStat(UUID userUuid, UserStatRequest request) {
         Optional<User> userOptional = userRepository.findById(userUuid);
         if (userOptional.isEmpty()) {
@@ -50,6 +53,7 @@ public class UserStatService {
         return ResponseEntity.status(HttpStatus.OK).body("User statistics updated successfully.");
     }
 
+    @Cacheable(value = "userStat", key = "#userUuid")
     public UserStatResponse getUserStat(UUID userUuid) {
         User user = userRepository.findById(userUuid)
                 .orElseThrow(() -> new IllegalArgumentException("User not found."));
@@ -70,6 +74,7 @@ public class UserStatService {
         );
     }
 
+    @CacheEvict(value = "userStat", key = "#userUuid")
     public ResponseEntity<String> resetUserStat(UUID userUuid) {
         Optional<User> userOptional = userRepository.findById(userUuid);
         if (userOptional.isEmpty()) {
@@ -111,6 +116,7 @@ public class UserStatService {
         System.out.println("User statistics have been reset for today: " + today);
     }
 
+    @Cacheable(value = "userStatHistory", key = "#userUuid")
     public List<UserStatResponse> getUserStatHistory(UUID userUuid) {
         List<UserStat> stats = userStatRepository.findAllByUser_UserUuidOrderByDateAsc(userUuid);
         return stats.stream().map(stat -> new UserStatResponse(
