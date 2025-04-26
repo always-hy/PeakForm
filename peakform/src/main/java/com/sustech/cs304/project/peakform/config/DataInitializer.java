@@ -11,9 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -209,7 +207,7 @@ public class DataInitializer {
         }
     }
 
-    private void initUserStatData() {
+    /*private void initUserStatData() {
         if (userStatRepository.count() == 0) {
             List<User> users = userRepository.findAll();
             LocalDate today = LocalDate.now();
@@ -292,7 +290,45 @@ public class DataInitializer {
             userStatRepository.saveAll(userStats);
         }
     }
+     */
 
+    private void initUserStatData() {
+        if (userStatRepository.count() == 0) {
+            List<User> users = userRepository.findAll();
+            LocalDate today = LocalDate.now();
+            Random random = new Random();
+
+            List<UserStat> userStats = new ArrayList<>();
+
+            for (User user : users) {
+                float baseWeight = 70f + random.nextFloat() * 30;
+                float baseHeight = 165f + random.nextFloat() * 15;
+
+                for (int i = 0; i < 7; i++) {
+                    LocalDate date = today.minusDays(i);
+
+                    float weightVariation = (random.nextFloat() - 0.5f) * 2f;
+                    float waterIntakeVariation = (random.nextFloat() - 0.5f) * 0.2f;
+                    int caloriesVariation = random.nextInt(51) - 25;
+                    int workoutDurationVariation = random.nextInt(11) - 5;
+
+                    userStats.add(UserStat.builder()
+                            .user(user)
+                            .date(date)
+                            .weight(baseWeight + weightVariation)
+                            .height(baseHeight)
+                            .waterIntake(2.5f + waterIntakeVariation)
+                            .caloriesBurned(400 + caloriesVariation)
+                            .workoutDuration(60 + workoutDurationVariation)
+                            .build()
+                    );
+                }
+            }
+
+            userStatRepository.saveAll(userStats);
+        }
+    }
+    
     private void initExerciseData() {
         if (exerciseRepository.count() == 0) {
             List<Exercise> exercises = List.of(
