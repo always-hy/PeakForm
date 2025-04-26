@@ -207,89 +207,15 @@ public class DataInitializer {
         }
     }
 
-    /*private void initUserStatData() {
-        if (userStatRepository.count() == 0) {
-            List<User> users = userRepository.findAll();
-            LocalDate today = LocalDate.now();
-
-            List<UserStat> userStats = List.of(
-                    UserStat.builder()
-                            .user(users.get(0))
-                            .date(today)
-                            .weight(80f)
-                            .height(180f)
-                            .waterIntake(2.5f)
-                            .caloriesBurned(300)
-                            .workoutDuration(45)
-                            .build(),
-                    UserStat.builder()
-                            .user(users.get(1))
-                            .date(today)
-                            .weight(85f)
-                            .height(185f)
-                            .waterIntake(3.0f)
-                            .caloriesBurned(400)
-                            .workoutDuration(60)
-                            .build(),
-                    UserStat.builder()
-                            .user(users.get(2))
-                            .date(today)
-                            .weight(90f)
-                            .height(190f)
-                            .waterIntake(3.5f)
-                            .caloriesBurned(500)
-                            .workoutDuration(75)
-                            .build(),
-                    UserStat.builder()
-                            .user(users.get(3))
-                            .date(today)
-                            .weight(100f)
-                            .height(195f)
-                            .waterIntake(4.0f)
-                            .caloriesBurned(600)
-                            .workoutDuration(90)
-                            .build(),
-                    UserStat.builder()
-                            .user(users.get(4))
-                            .date(today)
-                            .weight(110f)
-                            .height(200f)
-                            .waterIntake(4.5f)
-                            .caloriesBurned(750)
-                            .workoutDuration(120)
-                            .build(),
-                    UserStat.builder()
-                            .user(users.get(5))
-                            .date(today)
-                            .weight(100f)
-                            .height(195f)
-                            .waterIntake(4.0f)
-                            .caloriesBurned(600)
-                            .workoutDuration(80)
-                            .build(),
-                    UserStat.builder()
-                            .user(users.get(6))
-                            .date(today)
-                            .weight(110f)
-                            .height(200f)
-                            .waterIntake(4.2f)
-                            .caloriesBurned(750)
-                            .workoutDuration(100)
-                            .build(),
-                    UserStat.builder()
-                            .user(users.get(7))
-                            .date(today)
-                            .weight(150f)
-                            .height(210f)
-                            .waterIntake(5.5f)
-                            .caloriesBurned(950)
-                            .workoutDuration(130)
-                            .build()
-            );
-
-            userStatRepository.saveAll(userStats);
-        }
-    }
+    /**
+     * AI-generated-content
+     * tool: ChatGPT
+     * version: 4o
+     * usage: I needed to initialize mock UserStat data for testing purposes. The requirement was to generate
+     * randomized but realistic data (e.g., weight, height, water intake, calories burned, and workout duration)
+     * for each user for the past 7 days. I asked ChatGPT to help me design a method that would automatically
+     * create this data. I copied the suggested logic and made slight adjustments to ensure that float values
+     * were rounded to one decimal place for consistency.
      */
 
     private void initUserStatData() {
@@ -301,16 +227,25 @@ public class DataInitializer {
             List<UserStat> userStats = new ArrayList<>();
 
             for (User user : users) {
-                float baseWeight = 70f + random.nextFloat() * 30;
-                float baseHeight = 165f + random.nextFloat() * 15;
+                // base values, formatted to 1 decimal place
+                float baseWeight = 70f + (random.nextFloat() * 30);
+                baseWeight = Math.round(baseWeight * 10.0f) / 10.0f;  // round to one decimal place
+
+                float baseHeight = 165f + (random.nextFloat() * 15);
+                baseHeight = Math.round(baseHeight * 10.0f) / 10.0f;  // round to one decimal place
 
                 for (int i = 0; i < 7; i++) {
                     LocalDate date = today.minusDays(i);
 
+                    // variations, also formatted to 1 decimal place
                     float weightVariation = (random.nextFloat() - 0.5f) * 2f;
+                    weightVariation = Math.round(weightVariation * 10.0f) / 10.0f;  // round to one decimal place
+
                     float waterIntakeVariation = (random.nextFloat() - 0.5f) * 0.2f;
-                    int caloriesVariation = random.nextInt(51) - 25;
-                    int workoutDurationVariation = random.nextInt(11) - 5;
+                    waterIntakeVariation = Math.round(waterIntakeVariation * 10.0f) / 10.0f;  // round to one decimal place
+
+                    int caloriesVariation = random.nextInt(51) - 25; // no rounding needed for integers
+                    int workoutDurationVariation = random.nextInt(11) - 5; // no rounding needed for integers
 
                     userStats.add(UserStat.builder()
                             .user(user)
@@ -328,7 +263,7 @@ public class DataInitializer {
             userStatRepository.saveAll(userStats);
         }
     }
-    
+
     private void initExerciseData() {
         if (exerciseRepository.count() == 0) {
             List<Exercise> exercises = List.of(
