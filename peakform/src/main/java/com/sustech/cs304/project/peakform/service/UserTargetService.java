@@ -5,6 +5,8 @@ import com.sustech.cs304.project.peakform.dto.UserTargetRequest;
 import com.sustech.cs304.project.peakform.dto.UserTargetResponse;
 import com.sustech.cs304.project.peakform.repository.UserTargetRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,18 +20,21 @@ public class UserTargetService {
 
     private final UserTargetRepository userTargetRepository;
 
-    public ResponseEntity<UserTargetResponse> getUserTarget(UUID userUuid) {
+    @Cacheable(value = "userTarget", key = "#userUuid")
+    public Optional<UserTargetResponse> getUserTarget(UUID userUuid) {
         Optional<UserTarget> userTargetOptional = userTargetRepository.findByUser_UserUuid(userUuid);
 
         if (userTargetOptional.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return Optional.empty();
         }
 
         UserTarget userTarget = userTargetOptional.get();
+        UserTargetResponse userTargetResponse = mapToResponse(userTarget);
 
-        return ResponseEntity.ok(mapToResponse(userTarget));
+        return Optional.of(userTargetResponse);
     }
 
+    @CacheEvict(value = "userTarget", key = "#userUuid")
     public ResponseEntity<String> updateUserTarget(UUID userUuid, UserTargetRequest userTargetRequest) {
         Optional<UserTarget> userTargetOptional = userTargetRepository.findByUser_UserUuid(userUuid);
 
