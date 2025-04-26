@@ -13,6 +13,8 @@ import io.github.cdimascio.dotenv.Dotenv;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +41,6 @@ public class UserService implements UserDetailsService {
     private final UserTargetRepository userTargetRepository;
     private final UserStatRepository userStatRepository;
     private final FirebaseStorageService firebaseStorageService;
-    private final CacheManager cacheManager;
 
     // This method is used by Spring Security to load user details by email
     @Override
@@ -154,6 +155,7 @@ public class UserService implements UserDetailsService {
         return Optional.of(userResponse);
     }
 
+    @CacheEvict(value = "user", key = "#userUuid")
     public ResponseEntity<String> updateUser(UUID userUuid, UserRequest userRequest) {
         Optional<User> userOptional = userRepository.findById(userUuid);
 

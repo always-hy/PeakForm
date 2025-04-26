@@ -23,6 +23,7 @@ public class PeakFormApplication {
 		System.setProperty("spring.security.oauth2.client.registration.facebook.client-secret", dotenv.get("FB_CLIENT_SECRET"));
 		System.setProperty("spring.security.oauth2.client.registration.github.client-id", dotenv.get("GITHUB_CLIENT_ID"));
 		System.setProperty("spring.security.oauth2.client.registration.github.client-secret", dotenv.get("GITHUB_CLIENT_SECRET"));
+		System.setProperty("alipay.private-key", dotenv.get("ALIPAY_PRIVATE_KEY"));
 
 		SpringApplication.run(PeakFormApplication.class, args);
 	}
