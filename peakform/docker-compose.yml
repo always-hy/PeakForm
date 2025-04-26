@@ -1,27 +1,41 @@
+version: '3.8'
 services:
   mysql:
-    image: mysql:8.0
+    image: mysql:9.2.0
     container_name: peakform-mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=${DB_USERNAME}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=peakform_db
-      - MYSQL_PASSWORD=${DB_PASSWORD}
     ports:
-      - "3307:3307"
+      - "3308:3306"
     networks:
       - peakform-network
     volumes:
       - ./cache/mysql:/var/lib/mysql
       - ./conf-mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7.4.2
+    container_name: peakform-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - peakform-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq
+    container_name: peakform-rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -36,19 +50,6 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7.4.2
-    container_name: redis
-    ports:
-      - "6379:6379"
-    networks:
-      - peakform-network
-    healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   backend:
     build:
       context: .
@@ -57,16 +58,35 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      rabbitmq:
-        condition: service_healthy
       mysql:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - FB_CLIENT_ID=${FB_CLIENT_ID}
+      - FB_CLIENT_SECRET=${FB_CLIENT_SECRET}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      - ALIPAY_PRIVATE_KEY=${ALIPAY_PRIVATE_KEY}
+      - RABBITMQ_HOST=peakform-rabbitmq
+      - REDIS_HOST=peakform-redis
+      - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/serviceAccountKey
+    secrets:
+      - serviceAccountKey
     networks:
       - peakform-network
 
   ngrok:
     image: ngrok/ngrok:latest
-    container_name: ngrok
+    container_name: peakform-ngrok
     environment:
       - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
     command: http host.docker.internal:8080 --log=stdout
@@ -83,3 +103,7 @@ networks:
 
 volumes:
   mysql-data:
+
+secrets:
+  serviceAccountKey:
+    file: ./serviceAccountKey.json

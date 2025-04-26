@@ -6,7 +6,6 @@ import com.google.firebase.FirebaseOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -17,10 +16,8 @@ public class FirebaseConfig {
     public FirebaseApp firebaseApp() throws IOException {
         List<FirebaseApp> firebaseApps = FirebaseApp.getApps();
         if (firebaseApps.stream().noneMatch(app -> app.getName().equals(FirebaseApp.DEFAULT_APP_NAME))) {
-            FileInputStream serviceAccount = new FileInputStream("src/main/resources/serviceAccountKey.json");
-
             FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setCredentials(GoogleCredentials.getApplicationDefault())
                     .setStorageBucket("peakform-3d589.firebasestorage.app")
                     .build();
 
