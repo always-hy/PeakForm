@@ -1,3 +1,5 @@
+
+
 # How to Run the Project Backend
 
 ## Prerequisites
@@ -32,6 +34,15 @@ Execute the following command to build and run the project:
 ./build.sh
 ```
 
+## Terminating the Project
+
+- Press `Ctrl + C` in the terminal to stop the process.
+- Optionally, bring down the containers completely:
+
+  ```bash
+  docker compose down
+  ```
+
 ------
 
-**Last updated**: April 29, 2025, 22:41 by Hok Layheng
+**Last updated**: April 29, 2025, 22:45 by Hok Layheng
