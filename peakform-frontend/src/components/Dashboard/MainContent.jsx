@@ -9,29 +9,38 @@ import UserStatsModal from "./UserStatsModal";
 const MainContent = ({ userData, userUuid, userTarget }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [gymBookings, setGymBookings] = useState([]);
+  // State to track if stats have been updated
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
   // Function to open the modal
   const openModal = () => setIsModalOpen(true);
 
   // Function to close the modal
   const closeModal = () => setIsModalOpen(false);
 
-  // Function to handle modal form submission
-  const handleModalSubmit = (updatedValues) => {
-    // Here you could call the API to update the stats with the updated values
-    // For example:
-    // callApiToUpdateStats(updatedValues);
-
-    // In this example, we'll just log the updated values
-    console.log(updatedValues);
+  // Function to trigger refresh of data
+  const refreshData = () => {
+    setRefreshTrigger((prev) => prev + 1);
   };
 
+  // Function to handle modal form submission
+  const handleModalSubmit = (updatedValues) => {
+    console.log(updatedValues);
+    refreshData();
+  };
+
+  // Fetch user data and gym bookings
   useEffect(() => {
+    const fetchUserData = async () => {
+      // You would add code here to refresh userData and userTarget
+      // by making API calls similar to what you have in your app elsewhere
+      console.log("Refreshing user data");
+    };
+
     const fetchActivity = async () => {
       try {
         const statsResponse = await fetch(
-          // "http://localhost:8080/user-schedules/records?userUuid=" + data.userUuid,
           `http://localhost:8080/user-schedules/records?userUuid=${userUuid}`,
-
           {
             method: "GET",
             credentials: "include", // Include session cookies
@@ -50,10 +59,12 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
         console.error("Error during login or fetching gym data:", error);
       }
     };
+
     if (userUuid) {
       fetchActivity();
+      fetchUserData();
     }
-  }, [userUuid]);
+  }, [userUuid, refreshTrigger]); // Add refreshTrigger to dependencies
 
   if (!userData | !userTarget) {
     return "Loading";
@@ -99,12 +110,12 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
       </header>
 
       <div className="mt-8 w-full max-md:max-w-full relative">
-        <button
+        {/* <button
           onClick={openModal}
           className="relative top-0 right-0 bg-green-500 p-4 rounded-full text-white shadow-xl"
         >
-          Update Stats
-        </button>
+          Update All Stats
+        </button> */}
         <div className="w-full max-md:max-w-full">
           <div className="flex flex-wrap gap-7 items-center w-full max-md:max-w-full">
             <StatCard
@@ -113,6 +124,10 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
               type="duration"
               target={userTarget.targetWorkoutDuration}
               value={userData.workoutDuration}
+              userUuid={userUuid}
+              unit="minutes"
+              allStats={userData}
+              allTargets={userTarget}
             />
             <StatCard
               title="Water"
@@ -121,6 +136,9 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
               unit="Litres"
               value={userData.waterIntake}
               target={userTarget.targetWaterIntake}
+              userUuid={userUuid}
+              allStats={userData}
+              allTargets={userTarget}
             />
             <StatCard
               title="Calories"
@@ -129,12 +147,15 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
               value={userData.caloriesBurned}
               target={userTarget.targetCaloriesBurned}
               unit="kCal"
+              userUuid={userUuid}
               chart={
                 <CaloriesBurnedGraph
                   value={userData.caloriesBurned}
                   target={userTarget.targetCaloriesBurned}
                 />
               }
+              allStats={userData}
+              allTargets={userTarget}
             />
             <StatCard
               title="Streak"
@@ -156,14 +177,14 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
         </div> */}
       </div>
 
-      {/* Modal */}
+      {/* Modal - Keep as a backup for batch updates */}
       <UserStatsModal
         isOpen={isModalOpen}
         onClose={closeModal}
-        userData={userData} // Pass the current stats values
+        userData={userData}
         targetData={userTarget}
-        onSubmit={handleModalSubmit} // Handle the form submission
-        userUuid={userUuid} // Pass the userUuid to the Modal
+        onSubmit={handleModalSubmit}
+        userUuid={userUuid}
       />
     </section>
   );

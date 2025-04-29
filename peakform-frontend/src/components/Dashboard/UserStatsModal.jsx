@@ -20,6 +20,9 @@ const UserStatsModal = ({
   const [targetCaloriesBurned, setTargetCaloriesBurned] = useState(0);
   const [targetWorkoutDuration, setTargetWorkoutDuration] = useState(0);
 
+  // Status message state
+  const [statusMessage, setStatusMessage] = useState("");
+
   useEffect(() => {
     if (isOpen && userData && targetData) {
       setWeight(userData.weight || 0);
@@ -35,6 +38,65 @@ const UserStatsModal = ({
     }
   }, [isOpen, userData, targetData]);
 
+  // Function to update a single current stat
+  const updateSingleStat = async (statName, value) => {
+    const body = {
+      [statName]: parseFloat(value),
+    };
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/user-stats/update?userUuid=${userUuid}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        }
+      );
+      if (response.ok) {
+        setStatusMessage(`Successfully updated ${statName}!`);
+        setTimeout(() => setStatusMessage(""), 3000);
+      } else {
+        setStatusMessage(`Failed to update ${statName}.`);
+        setTimeout(() => setStatusMessage(""), 3000);
+      }
+    } catch (err) {
+      setStatusMessage(`Error: ${err.message}`);
+      setTimeout(() => setStatusMessage(""), 3000);
+    }
+  };
+
+  // Function to update a single target stat
+  const updateSingleTarget = async (statName, value) => {
+    const body = {
+      [statName]: parseFloat(value),
+    };
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/user-target/update?userUuid=${userUuid}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        }
+      );
+      if (response.ok) {
+        setStatusMessage(`Successfully updated ${statName}!`);
+        setTimeout(() => setStatusMessage(""), 3000);
+      } else {
+        setStatusMessage(`Failed to update ${statName}.`);
+        setTimeout(() => setStatusMessage(""), 3000);
+      }
+    } catch (err) {
+      setStatusMessage(`Error: ${err.message}`);
+      setTimeout(() => setStatusMessage(""), 3000);
+    }
+  };
+
+  // Function to handle updating all current stats at once
   const handleUserStatsSubmit = async () => {
     const body = {
       weight: parseFloat(weight),
@@ -55,22 +117,28 @@ const UserStatsModal = ({
         }
       );
       if (response.ok) {
-        console.log(await response.text());
-        onClose();
+        setStatusMessage("All stats updated successfully!");
+        setTimeout(() => {
+          setStatusMessage("");
+          onClose();
+        }, 2000);
       } else {
-        console.error("User stats update failed.");
+        setStatusMessage("Stats update failed.");
+        setTimeout(() => setStatusMessage(""), 3000);
       }
     } catch (err) {
-      console.error("Error updating user stats:", err);
+      setStatusMessage(`Error: ${err.message}`);
+      setTimeout(() => setStatusMessage(""), 3000);
     }
   };
 
+  // Function to handle updating all target stats at once
   const handleTargetStatsSubmit = async () => {
     const body = {
-      targetWeight: parseInt(targetWeight),
-      targetWaterIntake: parseInt(targetWaterIntake),
-      targetCaloriesBurned: parseInt(targetCaloriesBurned),
-      targetWorkoutDuration: parseInt(targetWorkoutDuration),
+      targetWeight: parseFloat(targetWeight),
+      targetWaterIntake: parseFloat(targetWaterIntake),
+      targetCaloriesBurned: parseFloat(targetCaloriesBurned),
+      targetWorkoutDuration: parseFloat(targetWorkoutDuration),
     };
 
     try {
@@ -84,75 +152,122 @@ const UserStatsModal = ({
         }
       );
       if (response.ok) {
-        console.log(await response.text());
-        onClose();
+        setStatusMessage("All target stats updated successfully!");
+        setTimeout(() => {
+          setStatusMessage("");
+          onClose();
+        }, 2000);
       } else {
-        console.error("Target stats update failed.");
+        setStatusMessage("Target stats update failed.");
+        setTimeout(() => setStatusMessage(""), 3000);
       }
     } catch (err) {
-      console.error("Error updating target stats:", err);
+      setStatusMessage(`Error: ${err.message}`);
+      setTimeout(() => setStatusMessage(""), 3000);
     }
   };
+
+  // Creates a paired input field with its own update button
+  const StatInputField = ({
+    label,
+    value,
+    onChange,
+    onUpdate,
+    statName,
+    unit,
+  }) => (
+    <div className="flex items-center mb-4">
+      <div className="flex-1">
+        <label className="mb-1 block">{label}</label>
+        <div className="flex items-center">
+          <input
+            type="number"
+            value={value}
+            onChange={onChange}
+            className="bg-black text-white border border-[#05A31D] p-2 w-full"
+            placeholder={label}
+          />
+          {unit && <span className="ml-2 text-white">{unit}</span>}
+        </div>
+      </div>
+      <button
+        type="button"
+        onClick={() => onUpdate(statName, value)}
+        className="bg-[#05A31D] text-black rounded-md font-medium px-3 py-2 ml-3 h-10 whitespace-nowrap"
+      >
+        Update
+      </button>
+    </div>
+  );
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50">
       <div className="bg-black text-white border border-[#05A31D] p-6 rounded-lg w-3/4 max-w-5xl">
-        <h2 className="text-xl font-semibold mb-6">Update Your Stats</h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold">Update Your Stats</h2>
+          {statusMessage && (
+            <div className="bg-zinc-800 px-4 py-2 rounded-md text-sm">
+              {statusMessage}
+            </div>
+          )}
+        </div>
+
         <div className="flex gap-8">
-          {/* Actual Stats Form */}
-          <form className="flex flex-col w-1/2">
+          {/* Current Stats Form */}
+          <div className="flex flex-col w-1/2">
             <h3 className="text-lg font-semibold mb-4">Current Stats</h3>
+
             {profile && (
               <>
-                <label className="mb-2">Weight</label>
-                <input
-                  type="number"
+                <StatInputField
+                  label="Weight (kg)"
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
-                  className="bg-black text-white border border-[#05A31D] p-2 mb-4"
-                  placeholder="Weight"
+                  onUpdate={updateSingleStat}
+                  statName="weight"
+                  unit="kg"
                 />
 
-                <label className="mb-2">Height</label>
-                <input
-                  type="number"
+                <StatInputField
+                  label="Height (cm)"
                   value={height}
                   onChange={(e) => setHeight(e.target.value)}
-                  className="bg-black text-white border border-[#05A31D] p-2 mb-4"
-                  placeholder="Height"
+                  onUpdate={updateSingleStat}
+                  statName="height"
+                  unit="cm"
                 />
               </>
             )}
 
             {!profile && (
               <>
-                <label className="mb-2">Water Intake</label>
-                <input
-                  type="number"
+                <StatInputField
+                  label="Water Intake"
                   value={waterIntake}
                   onChange={(e) => setWaterIntake(e.target.value)}
-                  className="bg-black text-white border border-[#05A31D] p-2 mb-4"
-                  placeholder="Water Intake"
+                  onUpdate={updateSingleStat}
+                  statName="waterIntake"
+                  unit="L"
                 />
 
-                <label className="mb-2">Calories Burned</label>
-                <input
-                  type="number"
+                <StatInputField
+                  label="Calories Burned"
                   value={caloriesBurned}
                   onChange={(e) => setCaloriesBurned(e.target.value)}
-                  className="bg-black text-white border border-[#05A31D] p-2 mb-4"
-                  placeholder="Calories Burned"
+                  onUpdate={updateSingleStat}
+                  statName="caloriesBurned"
+                  unit="kCal"
                 />
 
-                <label className="mb-2">Workout Duration (mins)</label>
-                <input
-                  type="number"
+                <StatInputField
+                  label="Workout Duration"
                   value={workoutDuration}
                   onChange={(e) => setWorkoutDuration(e.target.value)}
-                  className="bg-black text-white border border-[#05A31D] p-2 mb-4"
-                  placeholder="Workout Duration"
+                  onUpdate={updateSingleStat}
+                  statName="workoutDuration"
+                  unit="mins"
                 />
               </>
             )}
@@ -162,48 +277,48 @@ const UserStatsModal = ({
               className="bg-[#05A31D] px-4 py-2 text-black rounded-md font-semibold mt-4"
               onClick={handleUserStatsSubmit}
             >
-              Update Stats
+              Update All Stats
             </button>
-          </form>
+          </div>
 
           {/* Target Stats Form */}
-          <form className="flex flex-col w-1/2">
+          <div className="flex flex-col w-1/2">
             <h3 className="text-lg font-semibold mb-4">Target Stats</h3>
 
-            <label className="mb-2">Target Weight</label>
-            <input
-              type="number"
+            <StatInputField
+              label="Target Weight"
               value={targetWeight}
               onChange={(e) => setTargetWeight(e.target.value)}
-              className="bg-black text-white border border-[#05A31D] p-2 mb-4"
-              placeholder="Target Weight"
+              onUpdate={updateSingleTarget}
+              statName="targetWeight"
+              unit="kg"
             />
 
-            <label className="mb-2">Target Water Intake</label>
-            <input
-              type="number"
+            <StatInputField
+              label="Target Water Intake"
               value={targetWaterIntake}
               onChange={(e) => setTargetWaterIntake(e.target.value)}
-              className="bg-black text-white border border-[#05A31D] p-2 mb-4"
-              placeholder="Target Water Intake"
+              onUpdate={updateSingleTarget}
+              statName="targetWaterIntake"
+              unit="L"
             />
 
-            <label className="mb-2">Target Calories Burned</label>
-            <input
-              type="number"
+            <StatInputField
+              label="Target Calories Burned"
               value={targetCaloriesBurned}
               onChange={(e) => setTargetCaloriesBurned(e.target.value)}
-              className="bg-black text-white border border-[#05A31D] p-2 mb-4"
-              placeholder="Target Calories Burned"
+              onUpdate={updateSingleTarget}
+              statName="targetCaloriesBurned"
+              unit="kCal"
             />
 
-            <label className="mb-2">Target Workout Duration (mins)</label>
-            <input
-              type="number"
+            <StatInputField
+              label="Target Workout Duration"
               value={targetWorkoutDuration}
               onChange={(e) => setTargetWorkoutDuration(e.target.value)}
-              className="bg-black text-white border border-[#05A31D] p-2 mb-4"
-              placeholder="Target Workout Duration"
+              onUpdate={updateSingleTarget}
+              statName="targetWorkoutDuration"
+              unit="mins"
             />
 
             <button
@@ -211,9 +326,9 @@ const UserStatsModal = ({
               className="bg-[#05A31D] px-4 py-2 text-black rounded-md font-semibold mt-4"
               onClick={handleTargetStatsSubmit}
             >
-              Update Target
+              Update All Targets
             </button>
-          </form>
+          </div>
         </div>
 
         <div className="mt-6 flex justify-end">
@@ -222,7 +337,7 @@ const UserStatsModal = ({
             className="border border-[#05A31D] text-white px-4 py-2 rounded-md"
             onClick={onClose}
           >
-            Cancel
+            Close
           </button>
         </div>
       </div>

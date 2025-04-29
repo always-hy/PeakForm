@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
+import ActivityCard from "./ActivityCard";
 
 const gymData = [
   {
@@ -47,6 +48,13 @@ export default function GymsPage() {
   // In a real app, you would fetch gym data from an API
   const [gyms, setGyms] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [storedUuid, setStoredUuid] = useState(null);
+  const [gymBookings, setGymBookings] = useState([]);
+
+  useEffect(() => {
+    const uuid = localStorage.getItem("user_uuid");
+    setStoredUuid(uuid);
+  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -56,6 +64,50 @@ export default function GymsPage() {
     // Simulating data fetch - replace with your actual API call
     setGyms(gymData);
   }, []);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      // You would add code here to refresh userData and userTarget
+      // by making API calls similar to what you have in your app elsewhere
+      console.log("Refreshing user data");
+    };
+
+    const fetchActivity = async () => {
+      try {
+        const statsResponse = await fetch(
+          `http://localhost:8080/user-schedules/records?userUuid=${userUuid}`,
+          {
+            method: "GET",
+            credentials: "include", // Include session cookies
+          }
+        );
+
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setGymBookings(statsData);
+          console.log("Gym Bookings:", statsData);
+        } else {
+          const statsError = await statsResponse.text();
+          console.error("User stats failed:", statsError);
+        }
+      } catch (error) {
+        console.error("Error during login or fetching gym data:", error);
+      }
+    };
+
+    if (storedUuid) {
+      fetchActivity();
+      fetchUserData();
+    }
+  }, [storedUuid, refreshTrigger]);
+
+  if (storedUuid) {
+    fetchActivity();
+  }
+
+  if (!gymBookings) {
+    return "Loading";
+  }
 
   return (
     <div className="min-h-screen bg-black text-white flex">
@@ -141,6 +193,7 @@ export default function GymsPage() {
           ))}
         </div>
       </div>
+      <ActivityCard userUuid={storedUuid} gymBookings={gymBookings} />
     </div>
   );
 }
