@@ -57,6 +57,7 @@ public class DataInitializer {
                             .age(23)
                             .gender(User.Gender.MALE)
                             .bio("The Sorcerer Killer")
+                            .profileImageUrl("https://storage.googleapis.com/peakform-3d589.firebasestorage.app/user-profile/9fa2fa3e-a194-4187-95a3-5c818c433973.jpg?GoogleAccessId=firebase-adminsdk-fbsvc@peakform-3d589.iam.gserviceaccount.com&Expires=1746539285&Signature=GLYneGF1SDPPXQK7qsp%2BSSSf4ft5GsAam1RALGmrNYd1pUa8DJ%2Bkzdc1%2FDKMaEIUrGdrDEN4qzwD%2Frb5jdYFBKVPX1gHKwBnbJgd8jcNy%2FnVesesXFuyX8FplRxxios0L0MqoLIfFogxIVIoTQhgWdXyAUuSAttYPqAF%2B7IquheHrlYL%2FEg%2FCA8omVq39lsQwO0Sc3cadmaQqtYJcBOrwBv%2BG18IpxNolPH1zKuX74Zqd1nPa99MFiTW7rwdbZ4OsN4NJb%2BUUXWLOvVIz9%2FifET%2FghufeAoP37Y9OufE2fA9OQwcCRbq%2Bp4vToxxRtEYSO%2B9tOusJ225WdHeug%2FA1g%3D%3D")
                             .emailVerified(true)
                             .verificationToken(null)
                             .build(),
@@ -68,6 +69,7 @@ public class DataInitializer {
                             .age(53)
                             .gender(User.Gender.FEMALE)
                             .bio("The Lion's Sin of Pride")
+                            .profileImageUrl("https://storage.googleapis.com/peakform-3d589.firebasestorage.app/user-profile/eea34b25-6d9d-4bd4-a2aa-688c9969e0a1.jpg?GoogleAccessId=firebase-adminsdk-fbsvc@peakform-3d589.iam.gserviceaccount.com&Expires=1746540350&Signature=gqsGlJXweJz4qEMiBO7YnfNiKjxrtZjtSWfAo7yEdEI0f5Ob97wNx0mjIbISgQdWu%2BtVdS4HtdrMQrpBTdAw2BWSccsF%2FKHjox4ghnPBCJH4EBf8t%2Fa4kFmdOiGcEWJvfcl9U%2BAH59ZNpIj422jV0mKV3i3N0IVuSBxaq9q%2B0TLYlpG5vATdzY9c%2BLOtDbgG89ayOpSO47Ud0m23yFnrl36%2Flrmoe6ecHY0Z9ahLOMftwiqDx%2FDLrdTRI0ZXmm0XjARFi0mY9R5OKxx%2BfJUmoyEdLWLBJ7otgK9xtU2A3Plb3flAqWYIUzFC7ZeV6XFFws2OSsyzC1A%2BdWxPffI0rQ%3D%3D")
                             .emailVerified(true)
                             .verificationToken(null)
                             .build(),
@@ -79,6 +81,7 @@ public class DataInitializer {
                             .age(20)
                             .gender(User.Gender.OTHER)
                             .bio("The Black Swordsman")
+                            .profileImageUrl("https://storage.googleapis.com/peakform-3d589.firebasestorage.app/user-profile/aded6999-0e77-4710-8b61-031db5e7d456.jpg?GoogleAccessId=firebase-adminsdk-fbsvc@peakform-3d589.iam.gserviceaccount.com&Expires=1746540348&Signature=gGI0GYKMPwqUEDn2M9ih5ZqrIyo3H6scBoDUbKuDFKKPng7f0ig9tyjzUanccuiaq%2FktLgO9AsHz1UiHWm3g2xC1vXakev%2BwWez2OW0JWCa7xm34ivdACysbmg%2FAATJxe2%2BurqDwYBFlNgmgh7SsSSYsToq9uxKGwcwX581VnvB65x9KVXm%2BUpJ1sVE535vv4Hma8xOvwve%2Frl7aPyyTrfa7KVWJtATUtCSZpxDH3301kv4f5bykDJTwu5riolgj2oxOAiIoRE3%2BtshXYc%2F3yjUyUIynZ3t5aPG97Pig%2FrXMhGfzDapf6MkCErkxZkWT34Ue%2FE6m2t96%2F%2FwQkFjVJw%3D%3D")
                             .emailVerified(true)
                             .verificationToken(null)
                             .build(),
@@ -90,6 +93,7 @@ public class DataInitializer {
                             .age(45)
                             .gender(User.Gender.MALE)
                             .bio("The Strongest Creature on Earth")
+                            .profileImageUrl("https://storage.googleapis.com/peakform-3d589.firebasestorage.app/user-profile/d137a897-d0c9-4a36-85f3-efbc83e96800.jpg?GoogleAccessId=firebase-adminsdk-fbsvc@peakform-3d589.iam.gserviceaccount.com&Expires=1746540349&Signature=ZrLzG18STz%2BrWHGmW7bWPMX6Y5YzXWHUXO46wPfqjgG%2FhrlxFlQUlEmCBW%2BLp4hawGEVSw0Ff9zMbJCVbkn%2Bww57m1zemErDyrXlXKrJp2V%2Ff5vhKheIF9Js7HDfg35wn%2FievDGnOdjoMoTZ4QeZ0L4EOTtrcjsgrq0%2Bkzx3XjKf84TbGcIVZTZQDNO6Vky0UCi5RndUuDwHjCjeaCc3p0VEMefD40iCCAlyHXpYHPDzQ4hZD6RTJUG%2F4pPhhJRPqzd5%2FMd9XePhy7BAr4RN6%2B2fvj%2BqzH81Bp84oPnmcBA0dMPUGw44WY0X05ccg8aGSOv4nfk5XeLPX9iJB7%2BYZg%3D%3D")
                             .emailVerified(true)
                             .verificationToken(null)
                             .build(),
@@ -101,6 +105,7 @@ public class DataInitializer {
                             .age(30)
                             .gender(User.Gender.MALE)
                             .bio("The Legendary Super Saiyan")
+                            .profileImageUrl("https://storage.googleapis.com/peakform-3d589.firebasestorage.app/user-profile/2c2134c1-d410-429f-8ea7-da0ba62534d0.jpg?GoogleAccessId=firebase-adminsdk-fbsvc@peakform-3d589.iam.gserviceaccount.com&Expires=1746540342&Signature=Dy%2B4lQFPb1JwCmHURTl9kvazfkyRxbvKLRSuYlJvjWlsG5nvAb%2FkndFa7rMf7INJavuXunjEldfw0G2aYaFkdRPnNa1kMgsO1p0o5dubinrGgxG6M6Msenfcn9qaVTqK%2B8zr2DRTCuWk6fq0pzlmQxwQPYWL2kVGvGRxLzl1iQcjYeQ3J37pQuM1Ja50GpOjhRmqmHxgpXYnXvLIA7Y6Ef7nJBnR0ksrfNVxgQLKLArHtSCvfHKSJtjpWyJWju%2F40Tc0V75vL6rOJ4AcUuHqXZu%2BmcJu1NH%2BEiK1gRyGwevHVVQS%2F8ar4tnYlq%2FL48S9EFIUnjpcC43gczZGv%2BE8vw%3D%3D")
                             .emailVerified(true)
                             .verificationToken(null)
                             .build(),
@@ -112,6 +117,7 @@ public class DataInitializer {
                             .age(35)
                             .gender(User.Gender.MALE)
                             .bio("The Berserker of Soul Society")
+                            .profileImageUrl("https://storage.googleapis.com/peakform-3d589.firebasestorage.app/user-profile/54f843ef-665c-4f9e-b4c7-414dd5495662.jpg?GoogleAccessId=firebase-adminsdk-fbsvc@peakform-3d589.iam.gserviceaccount.com&Expires=1746540343&Signature=ZPk%2F5ZoobvF2GY1WgBG2XEcUsRmcJ87y7Z3PgRrW3rkfEZw5CfTmkssUyY19k6%2BGWcirNLKCSCzzdc6NuqTrtnjDnVThg7JInTeqYUZVN1pxMg0O1ws%2BqTvWoUL%2F9rChHQ2CBA8DyMKHp5dJXOOY8kL2ku1Ev48dpr1bHkCw4sTT2l8YsvuzqcmD8BiRfL%2FiBaCVSR28hs%2BHldKvD7OqeQOZhfRobDSqVJyW5n9QiORugdvvki%2FhEVEmUCNUVCbe926woVZN4poFtamMrwwWE%2BW7DfrhLJuOWCdE4nVZZFPReX1z8YSWZNk77OCJ5GUhiSKqeJB1QM%2Fmvp6HxPdhbA%3D%3D")
                             .emailVerified(true)
                             .verificationToken(null)
                             .build(),
@@ -123,6 +129,7 @@ public class DataInitializer {
                             .age(30)
                             .gender(User.Gender.MALE)
                             .bio("The Slayer of Hell, Rip and Tear")
+                            .profileImageUrl("https://storage.googleapis.com/peakform-3d589.firebasestorage.app/user-profile/5d2a7b34-3c9d-4f5a-9e2b-1f9a2d7e3c4f.jpg?GoogleAccessId=firebase-adminsdk-fbsvc@peakform-3d589.iam.gserviceaccount.com&Expires=1746540344&Signature=TldPRMY3hfI%2F4bZYLlwHqHmc6SM%2F6GqzqUg2VqU9Lv1A8bKu47QCdGQAhpZdytxXNqvQzApRBvpu6G6jTTlTZA5uDZnp9T9XxSrkgVqO%2F%2BHXfCwMcD0VvQ5rZku%2BtmUs%2BXjIQUgt90x7y%2FcznuZAQVP%2Fk9kaNdHjYNQm%2Bpl3Acsn0YPB3j7UvtXgAxpfIL0fdeG%2BYoLDSNKDzyICKqrQSzFDaMmKO6jRklYF2yxL48fzZj2qM7aDg97y%2BRe0UCyUxZCRRFEF3HnRF2dAoX5v0VqwSxt0ZCoUlhFnIqCkbgscByiO0hl2024EBdFKvzee3dK9H%2FwUg9%2Fz46DWofUxaw%3D%3D")
                             .emailVerified(true)
                             .verificationToken(null)
                             .build(),
@@ -134,6 +141,7 @@ public class DataInitializer {
                             .age(90)
                             .gender(User.Gender.MALE)
                             .bio("The God of War, Ghost of Sparta")
+                            .profileImageUrl("https://storage.googleapis.com/peakform-3d589.firebasestorage.app/user-profile/7e1f3a9d-2b4c-5d7e-8f3a-1c9d4e2b5a7f.jpg?GoogleAccessId=firebase-adminsdk-fbsvc@peakform-3d589.iam.gserviceaccount.com&Expires=1746540345&Signature=XrQdHRk4vc3WPq91CVnbVR34wiPafUnsXn6uLuNmRnHWHgYdibOIhkzQ%2Fi5Z%2B8kIZAbg8Jijme%2B%2BduRU9EYgrgIe5Fhm7Z9njvRr%2F3enJDSoJX5mBQVjNWUe7bX8qBkXnTXVhJW8lm2GRXq6MFNfE%2FPtNDa%2Bnc3P406X%2FL75sAYS2CEOMZzOsMxjG2fIHLD5I31E5uD9QCCboi1pEB91zlyeU34d6X6inIWJXv23MhOsw9NU7Pm9w83qforbvfojm6NOsR4REEndud3qCLml1a8qtNJDQuOy0j8Ir2HysCdVA7NWKKaP%2BIoC6VrYe%2BBTPv3roXvQaUtkvwprNZba%2BA%3D%3D")
                             .emailVerified(true)
                             .verificationToken(null)
                             .build()

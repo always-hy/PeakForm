@@ -42,6 +42,9 @@ public class User implements UserDetails {
     @Column(name = "bio", columnDefinition = "TEXT")
     private String bio;
 
+    @Column(name = "profile_image_url", columnDefinition = "TEXT")
+    private String profileImageUrl;
+
     @Column(name = "email_verified", nullable = false)
     private boolean emailVerified;
 

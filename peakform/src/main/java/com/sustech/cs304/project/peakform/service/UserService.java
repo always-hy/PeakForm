@@ -11,10 +11,7 @@ import com.sustech.cs304.project.peakform.repository.UserStatRepository;
 import com.sustech.cs304.project.peakform.repository.UserTargetRepository;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -140,8 +137,6 @@ public class UserService implements UserDetailsService {
         }
 
         User user = userOptional.get();
-        String profilePictureUrl = firebaseStorageService.getFileUrl("user-profile/" + userUuid + ".jpg")
-                .getBody();
 
         UserResponse userResponse = new UserResponse(
                 user.getUsername(),
@@ -149,7 +144,7 @@ public class UserService implements UserDetailsService {
                 user.getAge(),
                 user.getGender(),
                 user.getBio(),
-                profilePictureUrl
+                user.getProfileImageUrl()
         );
 
         return Optional.of(userResponse);
