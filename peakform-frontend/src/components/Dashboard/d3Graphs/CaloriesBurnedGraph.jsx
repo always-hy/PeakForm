@@ -75,6 +75,8 @@ const CaloriesBurnedGraph = ({ value, target }) => {
       .attr("font-family", "sans-serif");
   }, []);
 
+  if (target === 0) return;
+
   return <svg ref={ref}></svg>;
 };
 

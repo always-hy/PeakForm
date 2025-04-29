@@ -2,23 +2,61 @@
 import React, { useEffect, useState } from "react";
 import GoalCard from "./GoalCard";
 import AchievementCard from "./AchievementCard";
+import ProfileStatCard from "./ProfileStatCard";
 import UserStatsModal from "./UserStatsModal";
+
 const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
   // Function to open the modal
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [localUserData, setLocalUserData] = useState(userData);
+
   const openModal = () => setIsModalOpen(true);
 
   // Function to close the modal
   const closeModal = () => setIsModalOpen(false);
 
+  // Function to trigger refresh of data
+  const refreshData = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  // Effect to fetch updated user data when needed
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/user-stats/get?userUuid=${userUuid}`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setLocalUserData(data);
+        }
+      } catch (error) {
+        console.error("Error fetching updated user data:", error);
+      }
+    };
+
+    if (userUuid && refreshTrigger > 0) {
+      fetchUserData();
+    }
+  }, [refreshTrigger, userUuid]);
+
+  // Update localUserData when userData prop changes
+  useEffect(() => {
+    setLocalUserData(userData);
+  }, [userData]);
+
   // Function to handle modal form submission
   const handleModalSubmit = (updatedValues) => {
     // Here you could call the API to update the stats with the updated values
-    // For example:
-    // callApiToUpdateStats(updatedValues);
-
-    // In this example, we'll just log the updated values
     console.log(updatedValues);
+    refreshData();
   };
   // Prevent scrolling when mobile menu is open on mobile only
   useEffect(() => {
@@ -35,7 +73,7 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
     };
   }, [isOpen]);
 
-  if (!userData) {
+  if (!localUserData) {
     return "Loading";
   }
 
@@ -75,37 +113,25 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
           <div className="flex relative gap-10 items-center py-3 pr-6 pl-8 max-w-full min-h-[78px] w-[296px] max-md:px-5">
             <div className="flex absolute bottom-0 z-0 shrink-0 self-start rounded-xl bg-zinc-900 h-[78px] min-w-60 right-[-9px] w-[305px]" />
 
-            <div className="flex z-0 flex-col justify-center items-center self-stretch my-auto">
-              <div className="text-xl font-semibold text-white">
-                <span style={{ fontWeight: 700, fontSize: "24px" }}>
-                  {userData.weight}
-                </span>
-                <span
-                  style={{ fontSize: "14px", color: "rgba(157,172,193,1)" }}
-                >
-                  kg
-                </span>
-              </div>
-              <div className="text-base font-medium text-gray-500">Weight</div>
-            </div>
+            <ProfileStatCard
+              label="Weight"
+              value={localUserData.weight}
+              unit="kg"
+              type="weight"
+              userUuid={userUuid}
+              onUpdate={refreshData}
+              allStats={localUserData}
+            />
 
-            <div className="flex z-0 flex-col justify-center self-stretch my-auto w-[58px]">
-              <div className="text-2xl font-bold text-white">
-                {userData.height}
-                <span
-                  style={{
-                    fontWeight: 600,
-                    fontSize: "14px",
-                    color: "rgba(157,172,193,1)",
-                  }}
-                >
-                  cm
-                </span>
-              </div>
-              <div className="self-center text-base font-medium text-gray-500">
-                Height
-              </div>
-            </div>
+            <ProfileStatCard
+              label="Height"
+              value={localUserData.height}
+              unit="cm"
+              type="height"
+              userUuid={userUuid}
+              onUpdate={refreshData}
+              allStats={localUserData}
+            />
 
             <div className="flex z-0 flex-col justify-center self-stretch my-auto">
               <div className="text-xl font-semibold text-white">
@@ -203,35 +229,25 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
         <div className="flex relative gap-10 items-center py-3 pr-6 pl-8 mt-5 max-w-full min-h-[78px] w-[296px] max-md:px-5">
           <div className="flex absolute bottom-0 z-0 shrink-0 self-start rounded-xl bg-zinc-900 h-[78px] min-w-60 right-[-9px] w-[305px]" />
 
-          <div className="flex z-0 flex-col justify-center items-center self-stretch my-auto">
-            <div className="text-xl font-semibold text-white">
-              <span style={{ fontWeight: 700, fontSize: "24px" }}>
-                {userData.weight}
-              </span>
-              <span style={{ fontSize: "14px", color: "rgba(157,172,193,1)" }}>
-                kg
-              </span>
-            </div>
-            <div className="text-base font-medium text-gray-500">Weight</div>
-          </div>
+          <ProfileStatCard
+            label="Weight"
+            value={localUserData.weight}
+            unit="kg"
+            type="weight"
+            userUuid={userUuid}
+            onUpdate={refreshData}
+            allStats={userData}
+          />
 
-          <div className="flex z-0 flex-col justify-center self-stretch my-auto w-[58px]">
-            <div className="text-2xl font-bold text-white">
-              {userData.height}
-              <span
-                style={{
-                  fontWeight: 600,
-                  fontSize: "14px",
-                  color: "rgba(157,172,193,1)",
-                }}
-              >
-                cm
-              </span>
-            </div>
-            <div className="self-center text-base font-medium text-gray-500">
-              Height
-            </div>
-          </div>
+          <ProfileStatCard
+            label="Height"
+            value={localUserData.height}
+            unit="cm"
+            type="height"
+            userUuid={userUuid}
+            onUpdate={refreshData}
+            allStats={userData}
+          />
 
           <div className="flex z-0 flex-col justify-center self-stretch my-auto">
             <div className="text-xl font-semibold text-white">
@@ -285,7 +301,7 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
       <UserStatsModal
         isOpen={isModalOpen}
         onClose={closeModal}
-        userData={userData} // Pass the current stats values
+        userData={localUserData} // Pass the current stats values
         onSubmit={handleModalSubmit} // Handle the form submission
         userUuid={userUuid} // Pass the userUuid to the Modal
         profile={true}
