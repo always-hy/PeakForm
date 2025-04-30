@@ -12,7 +12,7 @@ import com.sustech.cs304.project.peakform.repository.GymSessionRepository;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import com.sustech.cs304.project.peakform.repository.UserScheduleRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +33,8 @@ public class GymService {
 
     private final FirebaseStorageService firebaseStorageService;
 
-    public ResponseEntity<List<GymListResponse>> getGyms() {
+    @Cacheable(value = "gyms", key = "'all'")
+    public List<GymListResponse> getGyms() {
         List<Gym> gyms = gymRepository.findAll();
         List<GymListResponse> gymResponses = gyms.stream()
                 .map(gym -> new GymListResponse(
@@ -47,24 +48,14 @@ public class GymService {
                         firebaseStorageService.getFiles("gym-photo/" + gym.getGymId() + "/").getBody().get(0)
                 ))
                 .toList();
-        return ResponseEntity.status(HttpStatus.OK).body(gymResponses);
+        return gymResponses;
     }
 
-    public ResponseEntity<GymDetailResponse> getGym(Long gymId, UUID userUuid) {
-        Optional<User> userOptional = Optional.empty();
-        if (userUuid != null) {
-            userOptional = userRepository.findById(userUuid);
-            if (userOptional.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-        }
+    @Cacheable(value = "gyms", key = "#gymId + '-' + #userUuid")
+    public GymDetailResponse getGym(Long gymId, UUID userUuid) {
+        Gym gym = gymRepository.findById(gymId).orElseThrow();
+        User user = userRepository.findById(userUuid).orElseThrow();
 
-        Optional<Gym> gymOptional = gymRepository.findById(gymId);
-        if (gymOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        Gym gym = gymOptional.get();
         ResponseEntity<List<String>> gymPhotos = firebaseStorageService.getFiles("gym-photo/" + gymId + "/");
         List<GymSession> gymSessions = gymSessionRepository.findByGym_GymIdAndDateIn(
                 gymId,
@@ -75,14 +66,11 @@ public class GymService {
         for (GymSession schedule : gymSessions) {
             UserSchedule.AppointmentStatus appointmentStatus = null;
 
-            if (userOptional.isPresent()) {
-                User user = userOptional.get();
-                Optional<UserSchedule> userSchedule = userScheduleRepository.findByUser_UserUuidAndGymSession_GymSessionId(user.getUserUuid(), schedule.getGymSessionId());
-                if (userSchedule.isEmpty()) {
-                    appointmentStatus = UserSchedule.AppointmentStatus.UNRESERVED;
-                } else {
-                    appointmentStatus = userSchedule.get().getAppointmentStatus();
-                }
+            Optional<UserSchedule> userSchedule = userScheduleRepository.findByUser_UserUuidAndGymSession_GymSessionId(user.getUserUuid(), schedule.getGymSessionId());
+            if (userSchedule.isEmpty()) {
+                appointmentStatus = UserSchedule.AppointmentStatus.UNRESERVED;
+            } else {
+                appointmentStatus = userSchedule.get().getAppointmentStatus();
             }
 
             LocalDateTime sessionStartDateTime = LocalDateTime.of(schedule.getDate(), schedule.getSessionStart());
@@ -101,7 +89,7 @@ public class GymService {
             }
         }
 
-        GymDetailResponse gymDetailResponse = new GymDetailResponse(
+        return new GymDetailResponse(
                 gym.getGymId(),
                 gym.getGymName(),
                 gym.getStartTime(),
@@ -112,7 +100,5 @@ public class GymService {
                 gymPhotos.getBody(),
                 gymScheduleResponses
         );
-
-        return ResponseEntity.status(HttpStatus.OK).body(gymDetailResponse);
     }
 }

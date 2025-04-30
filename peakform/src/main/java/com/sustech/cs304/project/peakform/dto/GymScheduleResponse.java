@@ -2,6 +2,7 @@ package com.sustech.cs304.project.peakform.dto;
 
 import com.sustech.cs304.project.peakform.domain.UserSchedule;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -12,5 +13,5 @@ public record GymScheduleResponse(
         LocalTime sessionEnd,
         Integer availableSlots,
         UserSchedule.AppointmentStatus appointmentStatus
-) {
+) implements Serializable {
 }

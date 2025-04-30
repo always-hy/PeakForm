@@ -1,5 +1,6 @@
 package com.sustech.cs304.project.peakform.dto;
 
+import java.io.Serializable;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -13,5 +14,5 @@ public record GymDetailResponse(
         String contact,
         List<String> gymPhotos,
         List<GymScheduleResponse> gymSessions
-) {
+) implements Serializable {
 }

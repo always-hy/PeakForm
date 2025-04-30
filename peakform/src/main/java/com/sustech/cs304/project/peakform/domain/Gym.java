@@ -45,7 +45,4 @@ public class Gym {
 
     @OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GymSession> gymSessions;
-
-    @OneToMany(mappedBy = "gym", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GymImage> gymImages;
 }
