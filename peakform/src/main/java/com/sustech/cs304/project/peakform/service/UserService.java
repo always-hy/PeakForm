@@ -137,6 +137,13 @@ public class UserService implements UserDetailsService {
         }
 
         User user = userOptional.get();
+        String profilePictureUrl = firebaseStorageService.getFileUrl("user-profile/" + userUuid + ".jpg")
+                .getBody();
+
+        if (!profilePictureUrl.isEmpty()) {
+            user.setProfileImageUrl(profilePictureUrl);
+            userRepository.save(user);
+        }
 
         UserResponse userResponse = new UserResponse(
                 user.getUsername(),
@@ -144,7 +151,7 @@ public class UserService implements UserDetailsService {
                 user.getAge(),
                 user.getGender(),
                 user.getBio(),
-                user.getProfileImageUrl()
+                profilePictureUrl
         );
 
         return Optional.of(userResponse);
