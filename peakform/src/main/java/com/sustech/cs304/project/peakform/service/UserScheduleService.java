@@ -12,9 +12,13 @@ import com.sustech.cs304.project.peakform.repository.UserRepository;
 import com.sustech.cs304.project.peakform.repository.UserScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -31,10 +35,11 @@ public class UserScheduleService {
     private final UserRepository userRepository;
 
     private final RabbitTemplate rabbitTemplate;
+    private final CacheManager cacheManager;
 
-    // Existing methods remain unchanged
-    public ResponseEntity<String> bookGymSession(Long gymSessionId, UUID userUuid) {
-        Optional<GymSession> gymSessionOptional = gymSessionRepository.findById(gymSessionId);
+    @Transactional
+    public ResponseEntity<String> bookGymSession(Long gymId, Long gymSessionId, UUID userUuid) {
+        Optional<GymSession> gymSessionOptional = gymSessionRepository.findByGym_GymIdAndGymSessionId(gymId, gymSessionId);
         if (gymSessionOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Gym session not found.");
         }
@@ -62,11 +67,15 @@ public class UserScheduleService {
         gymSession.setAvailableSlots(gymSession.getAvailableSlots() - 1);
         gymSessionRepository.save(gymSession);
 
+        cacheManager.getCache("gyms").evict(gymId + "-" + userUuid);
+        cacheManager.getCache("appointmentStats").evict(userUuid);
+
         return ResponseEntity.status(HttpStatus.OK).body("Gym booked successfully for user: " + userUuid + ".");
     }
 
-    public ResponseEntity<String> cancelGymSession(Long gymSessionId, UUID userUuid) {
-        Optional<GymSession> gymSessionOptional = gymSessionRepository.findById(gymSessionId);
+    @Transactional
+    public ResponseEntity<String> cancelGymSession(Long gymId, Long gymSessionId, UUID userUuid) {
+        Optional<GymSession> gymSessionOptional = gymSessionRepository.findByGym_GymIdAndGymSessionId(gymId, gymSessionId);
         if (gymSessionOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Gym session not found.");
         }
@@ -91,9 +100,14 @@ public class UserScheduleService {
         gymSession.setAvailableSlots(gymSession.getAvailableSlots() + 1);
         gymSessionRepository.save(gymSession);
 
+        cacheManager.getCache("gyms").evict(gymId + "-" + userUuid);
+        cacheManager.getCache("appointmentStats").evict(userUuid);
+
         return ResponseEntity.status(HttpStatus.OK).body("Gym booking canceled successfully for user: " + userUuid + ".");
     }
 
+    @Transactional
+    @CacheEvict(value = "appointmentStats", key = "#userUuid", condition = "#result.statusCode == T(org.springframework.http.HttpStatus).OK")
     public ResponseEntity<String> markGymSessionCompleted(Long gymSessionId, UUID userUuid) {
         Optional<GymSession> gymSessionOptional = gymSessionRepository.findById(gymSessionId);
         if (gymSessionOptional.isEmpty()) {
@@ -124,6 +138,8 @@ public class UserScheduleService {
         return ResponseEntity.status(HttpStatus.OK).body("Gym session marked as completed for user: " + userUuid + ".");
     }
 
+    @Transactional
+    @CacheEvict(value = "appointmentStats", key = "#userUuid", condition = "#result.statusCode == T(org.springframework.http.HttpStatus).OK")
     public ResponseEntity<String> markGymSessionMissed(Long gymSessionId, UUID userUuid) {
         Optional<GymSession> gymSessionOptional = gymSessionRepository.findById(gymSessionId);
         if (gymSessionOptional.isEmpty()) {
@@ -148,12 +164,8 @@ public class UserScheduleService {
         return ResponseEntity.status(HttpStatus.OK).body("Gym session marked as missed for user: " + userUuid + ".");
     }
 
-    public ResponseEntity<AppointmentStatsResponse> getAppointmentStats(UUID userUuid) {
-        Optional<User> userOptional = userRepository.findById(userUuid);
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
+    @Cacheable(value = "appointmentStats", key = "#userUuid")
+    public AppointmentStatsResponse getAppointmentStats(UUID userUuid) {
         Long totalBookings = userScheduleRepository.countByUser_UserUuid(userUuid);
         Long completedBookings = userScheduleRepository.countByUser_UserUuidAndAppointmentStatus(userUuid, UserSchedule.AppointmentStatus.COMPLETED);
         Long cancelledBookings = userScheduleRepository.countByUser_UserUuidAndAppointmentStatus(userUuid, UserSchedule.AppointmentStatus.CANCELLED);
@@ -178,7 +190,7 @@ public class UserScheduleService {
                 bookingRecords
         );
 
-        return ResponseEntity.status(HttpStatus.OK).body(statsResponse);
+        return statsResponse;
     }
 
     private void saveSchedule(UserSchedule userSchedule) {
