@@ -140,13 +140,8 @@ public class UserService implements UserDetailsService {
         String profilePictureUrl = firebaseStorageService.getFileUrl("user-profile/" + userUuid + ".jpg")
                 .getBody();
 
-        if (!profilePictureUrl.isEmpty()) {
-            user.setProfileImageUrl(profilePictureUrl);
-            userRepository.save(user);
-        }
-
         UserResponse userResponse = new UserResponse(
-                user.getUsername(),
+                user.getRealUsername(),
                 user.getEmail(),
                 user.getAge(),
                 user.getGender(),
