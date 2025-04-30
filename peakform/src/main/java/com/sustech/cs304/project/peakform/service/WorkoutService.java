@@ -11,6 +11,8 @@ import com.sustech.cs304.project.peakform.repository.UserRepository;
 import com.sustech.cs304.project.peakform.repository.WorkoutExerciseRepository;
 import com.sustech.cs304.project.peakform.repository.WorkoutRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ public class WorkoutService {
     private final ExerciseRepository exerciseRepository;
     private final WorkoutExerciseRepository workoutExerciseRepository;
 
+    @CacheEvict(value = "userTarget", key = "#userUuid")
     public ResponseEntity<String> createWorkoutPlan(UUID userUuid, WorkoutPlanRequest request) {
         Optional<User> userOptional = userRepository.findById(userUuid);
         if (userOptional.isEmpty()) {
@@ -70,26 +73,24 @@ public class WorkoutService {
         return ResponseEntity.status(HttpStatus.OK).body("New active workout plan created.");
     }
 
-    public ResponseEntity<List<WorkoutPlanResponse>> getWorkoutPlan(UUID userUuid) {
+    @Cacheable(value = "workoutPlan", key = "#userUuid")
+    public List<WorkoutPlanResponse> getWorkoutPlan(UUID userUuid) {
         Optional<User> userOptional = userRepository.findById(userUuid);
         if (userOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ArrayList<>());
+            return null;
         }
 
         List<Workout> workouts = workoutRepository.findByUser_UserUuidOrderByIsActiveDesc(userUuid);
-        if (workouts.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(new ArrayList<>());
-        }
-
         List<WorkoutPlanResponse> workoutPlanResponses = new ArrayList<>();
 
         for (Workout workout : workouts) {
             workoutPlanResponses.add(mapToWorkoutPlanResponse(workout));
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(workoutPlanResponses);
+        return workoutPlanResponses;
     }
 
+    @CacheEvict(value = "userTarget", key = "#userUuid")
     public ResponseEntity<String> activateWorkout(Long workoutId, UUID userUuid) {
         Optional<Workout> workoutOptional = workoutRepository.findById(workoutId);
 

@@ -5,6 +5,7 @@ import com.sustech.cs304.project.peakform.dto.WorkoutPlanResponse;
 import com.sustech.cs304.project.peakform.service.WorkoutService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,11 @@ public class WorkoutController {
     @GetMapping
     @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
     public ResponseEntity<List<WorkoutPlanResponse>> getWorkoutPlan(@RequestParam("userUuid") UUID userUuid) {
-        return workoutService.getWorkoutPlan(userUuid);
+        List<WorkoutPlanResponse> response = workoutService.getWorkoutPlan(userUuid);
+        if (response == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{workoutId}/activate")
