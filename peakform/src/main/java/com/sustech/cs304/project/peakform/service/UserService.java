@@ -79,6 +79,7 @@ public class UserService implements UserDetailsService {
                 .gender(registrationRequest.gender() != null ? registrationRequest.gender() : User.Gender.OTHER)
                 .emailVerified(false)
                 .verificationToken(verificationToken)
+                .isSubscribed(false)
                 .build();
 
         UserTarget userTarget = UserTarget.builder()
