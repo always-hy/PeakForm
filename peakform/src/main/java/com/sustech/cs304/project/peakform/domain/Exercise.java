@@ -30,4 +30,6 @@ public class Exercise {
     @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL, orphanRemoval = true)
     private
     List<WorkoutExercise> workoutExercises;
+
+
 }
