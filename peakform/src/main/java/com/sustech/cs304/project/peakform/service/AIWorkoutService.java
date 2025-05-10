@@ -50,25 +50,15 @@ public class AIWorkoutService {
         // Construct prompt
         String prompt = buildPrompt(currentUser, userStat, userTarget, availableExercises, request);
 
-        // Call OpenAI API via OpenAIService
-        String aiResponse = openAIService.getOpenAIResponse(prompt);
-        String cleanedJson = aiResponse
-                .replaceAll("```json\\n", "")
-                .replaceAll("```\\n", "")
-                .replaceAll("```", "")
-                .trim();
-
         try {
-            // Create workout plan
-            WorkoutPlanRequest workoutPlan = parseAIResponse(cleanedJson);
-            if (workoutPlan == null) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Failed to parse AI-generated workout plan.");
-            }
-            System.out.println("Parsed Workout Plan: " + workoutPlan);
-            workoutService.createWorkoutPlan(currentUser.getUserUuid(), workoutPlan);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body("Workout plan generated successfully.");
+            // Call OpenAI API via OpenAIService
+            String aiResponse = openAIService.getOpenAIResponse(prompt);
+            String cleanedJson = aiResponse
+                    .replaceAll("```json\\n", "")
+                    .replaceAll("```\\n", "")
+                    .replaceAll("```", "")
+                    .trim();
+            return ResponseEntity.status(HttpStatus.OK).body(cleanedJson);
         } catch (Exception e) {
             System.err.println("Error processing AI response: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

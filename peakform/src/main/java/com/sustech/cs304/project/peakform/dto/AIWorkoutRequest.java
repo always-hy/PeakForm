@@ -10,6 +10,4 @@ public record AIWorkoutRequest(
     Integer workoutDaysPerWeek, // e.g., 3, 4, 5
     Integer preferredWorkoutDurationPerSessionInMinutes, // e.g., 45, 60, 90
     List<String> focusAreas // e.g., ["Full body", "Upper body"]
-)
-{
-}
+) {}
