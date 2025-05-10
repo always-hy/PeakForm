@@ -101,14 +101,6 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
         </div>
 
         <div className="flex flex-col items-end gap-4 mt-8 max-w-full">
-          {/* Top-right Button */}
-          <button
-            onClick={openModal}
-            className="bg-green-500 p-4 rounded-full text-white shadow-xl"
-          >
-            +
-          </button>
-
           {/* Weight and Height Card */}
           <div className="flex relative gap-10 items-center py-3 pr-6 pl-8 max-w-full min-h-[78px] w-[296px] max-md:px-5">
             <div className="flex absolute bottom-0 z-0 shrink-0 self-start rounded-xl bg-zinc-900 h-[78px] min-w-60 right-[-9px] w-[305px]" />

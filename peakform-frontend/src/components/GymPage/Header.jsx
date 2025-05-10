@@ -39,7 +39,7 @@ function Header() {
               className="flex overflow-hidden gap-2 justify-center items-center"
             >
               <img
-                src="/logo.png"
+                src="/logo.svg"
                 alt="PeakForm Logo"
                 className="object-contain shrink-0 self-stretch my-auto aspect-square w-[18px]"
               />
