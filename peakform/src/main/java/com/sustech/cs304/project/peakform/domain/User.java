@@ -48,6 +48,9 @@ public class User implements UserDetails {
     @Column(name = "verification_token")
     private String verificationToken;
 
+    @Column(name = "isSubscribed", nullable = false)
+    private boolean isSubscribed;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserRecord userRecord;
 

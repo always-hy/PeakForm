@@ -144,6 +144,7 @@ public class SecurityConfig {
                 .gender(User.Gender.OTHER)
                 .emailVerified(true)
                 .verificationToken(null)
+                .isSubscribed(false)
                 .build();
 
         UserTarget userTarget = UserTarget.builder()

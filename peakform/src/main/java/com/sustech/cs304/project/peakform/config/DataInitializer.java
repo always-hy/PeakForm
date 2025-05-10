@@ -59,6 +59,7 @@ public class DataInitializer {
                             .bio("The Sorcerer Killer")
                             .emailVerified(true)
                             .verificationToken(null)
+                            .isSubscribed(true)
                             .build(),
                     User.builder()
                             .userUuid(UUID.fromString("eea34b25-6d9d-4bd4-a2aa-688c9969e0a1"))
@@ -70,6 +71,7 @@ public class DataInitializer {
                             .bio("The Lion's Sin of Pride")
                             .emailVerified(true)
                             .verificationToken(null)
+                            .isSubscribed(true)
                             .build(),
                     User.builder()
                             .userUuid(UUID.fromString("aded6999-0e77-4710-8b61-031db5e7d456"))
@@ -81,6 +83,7 @@ public class DataInitializer {
                             .bio("The Black Swordsman")
                             .emailVerified(true)
                             .verificationToken(null)
+                            .isSubscribed(false)
                             .build(),
                     User.builder()
                             .userUuid(UUID.fromString("d137a897-d0c9-4a36-85f3-efbc83e96800"))
@@ -92,6 +95,7 @@ public class DataInitializer {
                             .bio("The Strongest Creature on Earth")
                             .emailVerified(true)
                             .verificationToken(null)
+                            .isSubscribed(false)
                             .build(),
                     User.builder()
                             .userUuid(UUID.fromString("2c2134c1-d410-429f-8ea7-da0ba62534d0"))
@@ -103,6 +107,7 @@ public class DataInitializer {
                             .bio("The Legendary Super Saiyan")
                             .emailVerified(true)
                             .verificationToken(null)
+                            .isSubscribed(false)
                             .build(),
                     User.builder()
                             .userUuid(UUID.fromString("54f843ef-665c-4f9e-b4c7-414dd5495662"))
@@ -114,6 +119,7 @@ public class DataInitializer {
                             .bio("The Berserker of Soul Society")
                             .emailVerified(true)
                             .verificationToken(null)
+                            .isSubscribed(false)
                             .build(),
                     User.builder()
                             .userUuid(UUID.fromString("5d2a7b34-3c9d-4f5a-9e2b-1f9a2d7e3c4f"))
@@ -125,6 +131,7 @@ public class DataInitializer {
                             .bio("The Slayer of Hell, Rip and Tear")
                             .emailVerified(true)
                             .verificationToken(null)
+                            .isSubscribed(false)
                             .build(),
                     User.builder()
                             .userUuid(UUID.fromString("7e1f3a9d-2b4c-5d7e-8f3a-1c9d4e2b5a7f"))
@@ -136,6 +143,7 @@ public class DataInitializer {
                             .bio("The God of War, Ghost of Sparta")
                             .emailVerified(true)
                             .verificationToken(null)
+                            .isSubscribed(false)
                             .build()
             );
             userRepository.saveAll(users);
