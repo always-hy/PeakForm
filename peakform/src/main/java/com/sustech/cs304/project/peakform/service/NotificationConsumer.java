@@ -13,9 +13,6 @@ public class NotificationConsumer {
 
     @RabbitListener(queues = "appointmentQueue")
     public void handleAppointmentNotification(AppointmentNotification notification) {
-        emailService.sendAppointmentReminder(
-                notification.userEmail(),
-                notification.appointmentTime()
-        );
+        emailService.sendAppointmentReminder(notification.userEmail(), notification.appointmentTime());
     }
 }

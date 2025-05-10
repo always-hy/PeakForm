@@ -36,7 +36,7 @@ public class GymService {
     @Cacheable(value = "gyms", key = "'all'")
     public List<GymListResponse> getGyms() {
         List<Gym> gyms = gymRepository.findAll();
-        List<GymListResponse> gymResponses = gyms.stream()
+        return gyms.stream()
                 .map(gym -> new GymListResponse(
                         gym.getGymId(),
                         gym.getGymName(),
@@ -48,7 +48,6 @@ public class GymService {
                         firebaseStorageService.getFiles("gym-photo/" + gym.getGymId() + "/").getBody().get(0)
                 ))
                 .toList();
-        return gymResponses;
     }
 
     @Cacheable(value = "gyms", key = "#gymId + '-' + #userUuid")

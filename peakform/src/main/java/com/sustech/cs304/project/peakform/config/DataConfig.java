@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,6 +31,7 @@ public class DataConfig {
     private final GymSessionService gymSessionService;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final NotificationRepository notificationRepository;
 
 
     @Transactional
@@ -225,7 +227,6 @@ public class DataConfig {
      * create this data. I copied the suggested logic and made slight adjustments to ensure that float values
      * were rounded to one decimal place for consistency.
      */
-
     private void initUserStatData() {
         if (userStatRepository.count() == 0) {
             List<User> users = userRepository.findAll();
@@ -490,6 +491,23 @@ public class DataConfig {
     }
 
     private void initNotificationData() {
+        if (notificationRepository.count() == 0) {
+            List<Notification> notifications = List.of(
+                    Notification.builder()
+                            .message("This is a reminder for your appointment scheduled on 2025-05-07T10:30.")
+                            .isRead(false)
+                            .createdAt(LocalDateTime.parse("2025-05-07T05:30:00.0"))
+                            .user(userRepository.findById(UUID.fromString("9fa2fa3e-a194-4187-95a3-5c818c433973")).get())
+                            .build(),
+                    Notification.builder()
+                            .message("This is a reminder for your appointment scheduled on 2025-05-10T10:30.")
+                            .isRead(true)
+                            .createdAt(LocalDateTime.parse("2025-05-10T05:30:00.0"))
+                            .user(userRepository.findById(UUID.fromString("9fa2fa3e-a194-4187-95a3-5c818c433973")).get())
+                            .build()
+            );
+            notificationRepository.saveAll(notifications);
+        }
     }
 
     private void initAchievementData() {
