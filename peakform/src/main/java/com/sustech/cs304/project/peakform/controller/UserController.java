@@ -1,10 +1,12 @@
 package com.sustech.cs304.project.peakform.controller;
 
 import com.sustech.cs304.project.peakform.domain.User;
+import com.sustech.cs304.project.peakform.dto.AIWorkoutRequest;
 import com.sustech.cs304.project.peakform.dto.RegistrationRequest;
 import com.sustech.cs304.project.peakform.dto.UserRequest;
 import com.sustech.cs304.project.peakform.dto.UserResponse;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
+import com.sustech.cs304.project.peakform.service.AIWorkoutService;
 import com.sustech.cs304.project.peakform.service.FirebaseStorageService;
 import com.sustech.cs304.project.peakform.service.UserService;
 import jakarta.transaction.Transactional;
@@ -23,8 +25,9 @@ import java.util.UUID;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
-    private final UserRepository userRepository;
+    private final AIWorkoutService aiWorkoutService;
     private final FirebaseStorageService firebaseStorageService;
+    private final UserRepository userRepository;
 
     @GetMapping("/details")
     @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
@@ -66,5 +69,13 @@ public class UserController {
                     return ResponseEntity.status(HttpStatus.OK).body("Email verified successfully.");
                 })
                 .orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid verification token."));
+    }
+
+    @Transactional
+    @PostMapping("/ai-generate-workout")
+    @PreAuthorize("#request.userUuid.toString() == authentication.principal.userUuid.toString()")
+    public ResponseEntity<String> generateWorkoutPlan(
+            @RequestBody AIWorkoutRequest request) {
+        return aiWorkoutService.generateWorkoutPlan(request);
     }
 }
