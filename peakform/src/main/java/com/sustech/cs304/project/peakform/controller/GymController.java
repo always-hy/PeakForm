@@ -24,6 +24,7 @@ public class GymController {
 
     private final UserRepository userRepository;
     private final GymRepository gymRepository;
+
     private final GymService gymService;
 
     @GetMapping("")

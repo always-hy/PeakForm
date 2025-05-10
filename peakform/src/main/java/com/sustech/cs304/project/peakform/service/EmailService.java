@@ -1,5 +1,6 @@
 package com.sustech.cs304.project.peakform.service;
 
+import com.sustech.cs304.project.peakform.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -12,6 +13,10 @@ import java.time.LocalDateTime;
 public class EmailService {
 
     private final JavaMailSender mailSender;
+
+    private final UserRepository userRepository;
+
+    private final NotificationService notificationService;
 
     public void sendVerificationEmail(String to, String verificationToken) {
         String subject = "Verify Your Email Address";
@@ -36,5 +41,7 @@ public class EmailService {
         message.setText(text);
 
         mailSender.send(message);
+
+        notificationService.createNotification(text, userRepository.findByEmail(to).get().getUserUuid());
     }
 }
