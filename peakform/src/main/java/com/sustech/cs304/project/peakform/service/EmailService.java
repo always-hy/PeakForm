@@ -1,5 +1,6 @@
 package com.sustech.cs304.project.peakform.service;
 
+import com.sustech.cs304.project.peakform.domain.WorkoutExercise;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
@@ -34,6 +35,20 @@ public class EmailService {
     public void sendAppointmentReminder(String to, LocalDateTime appointmentTime) {
         String subject = "Appointment Reminder";
         String text = "This is a reminder for your appointment scheduled on " + appointmentTime + ".";
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
+
+        mailSender.send(message);
+
+        notificationService.createNotification(text, userRepository.findByEmail(to).get().getUserUuid());
+    }
+
+    public void sendWorkoutReminder(String to, WorkoutExercise.Day workoutDay) {
+        String subject = "Workout Reminder";
+        String text = "This is a reminder that you have a workout scheduled for " + workoutDay + ".";
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
