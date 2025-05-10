@@ -8,4 +8,6 @@ import java.util.UUID;
 
 public interface WorkoutRepository extends JpaRepository<Workout, Long> {
     List<Workout> findByUser_UserUuidOrderByIsActiveDesc(UUID userUuid);
+
+    List<Workout> findByIsActiveTrue();
 }
