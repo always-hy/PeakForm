@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="61" viewBox="0 0 60 61" fill="none">
+<rect width="60" height="60" rx="30" transform="matrix(-1 0 0 1 60 0.0700684)" fill="#222629"/>
+<path d="M37 30.0701H23" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M30 37.0701L23 30.0701L30 23.0701" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<div xmlns="" id="divScriptsUsed" style="display: none"/><script xmlns="" id="globalVarsDetection" src="chrome-extension://cmkdbmfndkfgebldhnkbfhlneefdaaip/js/wrs_env.js"/></svg>

@@ -52,21 +52,23 @@ const ActivityCard = ({ userUuid, gymBookings }) => {
   };
 
   return (
-    <article className="grow shrink self-stretch px-5 pt-5 pb-6 my-auto text-white whitespace-nowrap rounded-xl bg-zinc-900 min-h-[271px] min-w-60 w-[342px] max-md:pb-24 max-md:max-w-full">
-      <div className="flex gap-10 justify-between items-center w-full mb-4">
+    <article className="flex flex-col h-full py-5 px-4 text-white bg-zinc-900 border-l border-zinc-800">
+      <div className="flex gap-4 justify-between items-center w-full mb-4">
         <h3 className="text-xl font-semibold leading-tight">Activity</h3>
       </div>
 
-      <div className="overflow-y-auto max-h-[200px] pr-2 space-y-4">
+      <div className="overflow-y-auto flex-grow pr-1 space-y-4 scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-zinc-900">
         {bookings.length === 0 ? (
-          <p className="text-gray-400">No bookings available.</p>
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-400 text-center">No bookings available.</p>
+          </div>
         ) : (
           bookings.map((record, index) => (
             <div
               key={index}
-              className="flex flex-col gap-1 p-3 bg-zinc-800 rounded-lg text-sm leading-tight"
+              className="flex flex-col gap-1 p-3 bg-zinc-800 rounded-lg text-sm leading-tight transition-all hover:bg-zinc-750 break-words"
             >
-              <span className="font-medium">{record.gymName}</span>
+              <span className="font-medium truncate">{record.gymName}</span>
               <span>{record.date}</span>
               <span>
                 {record.sessionStart} - {record.sessionEnd}
@@ -85,16 +87,20 @@ const ActivityCard = ({ userUuid, gymBookings }) => {
                 [{record.appointmentStatus.toLowerCase()}]
               </span>
 
-              <div className="flex gap-2 mt-2">
+              <div className="flex flex-wrap gap-2 mt-2">
                 {["COMPLETED", "MISSED", "CANCELLED"].map((status) => (
                   <button
                     key={status}
-                    className={`px-2 py-1 text-xs rounded ${status === record.appointmentStatus ? "bg-gray-600" : "bg-zinc-700"}`}
+                    className={`px-1.5 py-0.5 text-xs rounded transition-colors ${
+                      status === record.appointmentStatus
+                        ? "bg-[#0ADE1E] text-black font-medium"
+                        : "bg-zinc-700 hover:bg-zinc-600"
+                    }`}
                     onClick={() =>
                       handleStatusChange(record.gymSessionId, status)
                     }
                   >
-                    {status}
+                    {status.charAt(0) + status.slice(1).toLowerCase()}
                   </button>
                 ))}
               </div>

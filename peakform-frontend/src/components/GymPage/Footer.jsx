@@ -106,7 +106,7 @@ function Footer() {
                 className="flex overflow-hidden gap-2 justify-center items-center hover:opacity-80 transition-opacity"
               >
                 <img
-                  src="/logo.png"
+                  src="/logo.svg"
                   alt="PeakForm Logo"
                   className="object-contain shrink-0 self-stretch my-auto w-6 aspect-square"
                 />
