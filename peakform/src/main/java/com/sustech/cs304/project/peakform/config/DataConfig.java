@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class DataInitializer {
+public class DataConfig {
 
     private final UserRepository userRepository;
     private final ExerciseRepository exerciseRepository;
@@ -275,11 +275,39 @@ public class DataInitializer {
     private void initExerciseData() {
         if (exerciseRepository.count() == 0) {
             List<Exercise> exercises = List.of(
+                    // Upper Body Exercises
                     Exercise.builder()
                             .exerciseName("Push-Up")
                             .description("A basic bodyweight exercise to strengthen the chest, shoulders, and triceps.")
                             .targetMuscleGroup("Chest, Shoulders, Triceps")
                             .build(),
+                    Exercise.builder()
+                            .exerciseName("Pull-Up")
+                            .description("An upper-body compound exercise that targets the back and biceps.")
+                            .targetMuscleGroup("Back, Biceps")
+                            .build(),
+                    Exercise.builder()
+                            .exerciseName("Bench Press")
+                            .description("A popular upper-body exercise to develop strength in the chest and triceps.")
+                            .targetMuscleGroup("Chest, Triceps")
+                            .build(),
+                    Exercise.builder()
+                            .exerciseName("Overhead Press")
+                            .description("A shoulder exercise performed by pressing weight overhead.")
+                            .targetMuscleGroup("Shoulders, Triceps")
+                            .build(),
+                    Exercise.builder()
+                            .exerciseName("Bicep Curl")
+                            .description("Isolation exercise targeting the biceps.")
+                            .targetMuscleGroup("Biceps")
+                            .build(),
+                    Exercise.builder()
+                            .exerciseName("Tricep Dip")
+                            .description("Bodyweight exercise focusing on the triceps.")
+                            .targetMuscleGroup("Triceps")
+                            .build(),
+
+                    // Lower Body Exercises
                     Exercise.builder()
                             .exerciseName("Squat")
                             .description("A lower-body exercise that primarily targets the quadriceps, hamstrings, and glutes.")
@@ -291,9 +319,70 @@ public class DataInitializer {
                             .targetMuscleGroup("Back, Hamstrings, Glutes")
                             .build(),
                     Exercise.builder()
-                            .exerciseName("Bench Press")
-                            .description("A popular upper-body exercise to develop strength in the chest and triceps.")
-                            .targetMuscleGroup("Chest, Triceps")
+                            .exerciseName("Lunge")
+                            .description("Unilateral leg exercise working quads, glutes, and hamstrings.")
+                            .targetMuscleGroup("Legs, Glutes")
+                            .build(),
+                    Exercise.builder()
+                            .exerciseName("Calf Raise")
+                            .description("Isolation exercise for the calf muscles.")
+                            .targetMuscleGroup("Calves")
+                            .build(),
+                    Exercise.builder()
+                            .exerciseName("Leg Press")
+                            .description("Machine exercise targeting the lower body.")
+                            .targetMuscleGroup("Quads, Hamstrings, Glutes")
+                            .build(),
+
+                    // Core Exercises
+                    Exercise.builder()
+                            .exerciseName("Plank")
+                            .description("Isometric core exercise that strengthens the entire abdominal region.")
+                            .targetMuscleGroup("Core, Abs")
+                            .build(),
+                    Exercise.builder()
+                            .exerciseName("Russian Twist")
+                            .description("Rotational core exercise that targets the obliques.")
+                            .targetMuscleGroup("Obliques, Abs")
+                            .build(),
+                    Exercise.builder()
+                            .exerciseName("Hanging Leg Raise")
+                            .description("Advanced core exercise that targets the lower abs.")
+                            .targetMuscleGroup("Lower Abs")
+                            .build(),
+                    Exercise.builder()
+                            .exerciseName("Ab Rollout")
+                            .description("Challenging core exercise using a wheel or barbell.")
+                            .targetMuscleGroup("Abs, Core")
+                            .build(),
+
+                    // Functional/Compound Exercises
+                    Exercise.builder()
+                            .exerciseName("Burpee")
+                            .description("Full-body exercise combining squat, push-up, and jump.")
+                            .targetMuscleGroup("Full Body")
+                            .build(),
+                    Exercise.builder()
+                            .exerciseName("Kettlebell Swing")
+                            .description("Hip-hinging exercise that works the posterior chain.")
+                            .targetMuscleGroup("Glutes, Hamstrings, Core")
+                            .build(),
+                    Exercise.builder()
+                            .exerciseName("Clean and Press")
+                            .description("Olympic lift variation that works the entire body.")
+                            .targetMuscleGroup("Full Body")
+                            .build(),
+
+                    // Cardio Exercises
+                    Exercise.builder()
+                            .exerciseName("Jump Rope")
+                            .description("Cardiovascular exercise that improves coordination and endurance.")
+                            .targetMuscleGroup("Calves, Shoulders, Cardiovascular")
+                            .build(),
+                    Exercise.builder()
+                            .exerciseName("Box Jump")
+                            .description("Plyometric exercise that develops explosive power.")
+                            .targetMuscleGroup("Legs, Glutes")
                             .build()
             );
             exerciseRepository.saveAll(exercises);
