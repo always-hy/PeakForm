@@ -6,6 +6,7 @@ import com.sustech.cs304.project.peakform.dto.NotificationResponse;
 import com.sustech.cs304.project.peakform.repository.NotificationRepository;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +52,7 @@ public class NotificationService {
     }
 
     @Transactional
+    @CacheEvict(value = "notifications", key = "#userUuid", condition = "#result.statusCode == T(org.springframework.http.HttpStatus).OK")
     public ResponseEntity<String> markNotificationAsRead(UUID userUuid, Long notificationId) {
         Optional<Notification> notificationOptional = notificationRepository.findByUser_UserUuidAndNotificationId(userUuid, notificationId);
         if (notificationOptional.isEmpty()) {
