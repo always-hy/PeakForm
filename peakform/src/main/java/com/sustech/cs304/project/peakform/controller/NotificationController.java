@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +20,6 @@ import java.util.UUID;
 public class NotificationController {
 
     private final UserRepository userRepository;
-
     private final NotificationService notificationService;
 
     @GetMapping("")
@@ -35,5 +31,11 @@ public class NotificationController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(notificationService.getNotificationsByUserUuid(userUuid));
+    }
+
+    @PutMapping("/{notificationId}/mark-read")
+    @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
+    public ResponseEntity<String> markNotificationAsRead(@RequestParam("userUuid") UUID userUuid, @PathVariable("notificationId") Long notificationId) {
+        return notificationService.markNotificationAsRead(userUuid, notificationId);
     }
 }
