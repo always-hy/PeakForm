@@ -7,10 +7,14 @@ import com.sustech.cs304.project.peakform.repository.NotificationRepository;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -44,5 +48,23 @@ public class NotificationService {
                         notification.getCreatedAt()
                 ))
                 .toList();
+    }
+
+    @Transactional
+    public ResponseEntity<String> markNotificationAsRead(UUID userUuid, Long notificationId) {
+        Optional<Notification> notificationOptional = notificationRepository.findByUser_UserUuidAndNotificationId(userUuid, notificationId);
+        if (notificationOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Notification not found.");
+        }
+
+        Notification notification = notificationOptional.get();
+        if (notification.getIsRead()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Notification already marked as read.");
+        }
+
+        notification.setIsRead(true);
+        notificationRepository.save(notification);
+
+        return ResponseEntity.ok("Notification marked as read.");
     }
 }
