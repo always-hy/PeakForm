@@ -1,18 +1,19 @@
 package com.sustech.cs304.project.peakform.service;
 
-import com.sustech.cs304.project.peakform.dto.PaymentRequest;
-import io.github.cdimascio.dotenv.Dotenv;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
+import com.sustech.cs304.project.peakform.dto.PaymentRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
 
+@Profile("dev")
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
