@@ -15,8 +15,11 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +33,8 @@ public class WorkoutService {
     private final WorkoutRepository workoutRepository;
     private final ExerciseRepository exerciseRepository;
     private final WorkoutExerciseRepository workoutExerciseRepository;
+
+    private final EmailService emailService;
 
     @CacheEvict(value = "userTarget", key = "#userUuid")
     public ResponseEntity<String> createWorkoutPlan(UUID userUuid, WorkoutPlanRequest request) {
@@ -125,5 +130,22 @@ public class WorkoutService {
             ));
         }
         return new WorkoutPlanResponse(workout.getWorkoutId(), workout.getIsActive(), exercises);
+    }
+
+    @Scheduled(cron = "0 0 18 * * *")
+    public void sendWorkoutReminders() {
+        DayOfWeek tomorrow = LocalDate.now().plusDays(1).getDayOfWeek();
+        WorkoutExercise.Day tomorrowDay = WorkoutExercise.Day.valueOf(tomorrow.name());
+
+        List<Workout> activeWorkouts = workoutRepository.findByIsActiveTrue();
+
+        for (Workout workout : activeWorkouts) {
+            boolean hasExerciseTomorrow = workout.getWorkoutExercises().stream()
+                    .anyMatch(ex -> ex.getDay() == tomorrowDay);
+
+            if (hasExerciseTomorrow) {
+                emailService.sendWorkoutReminder(workout.getUser().getEmail(), tomorrowDay);
+            }
+        }
     }
 }
