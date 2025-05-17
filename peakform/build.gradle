@@ -45,6 +45,8 @@ dependencies {
     testImplementation "org.testcontainers:testcontainers:1.20.6"
     testImplementation "org.testcontainers:mysql:1.20.6"
     testImplementation "org.testcontainers:junit-jupiter:1.20.6"
+    testImplementation "org.testcontainers:rabbitmq:1.20.6"
+    testImplementation 'com.icegreen:greenmail:1.6.5'
     testImplementation 'io.rest-assured:rest-assured:5.5.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 //    developmentOnly 'org.springframework.boot:spring-boot-devtools'

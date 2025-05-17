@@ -4,12 +4,14 @@ import com.sustech.cs304.project.peakform.dto.PaymentRequest;
 import com.sustech.cs304.project.peakform.service.PaymentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Profile("dev")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/payment")

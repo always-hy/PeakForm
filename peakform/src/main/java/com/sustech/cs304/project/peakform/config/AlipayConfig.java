@@ -5,6 +5,7 @@ import com.alipay.api.DefaultAlipayClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 
 import javax.annotation.PreDestroy;
@@ -12,6 +13,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Profile("dev")
 @Configuration
 public class AlipayConfig {
 
