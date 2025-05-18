@@ -147,6 +147,7 @@ public class UserService implements UserDetailsService {
                 user.getAge(),
                 user.getGender(),
                 user.getBio(),
+                user.isSubscribed(),
                 profilePictureUrl
         );
 
