@@ -10,5 +10,6 @@ public record UserResponse (
         Integer age,
         User.Gender gender,
         String bio,
+        Boolean isSubscribed,
         String url
 ) implements Serializable {}
