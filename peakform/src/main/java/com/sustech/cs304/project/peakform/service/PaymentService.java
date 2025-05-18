@@ -3,12 +3,21 @@ package com.sustech.cs304.project.peakform.service;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.alipay.api.response.AlipayTradePagePayResponse;
-import com.sustech.cs304.project.peakform.dto.PaymentRequest;
+import com.sustech.cs304.project.peakform.domain.User;
+import com.sustech.cs304.project.peakform.dto.AlipayPaymentRequest;
+import com.sustech.cs304.project.peakform.dto.StripePaymentRequest;
+import com.sustech.cs304.project.peakform.repository.UserRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
+import com.stripe.param.PaymentIntentCreateParams;
 
 import java.util.List;
 import java.util.Map;
@@ -19,6 +28,43 @@ import java.util.Map;
 public class PaymentService {
     private final AlipayClient alipayClient;
     private final RestTemplate restTemplate = new RestTemplate();
+    private final UserRepository userRepository;
+
+    @Value("${stripe.secret-key}")
+    String secretKey;
+
+    @PostConstruct
+    public void init() {
+        Stripe.apiKey = secretKey;
+    }
+
+    public String processPayment(StripePaymentRequest request) throws StripeException {
+        User user = userRepository.findById(request.userUuid())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // Create payment intent
+        PaymentIntent paymentIntent = PaymentIntent.create(
+                PaymentIntentCreateParams.builder()
+                        .setAmount(request.amount())
+                        .setCurrency(request.currency())
+                        .setPaymentMethod(request.paymentMethodId())
+                        .setConfirm(true)
+                        .setAutomaticPaymentMethods(
+                                PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
+                                        .setEnabled(true)
+                                        .build()
+                        )
+                        .build()
+        );
+
+        if ("succeeded".equals(paymentIntent.getStatus())) {
+            user.setSubscribed(true);
+            userRepository.save(user);
+            return paymentIntent.getId();
+        } else {
+            throw new RuntimeException("Payment failed: " + paymentIntent.getStatus());
+        }
+    }
 
     private String getNgrokUrl() {
         try {
@@ -33,7 +79,7 @@ public class PaymentService {
         return "http://localhost:3000/payment/notify";
     }
 
-    public ResponseEntity<String> makeAlipayPayment(PaymentRequest request) {
+    public ResponseEntity<String> makeAlipayPayment(AlipayPaymentRequest request) {
         AlipayTradePagePayRequest alipayRequest = new AlipayTradePagePayRequest();
         alipayRequest.setReturnUrl("http://localhost:3000/payment/success");
         alipayRequest.setNotifyUrl(getNgrokUrl());
