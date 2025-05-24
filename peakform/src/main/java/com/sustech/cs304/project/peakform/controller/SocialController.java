@@ -30,4 +30,14 @@ public class SocialController {
         List<BasicUserDetailResponse> followers = socialService.getFollowers(userUuid);
         return ResponseEntity.ok(followers);
     }
+
+    @GetMapping("/followings")
+    public ResponseEntity<List<BasicUserDetailResponse>> getFollowings(@RequestParam UUID userUuid) {
+        if (!userRepository.existsById(userUuid)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<BasicUserDetailResponse> followings = socialService.getFollowings(userUuid);
+        return ResponseEntity.ok(followings);
+    }
 }
