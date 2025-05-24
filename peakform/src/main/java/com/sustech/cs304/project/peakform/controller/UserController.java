@@ -1,10 +1,6 @@
 package com.sustech.cs304.project.peakform.controller;
 
-import com.sustech.cs304.project.peakform.domain.User;
-import com.sustech.cs304.project.peakform.dto.AIWorkoutRequest;
-import com.sustech.cs304.project.peakform.dto.RegistrationRequest;
-import com.sustech.cs304.project.peakform.dto.UserRequest;
-import com.sustech.cs304.project.peakform.dto.UserResponse;
+import com.sustech.cs304.project.peakform.dto.*;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import com.sustech.cs304.project.peakform.service.AIWorkoutService;
 import com.sustech.cs304.project.peakform.service.FirebaseStorageService;
@@ -17,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -77,5 +74,11 @@ public class UserController {
     public ResponseEntity<String> generateWorkoutPlan(
             @RequestBody AIWorkoutRequest request) {
         return aiWorkoutService.generateWorkoutPlan(request);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<UserFilterResponse>> searchUsers(@RequestParam("username") String username) {
+        List<UserFilterResponse> results = userService.searchUsersByUsername(username);
+        return ResponseEntity.ok(results);
     }
 }
