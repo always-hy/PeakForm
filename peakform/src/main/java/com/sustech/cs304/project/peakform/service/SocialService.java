@@ -20,10 +20,30 @@ public class SocialService {
 
     @Cacheable(value = "social", key = "#userUuid + '-followers'")
     public List<BasicUserDetailResponse> getFollowers(UUID userUuid) {
-        List<Social> socialList = socialRepository.findByFollowing_UserUuid(userUuid);
+        List<Social> followers = socialRepository.findByFollowing_UserUuid(userUuid);
 
-        return socialList.stream()
+        return followers.stream()
                 .map(Social::getFollower)
+                .map(user -> {
+                    String profilePictureUrl = firebaseStorageService
+                            .getFileUrl("user-profile/" + user.getUserUuid() + ".jpg")
+                            .getBody();
+
+                    return new BasicUserDetailResponse(
+                            user.getRealUsername(),
+                            user.getEmail(),
+                            profilePictureUrl
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Cacheable(value = "social", key = "#userUuid + '-followings'")
+    public List<BasicUserDetailResponse> getFollowings(UUID userUuid) {
+        List<Social> followings = socialRepository.findByFollower_UserUuid(userUuid);
+
+        return followings.stream()
+                .map(Social::getFollowing)
                 .map(user -> {
                     String profilePictureUrl = firebaseStorageService
                             .getFileUrl("user-profile/" + user.getUserUuid() + ".jpg")
