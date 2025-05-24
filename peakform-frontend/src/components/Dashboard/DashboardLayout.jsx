@@ -5,13 +5,13 @@ import MainContent from "./MainContent";
 import UserProfile from "./UserProfile";
 import MobileMenuButton from "./MobileMenuButton";
 import SidebarMenuButton from "./SidebarMenuButton";
-// import Lottie from "./Lottie";
 
 const DashboardLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [userDetails, setUserDetails] = useState(null);
   const [userTarget, setUserTarget] = useState(null);
   const [storedUuid, setStoredUuid] = useState(null);
 
@@ -23,6 +23,36 @@ const DashboardLayout = () => {
   useEffect(() => {
     console.log("storedUuid state updated:", storedUuid);
   }, [storedUuid]);
+
+  useEffect(() => {
+    const uuid = localStorage.getItem("user_uuid");
+    const FetchUserDetails = async () => {
+      try {
+        const statsResponse = await fetch(
+          // "http://localhost:8080/user-schedules/records?userUuid=" + data.userUuid,
+          `http://localhost:8080/user/details?userUuid=${uuid}`,
+
+          {
+            method: "GET",
+            credentials: "include", // Include session cookies
+          }
+        );
+
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setUserDetails(statsData);
+          console.log("User details:", statsData);
+        } else {
+          const statsError = await statsResponse.text();
+          console.error("User stats failed:", statsError);
+        }
+      } catch (error) {
+        console.error("Error during login or fetching gym data:", error);
+      }
+    };
+
+    FetchUserDetails();
+  }, []);
 
   useEffect(() => {
     const uuid = localStorage.getItem("user_uuid");
@@ -135,6 +165,7 @@ const DashboardLayout = () => {
         toggleOpen={toggleMobileMenu}
         userData={userData}
         userUuid={storedUuid}
+        profile={userDetails}
       />
       {isMobile && (
         <>

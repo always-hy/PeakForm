@@ -1,109 +1,190 @@
 "use client";
-
 import { useState, useEffect } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
-const ActivityCard = ({ userUuid, gymBookings }) => {
-  const [bookings, setBookings] = useState(gymBookings?.bookingRecords || []);
+export default function ActivityCard() {
+  const [userData, setUserData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedMetric, setSelectedMetric] = useState("weight");
 
-  // Update bookings whenever gymBookings changes
   useEffect(() => {
-    setBookings(gymBookings?.bookingRecords || []);
-  }, [gymBookings]);
-
-  // Function to update the status of a booking and send the API request
-  const handleStatusChange = async (gymSessionId, newStatus) => {
-    let url = "";
-
-    // Set the URL based on the new status
-    if (newStatus === "COMPLETED") {
-      url = `http://localhost:8080/user-schedules/complete?gymSessionId=${gymSessionId}&userUuid=${userUuid}`;
-    } else if (newStatus === "MISSED") {
-      url = `http://localhost:8080/user-schedules/miss?gymSessionId=${gymSessionId}&userUuid=${userUuid}`;
-    } else if (newStatus === "CANCELLED") {
-      url = `http://localhost:8080/user-schedules/cancel?gymSessionId=${gymSessionId}&userUuid=${userUuid}`;
-    }
-
-    try {
-      // Send the API request to update the status
-      const response = await fetch(url, {
-        method: "PUT",
-        credentials: "include",
-      });
-
-      if (response.ok) {
-        // Update the booking status in the local state
-        setBookings((prevBookings) => {
-          if (!Array.isArray(prevBookings)) {
-            return [];
+    const uuid = localStorage.getItem("user_uuid");
+    const fetchUserStats = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/user-stats/history?userUuid=${uuid}`,
+          {
+            method: "GET",
+            credentials: "include", // Include session cookies
           }
+        );
 
-          return prevBookings.map((booking) =>
-            booking.gymSessionId === gymSessionId
-              ? { ...booking, appointmentStatus: newStatus }
-              : booking
-          );
-        });
-      } else {
-        console.error("Failed to update the status");
+        if (!response.ok) {
+          throw new Error("Failed to fetch user stats");
+        }
+
+        const data = await response.json();
+        // Sort by date ascending
+        const sortedData = [...data].sort(
+          (a, b) => new Date(a.date) - new Date(b.date)
+        );
+        setUserData(sortedData);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Error updating the status:", error);
-    }
+    };
+
+    fetchUserStats();
+  }, []);
+
+  // Function to format dates for better display
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
-  return (
-    <article className="grow shrink self-stretch px-5 pt-5 pb-6 my-auto text-white whitespace-nowrap rounded-xl bg-zinc-900 min-h-[271px] min-w-60 w-[342px] max-md:pb-24 max-md:max-w-full">
-      <div className="flex gap-10 justify-between items-center w-full mb-4">
-        <h3 className="text-xl font-semibold leading-tight">Activity</h3>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64 bg-black text-white">
+        Loading user statistics...
       </div>
+    );
+  }
 
-      <div className="overflow-y-auto max-h-[200px] pr-2 space-y-4">
-        {bookings.length === 0 ? (
-          <p className="text-gray-400">No bookings available.</p>
-        ) : (
-          bookings.map((record, index) => (
-            <div
-              key={index}
-              className="flex flex-col gap-1 p-3 bg-zinc-800 rounded-lg text-sm leading-tight"
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64 bg-black text-white">
+        Error: {error}
+      </div>
+    );
+  }
+
+  const chartConfigs = [
+    {
+      id: "weight",
+      title: "Weight (kg)",
+      dataKey: "weight",
+      stroke: "#05A31D",
+      domain: ["dataMin - 1", "dataMax + 1"],
+    },
+    {
+      id: "height",
+      title: "Height (cm)",
+      dataKey: "height",
+      stroke: "#05A31D",
+      domain: ["dataMin - 1", "dataMax + 1"],
+    },
+    {
+      id: "water",
+      title: "Water Intake (L)",
+      dataKey: "waterIntake",
+      stroke: "#05A31D",
+      domain: ["dataMin - 0.2", "dataMax + 0.2"],
+    },
+    {
+      id: "calories",
+      title: "Calories Burned",
+      dataKey: "caloriesBurned",
+      stroke: "#05A31D",
+      domain: ["dataMin - 20", "dataMax + 20"],
+    },
+    {
+      id: "duration",
+      title: "Workout Duration (min)",
+      dataKey: "workoutDuration",
+      stroke: "#05A31D",
+      domain: ["dataMin - 5", "dataMax + 5"],
+    },
+  ];
+
+  // Chart component to avoid repetition
+  const MetricChart = ({ config }) => {
+    const { id, title, dataKey, stroke, domain } = config;
+
+    return (
+      <div className="bg-[#1C1C1C] border border-[#05A31D] rounded-lg p-4 shadow-lg">
+        <h3 className="text-white text-lg font-semibold mb-4">{title}</h3>
+        <div className="h-48 w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={userData}
+              margin={{ top: 5, right: 20, left: 20, bottom: 20 }}
             >
-              <span className="font-medium">{record.gymName}</span>
-              <span>{record.date}</span>
-              <span>
-                {record.sessionStart} - {record.sessionEnd}
-              </span>
-              <span
-                className={`capitalize font-semibold ${
-                  record.appointmentStatus === "COMPLETED"
-                    ? "text-green-400"
-                    : record.appointmentStatus === "MISSED"
-                      ? "text-red-400"
-                      : record.appointmentStatus === "CANCELLED"
-                        ? "text-yellow-400"
-                        : "text-gray-300"
-                }`}
-              >
-                [{record.appointmentStatus.toLowerCase()}]
-              </span>
-
-              <div className="flex gap-2 mt-2">
-                {["COMPLETED", "MISSED", "CANCELLED"].map((status) => (
-                  <button
-                    key={status}
-                    className={`px-2 py-1 text-xs rounded ${status === record.appointmentStatus ? "bg-gray-600" : "bg-zinc-700"}`}
-                    onClick={() =>
-                      handleStatusChange(record.gymSessionId, status)
-                    }
-                  >
-                    {status}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))
-        )}
+              <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+              <XAxis
+                dataKey="date"
+                tickFormatter={formatDate}
+                tick={{ fill: "#fff" }}
+                stroke="#444"
+              />
+              <YAxis domain={domain} tick={{ fill: "#fff" }} stroke="#444" />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#1C1C1C",
+                  borderColor: "#05A31D",
+                  color: "#fff",
+                }}
+                labelFormatter={(value) => `Date: ${formatDate(value)}`}
+                formatter={(value) => [`${value}`, `${title.split(" ")[0]}`]}
+              />
+              <Line
+                type="monotone"
+                dataKey={dataKey}
+                stroke={stroke}
+                strokeWidth={2}
+                dot={{ fill: stroke, strokeWidth: 1 }}
+                activeDot={{ r: 6, fill: stroke }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </div>
-    </article>
-  );
-};
+    );
+  };
 
-export default ActivityCard;
+  const selectedConfig = chartConfigs.find(
+    (config) => config.id === selectedMetric
+  );
+
+  return (
+    <div className="w-full bg-[#1C1C1C] p-6 rounded-xl">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <h2 className="text-white text-2xl font-bold">Activity Statistics</h2>
+        <div className="flex items-center gap-2">
+          <label
+            htmlFor="metric-select"
+            className="text-white text-sm font-medium"
+          >
+            Select Metric:
+          </label>
+          <select
+            id="metric-select"
+            value={selectedMetric}
+            onChange={(e) => setSelectedMetric(e.target.value)}
+            className="bg-[#1C1C1C] border border-[#05A31D] text-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#05A31D] focus:border-transparent"
+          >
+            {chartConfigs.map((config) => (
+              <option key={config.id} value={config.id}>
+                {config.title}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div className="w-full">
+        <MetricChart config={selectedConfig} />
+      </div>
+    </div>
+  );
+}
