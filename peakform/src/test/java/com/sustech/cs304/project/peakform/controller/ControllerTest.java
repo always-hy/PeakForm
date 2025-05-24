@@ -166,7 +166,7 @@ public class ControllerTest extends AbstractTestContainerConfig {
         List<String> loginResponse = LoginUtils.login("prakbunlong53@gmail.com", "1");
 
         Long workoutId = 1L;
-        
+
         given()
                 .contentType(ContentType.JSON)
                 .sessionId(loginResponse.get(1))
@@ -193,5 +193,93 @@ public class ControllerTest extends AbstractTestContainerConfig {
                 .then()
                 .statusCode(404)
                 .body(equalTo("Workout not found or doesn't belong to user."));
+    }
+
+    // UserStatControllerTest
+    @Test
+    void updateUserStatSuccessTest() {
+        List<String> loginResponse = LoginUtils.login("prakbunlong53@gmail.com", "1");
+
+        Map<String, Object> requestBody = Map.of(
+                "weight", 70.5,
+                "height", 175.0,
+                "waterIntake", 1.5,
+                "caloriesBurned", 300,
+                "workoutDuration", 45
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .sessionId(loginResponse.get(1))
+                .queryParam("userUuid", loginResponse.get(0))
+                .body(requestBody)
+                .when()
+                .put("/user-stats/update")
+                .then()
+                .statusCode(200)
+                .body(equalTo("User statistics updated successfully."));
+    }
+
+    @Test
+    void getUserStatSuccessTest() {
+        List<String> loginResponse = LoginUtils.login("prakbunlong53@gmail.com", "1");
+
+        given()
+                .contentType(ContentType.JSON)
+                .sessionId(loginResponse.get(1))
+                .queryParam("userUuid", loginResponse.get(0))
+                .when()
+                .get("/user-stats")
+                .then()
+                .statusCode(200)
+                .body("weight", notNullValue())
+                .body("height", notNullValue())
+                .body("waterIntake", notNullValue())
+                .body("caloriesBurned", notNullValue())
+                .body("workoutDuration", notNullValue());
+    }
+
+    @Test
+    void getUserStatUnauthorizedTest() {
+        // Try without session
+        given()
+                .contentType(ContentType.JSON)
+                .queryParam("userUuid", UUID.randomUUID().toString())
+                .when()
+                .get("/user-stats")
+                .then()
+                .statusCode(401)
+                .body("message", equalTo("Unauthorized"));
+    }
+
+    @Test
+    void resetUserStatTest() {
+        List<String> loginResponse = LoginUtils.login("prakbunlong53@gmail.com", "1");
+
+        given()
+                .contentType(ContentType.JSON)
+                .sessionId(loginResponse.get(1))
+                .queryParam("userUuid", loginResponse.get(0))
+                .when()
+                .put("/user-stats/reset")
+                .then()
+                .statusCode(200)
+                .body(equalTo("User statistics reset successfully."));
+    }
+
+    @Test
+    void getUserStatHistoryTest() {
+        List<String> loginResponse = LoginUtils.login("prakbunlong53@gmail.com", "1");
+
+        given()
+                .contentType(ContentType.JSON)
+                .sessionId(loginResponse.get(1))
+                .queryParam("userUuid", loginResponse.get(0))
+                .when()
+                .get("/user-stats/history")
+                .then()
+                .statusCode(200)
+                .body("$", not(empty()))
+                .body("[0].date", notNullValue());
     }
 }
