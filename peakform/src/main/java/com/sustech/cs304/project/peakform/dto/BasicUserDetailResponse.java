@@ -1,8 +1,10 @@
 package com.sustech.cs304.project.peakform.dto;
 
-public record UserFilterResponse(
+import java.io.Serializable;
+
+public record BasicUserDetailResponse(
         String username,
         String email,
         String profilePictureUrl
-) {
+) implements Serializable {
 }
