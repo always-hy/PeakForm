@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/user/register", "/user/verify-email", "/gyms").permitAll()
+                        .requestMatchers("/login", "/user/register", "/user/verify-email", "/user/search/**", "/gyms").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -79,32 +79,32 @@ public class SecurityConfig {
                         })
                 )
                 .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/login")
-                        .successHandler((request, response, authentication) -> {
-                            OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
-                            String email = oauthUser.getAttribute("email");
-                            if (email == null) {
-                                response.sendError(HttpStatus.BAD_REQUEST.value(), "Email not provided by provider");
-                                return;
-                            }
-                            String name = oauthUser.getAttribute("name");
-                            User user = userRepository.findByEmail(email)
-                                    .orElseGet(() -> {
-                                        System.out.println("Creating new user with email: " + email);
-                                        return createNewUserWithDefaults(email, name);
-                                    });
-                            response.setStatus(HttpStatus.OK.value());
-                            response.setContentType("application/json");
-                            response.getWriter().write("{\"message\": \"Login successful\", \"userUuid\": \"" + user.getUserUuid() + "\"}");
+                                .loginPage("/login")
+                                .successHandler((request, response, authentication) -> {
+                                    OAuth2User oauthUser = (OAuth2User) authentication.getPrincipal();
+                                    String email = oauthUser.getAttribute("email");
+                                    if (email == null) {
+                                        response.sendError(HttpStatus.BAD_REQUEST.value(), "Email not provided by provider");
+                                        return;
+                                    }
+                                    String name = oauthUser.getAttribute("name");
+                                    User user = userRepository.findByEmail(email)
+                                            .orElseGet(() -> {
+                                                System.out.println("Creating new user with email: " + email);
+                                                return createNewUserWithDefaults(email, name);
+                                            });
+                                    response.setStatus(HttpStatus.OK.value());
+                                    response.setContentType("application/json");
+                                    response.getWriter().write("{\"message\": \"Login successful\", \"userUuid\": \"" + user.getUserUuid() + "\"}");
 //                            response.sendRedirect("http://localhost:3000/dashboard");
-                        })
-                        .failureHandler((request, response, exception) -> {
-                            System.out.println("OAuth2 Failure - Exception: " + exception.getMessage());
-                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                            response.setContentType("application/json");
-                            response.getWriter().write("{\"message\": \"OAuth login failed: " + exception.getMessage() + "\"}");
-                        })
-                        .permitAll()
+                                })
+                                .failureHandler((request, response, exception) -> {
+                                    System.out.println("OAuth2 Failure - Exception: " + exception.getMessage());
+                                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                                    response.setContentType("application/json");
+                                    response.getWriter().write("{\"message\": \"OAuth login failed: " + exception.getMessage() + "\"}");
+                                })
+                                .permitAll()
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) -> {

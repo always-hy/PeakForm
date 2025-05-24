@@ -4,6 +4,7 @@ import com.sustech.cs304.project.peakform.domain.User;
 import com.sustech.cs304.project.peakform.domain.UserStat;
 import com.sustech.cs304.project.peakform.domain.UserTarget;
 import com.sustech.cs304.project.peakform.dto.RegistrationRequest;
+import com.sustech.cs304.project.peakform.dto.UserFilterResponse;
 import com.sustech.cs304.project.peakform.dto.UserRequest;
 import com.sustech.cs304.project.peakform.dto.UserResponse;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -170,5 +172,21 @@ public class UserService implements UserDetailsService {
 
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.OK).body("User updated successfully.");
+    }
+
+    public List<UserFilterResponse> searchUsersByUsername(String username) {
+        List<User> users = userRepository.findByUsernameContainingIgnoreCase(username);
+
+        return users.stream().map(user -> {
+            String profilePictureUrl = firebaseStorageService
+                    .getFileUrl("user-profile/" + user.getUserUuid().toString() + ".jpg")
+                    .getBody();
+
+            return new UserFilterResponse(
+                    user.getRealUsername(),
+                    user.getEmail(),
+                    profilePictureUrl
+            );
+        }).toList();
     }
 }
