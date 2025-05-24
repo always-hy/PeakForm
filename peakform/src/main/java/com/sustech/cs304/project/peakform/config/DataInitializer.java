@@ -27,12 +27,12 @@ public class DataInitializer {
     private final UserScheduleRepository userScheduleRepository;
     private final UserTargetRepository userTargetRepository;
     private final UserStatRepository userStatRepository;
+    private final NotificationRepository notificationRepository;
+    private final SocialRepository socialRepository;
 
     private final GymSessionService gymSessionService;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final NotificationRepository notificationRepository;
-
 
     @Transactional
     @PostConstruct
@@ -46,6 +46,7 @@ public class DataInitializer {
         initUserScheduleData();
         initNotificationData();
         initAchievementData();
+        initSocialData();
     }
 
     private void initUserData() {
@@ -522,6 +523,29 @@ public class DataInitializer {
                     Achievement.builder().achievementName("Target Weight Reached").build()
             );
             achievementRepository.saveAll(achievements);
+        }
+    }
+
+    private void initSocialData() {
+        if (socialRepository.count() == 0) {
+            List<Social> socials = List.of(
+                    Social.builder()
+                            .follower(userRepository.findById(UUID.fromString("eea34b25-6d9d-4bd4-a2aa-688c9969e0a1")).get())
+                            .following(userRepository.findById(UUID.fromString("9fa2fa3e-a194-4187-95a3-5c818c433973")).get())
+                            .createdAt(LocalDateTime.now().minusDays(1))
+                            .build(),
+                    Social.builder()
+                            .follower(userRepository.findById(UUID.fromString("aded6999-0e77-4710-8b61-031db5e7d456")).get())
+                            .following(userRepository.findById(UUID.fromString("9fa2fa3e-a194-4187-95a3-5c818c433973")).get())
+                            .createdAt(LocalDateTime.now().minusDays(1))
+                            .build(),
+                    Social.builder()
+                            .follower(userRepository.findById(UUID.fromString("9fa2fa3e-a194-4187-95a3-5c818c433973")).get())
+                            .following(userRepository.findById(UUID.fromString("eea34b25-6d9d-4bd4-a2aa-688c9969e0a1")).get())
+                            .createdAt(LocalDateTime.now())
+                            .build()
+            );
+            socialRepository.saveAll(socials);
         }
     }
 }

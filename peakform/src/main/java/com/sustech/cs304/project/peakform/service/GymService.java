@@ -26,6 +26,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class GymService {
+
     private final GymRepository gymRepository;
     private final GymSessionRepository gymSessionRepository;
     private final UserRepository userRepository;

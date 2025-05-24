@@ -77,8 +77,8 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<UserFilterResponse>> searchUsers(@RequestParam("username") String username) {
-        List<UserFilterResponse> results = userService.searchUsersByUsername(username);
+    public ResponseEntity<List<BasicUserDetailResponse>> searchUsers(@RequestParam("username") String username) {
+        List<BasicUserDetailResponse> results = userService.searchUsersByUsername(username);
         return ResponseEntity.ok(results);
     }
 }
