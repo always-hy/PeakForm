@@ -5,10 +5,8 @@ import com.sustech.cs304.project.peakform.repository.UserRepository;
 import com.sustech.cs304.project.peakform.service.SocialService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -39,5 +37,11 @@ public class SocialController {
 
         List<BasicUserDetailResponse> followings = socialService.getFollowings(userUuid);
         return ResponseEntity.ok(followings);
+    }
+
+    @PostMapping("/follow")
+    @PreAuthorize("#followerUuid.toString() == authentication.principal.userUuid.toString()")
+    public ResponseEntity<String> followUser(@RequestParam UUID followerUuid, @RequestParam String followingEmail) {
+        return socialService.followUser(followerUuid, followingEmail);
     }
 }

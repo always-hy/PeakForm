@@ -1,13 +1,19 @@
 package com.sustech.cs304.project.peakform.service;
 
 import com.sustech.cs304.project.peakform.domain.Social;
+import com.sustech.cs304.project.peakform.domain.User;
 import com.sustech.cs304.project.peakform.dto.BasicUserDetailResponse;
 import com.sustech.cs304.project.peakform.repository.SocialRepository;
+import com.sustech.cs304.project.peakform.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -17,6 +23,7 @@ public class SocialService {
 
     private final SocialRepository socialRepository;
     private final FirebaseStorageService firebaseStorageService;
+    private final UserRepository userRepository;
 
     @Cacheable(value = "social", key = "#userUuid + '-followers'")
     public List<BasicUserDetailResponse> getFollowers(UUID userUuid) {
@@ -56,5 +63,35 @@ public class SocialService {
                     );
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public ResponseEntity<String> followUser(UUID followerUuid, String followingEmail) {
+        Optional<User> followerOptional = userRepository.findByUserUuid(followerUuid);
+        Optional<User> followingOptional = userRepository.findByEmail(followingEmail);
+
+        if (followerOptional.isEmpty() || followingOptional.isEmpty()) {
+            return ResponseEntity.status(404).body("User not found.");
+        }
+
+        User follower = followerOptional.get();
+        User following = followingOptional.get();
+
+        if (follower.equals(following)) {
+            return ResponseEntity.badRequest().body("You cannot follow yourself.");
+        }
+
+        if (socialRepository.existsByFollowerAndFollowing(follower, following)) {
+            return ResponseEntity.badRequest().body("You are already following this user.");
+        }
+
+        Social follow = Social.builder()
+                .follower(follower)
+                .following(following)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        socialRepository.save(follow);
+        return ResponseEntity.ok("Successfully followed the user.");
     }
 }
