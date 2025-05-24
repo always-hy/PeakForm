@@ -7,6 +7,7 @@ import com.sustech.cs304.project.peakform.repository.SocialRepository;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,11 @@ import java.util.stream.Collectors;
 public class SocialService {
 
     private final SocialRepository socialRepository;
-    private final FirebaseStorageService firebaseStorageService;
     private final UserRepository userRepository;
+
+    private final FirebaseStorageService firebaseStorageService;
+
+    private final CacheManager cacheManager;
 
     @Cacheable(value = "social", key = "#userUuid + '-followers'")
     public List<BasicUserDetailResponse> getFollowers(UUID userUuid) {
@@ -90,6 +94,12 @@ public class SocialService {
                 .following(following)
                 .createdAt(LocalDateTime.now())
                 .build();
+
+        String followerKey = follower.getUserUuid() + "-followings";
+        String followingKey = following.getUserUuid() + "-followers";
+
+        cacheManager.getCache("social").evict(followerKey);
+        cacheManager.getCache("social").evict(followingKey);
 
         socialRepository.save(follow);
         return ResponseEntity.ok("Successfully followed the user.");
