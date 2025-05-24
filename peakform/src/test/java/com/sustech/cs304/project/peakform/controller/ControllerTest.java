@@ -11,6 +11,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
@@ -18,7 +19,7 @@ import static org.hamcrest.Matchers.*;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class GymControllerTest extends AbstractTestContainerConfig {
+public class ControllerTest extends AbstractTestContainerConfig {
 
     @LocalServerPort
     private Integer port;
@@ -28,6 +29,7 @@ public class GymControllerTest extends AbstractTestContainerConfig {
         RestAssured.baseURI = "http://localhost:" + port;
     }
 
+    // GymControllerTest
     @Test
     void getGymsTest() {
         given()
@@ -104,5 +106,92 @@ public class GymControllerTest extends AbstractTestContainerConfig {
                 .get("/gyms/1000")
                 .then()
                 .statusCode(404);
+    }
+
+    // WorkoutControllerTest
+    @Test
+    void createWorkoutPlanSuccessTest() {
+        System.out.println("createWorkoutPlanSuccessTest");
+        List<String> loginResponse = LoginUtils.login("prakbunlong53@gmail.com", "1");
+
+        Map<String, Object> requestBody = Map.of(
+                "exercises", List.of(
+                        Map.of(
+                                "exerciseId", 1,
+                                "day", "MONDAY",
+                                "sets", 3,
+                                "reps", 10
+                        ),
+                        Map.of(
+                                "exerciseId", 2,
+                                "day", "WEDNESDAY",
+                                "sets", 4,
+                                "reps", 12
+                        )
+                )
+        );
+
+        given()
+                .contentType(ContentType.JSON)
+                .sessionId(loginResponse.get(1))
+                .queryParam("userUuid", loginResponse.get(0))
+                .body(requestBody)
+                .when()
+                .post("/workout-plans/create")
+                .then()
+                .statusCode(200)
+                .body(equalTo("New active workout plan created."));
+    }
+
+    @Test
+    void getWorkoutPlansTest() {
+        List<String> loginResponse = LoginUtils.login("prakbunlong53@gmail.com", "1");
+
+        given()
+                .contentType(ContentType.JSON)
+                .sessionId(loginResponse.get(1))
+                .queryParam("userUuid", loginResponse.get(0))
+                .when()
+                .get("/workout-plans")
+                .then()
+                .statusCode(200)
+                .body("$", not(empty()))
+                .body("[0].workoutId", notNullValue())
+                .body("[0].isActive", anyOf(equalTo(true), equalTo(false)))
+                .body("[0].exercises", not(empty()));
+    }
+
+    @Test
+    void activateWorkoutPlanSuccessTest() {
+        List<String> loginResponse = LoginUtils.login("prakbunlong53@gmail.com", "1");
+
+        Long workoutId = 1L;
+        
+        given()
+                .contentType(ContentType.JSON)
+                .sessionId(loginResponse.get(1))
+                .queryParam("userUuid", loginResponse.get(0))
+                .when()
+                .put("/workout-plans/" + workoutId + "/activate")
+                .then()
+                .statusCode(200)
+                .body(equalTo("Workout plan activated."));
+    }
+
+    @Test
+    void activateWorkoutPlanNotFoundTest() {
+        List<String> loginResponse = LoginUtils.login("prakbunlong53@gmail.com", "1");
+
+        Long invalidWorkoutId = 1000L;
+
+        given()
+                .contentType(ContentType.JSON)
+                .sessionId(loginResponse.get(1))
+                .queryParam("userUuid", loginResponse.get(0))
+                .when()
+                .put("/workout-plans/" + invalidWorkoutId + "/activate")
+                .then()
+                .statusCode(404)
+                .body(equalTo("Workout not found or doesn't belong to user."));
     }
 }
