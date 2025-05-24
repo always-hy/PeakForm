@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class DataConfig {
+public class DataInitializer {
 
     private final UserRepository userRepository;
     private final ExerciseRepository exerciseRepository;
