@@ -14,6 +14,7 @@ export default function ActivityCard() {
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedMetric, setSelectedMetric] = useState("weight");
 
   useEffect(() => {
     const uuid = localStorage.getItem("user_uuid");
@@ -152,15 +153,37 @@ export default function ActivityCard() {
     );
   };
 
+  const selectedConfig = chartConfigs.find(
+    (config) => config.id === selectedMetric
+  );
+
   return (
-    <div className="bg-black p-6 rounded-xl">
-      <h2 className="text-white text-2xl font-bold mb-6">
-        Activity Statistics
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {chartConfigs.map((config) => (
-          <MetricChart key={config.id} config={config} />
-        ))}
+    <div className="w-full bg-[#1C1C1C] p-6 rounded-xl">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <h2 className="text-white text-2xl font-bold">Activity Statistics</h2>
+        <div className="flex items-center gap-2">
+          <label
+            htmlFor="metric-select"
+            className="text-white text-sm font-medium"
+          >
+            Select Metric:
+          </label>
+          <select
+            id="metric-select"
+            value={selectedMetric}
+            onChange={(e) => setSelectedMetric(e.target.value)}
+            className="bg-[#1C1C1C] border border-[#05A31D] text-white rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#05A31D] focus:border-transparent"
+          >
+            {chartConfigs.map((config) => (
+              <option key={config.id} value={config.id}>
+                {config.title}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div className="w-full">
+        <MetricChart config={selectedConfig} />
       </div>
     </div>
   );

@@ -73,7 +73,7 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
     };
   }, [isOpen]);
 
-  if (!localUserData) {
+  if (!localUserData || !profile) {
     return "Loading";
   }
 
@@ -86,7 +86,7 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
             <div className="flex w-full min-h-[46px]" />
           </div>
           <div className="self-stretch my-auto w-[136px]">
-            <h2 className="text-lg font-bold text-white">Harrold Tok</h2>
+            <h2 className="text-lg font-bold text-white">{profile.username}</h2>
             <div className="flex gap-px items-start">
               <div className="flex justify-between items-center px-1 py-0.5 w-5">
                 <img
@@ -204,7 +204,7 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
             <div className="flex w-full min-h-[46px]" />
           </div>
           <div className="self-stretch my-auto w-[136px]">
-            <h2 className="text-lg font-bold text-white">Harrold Tok</h2>
+            <h2 className="text-lg font-bold text-white">{profile.username}</h2>
             <div className="flex gap-px items-start">
               <div className="flex justify-between items-center px-1 py-0.5 w-5">
                 <img

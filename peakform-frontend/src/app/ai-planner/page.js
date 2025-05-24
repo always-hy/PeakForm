@@ -1,8 +1,8 @@
 import Image from "next/image";
 
 import React from "react";
-import AIWorkoutPlanner from "@/components/AIWorkoutPlanner/MainPlanner";
+import EnhancedWorkoutPlanner from "@/components/AIWorkoutPlanner/ImprovedPlanner";
 
 export default function Page() {
-  return <AIWorkoutPlanner />;
+  return <EnhancedWorkoutPlanner />;
 }
