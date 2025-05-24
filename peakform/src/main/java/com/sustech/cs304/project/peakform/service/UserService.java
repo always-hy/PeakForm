@@ -3,8 +3,8 @@ package com.sustech.cs304.project.peakform.service;
 import com.sustech.cs304.project.peakform.domain.User;
 import com.sustech.cs304.project.peakform.domain.UserStat;
 import com.sustech.cs304.project.peakform.domain.UserTarget;
+import com.sustech.cs304.project.peakform.dto.BasicUserDetailResponse;
 import com.sustech.cs304.project.peakform.dto.RegistrationRequest;
-import com.sustech.cs304.project.peakform.dto.UserFilterResponse;
 import com.sustech.cs304.project.peakform.dto.UserRequest;
 import com.sustech.cs304.project.peakform.dto.UserResponse;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
@@ -174,7 +174,7 @@ public class UserService implements UserDetailsService {
         return ResponseEntity.status(HttpStatus.OK).body("User updated successfully.");
     }
 
-    public List<UserFilterResponse> searchUsersByUsername(String username) {
+    public List<BasicUserDetailResponse> searchUsersByUsername(String username) {
         List<User> users = userRepository.findByUsernameContainingIgnoreCase(username);
 
         return users.stream().map(user -> {
@@ -182,7 +182,7 @@ public class UserService implements UserDetailsService {
                     .getFileUrl("user-profile/" + user.getUserUuid().toString() + ".jpg")
                     .getBody();
 
-            return new UserFilterResponse(
+            return new BasicUserDetailResponse(
                     user.getRealUsername(),
                     user.getEmail(),
                     profilePictureUrl
