@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import StatCard from "./StatCard";
 import ActivityCard from "./ActivityCard";
 import ProgressCard from "./ProgressCard";
@@ -9,8 +9,13 @@ import UserStatsModal from "./UserStatsModal";
 const MainContent = ({ userData, userUuid, userTarget }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [gymBookings, setGymBookings] = useState([]);
-  // State to track if stats have been updated
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Notification states
+  const [notifications, setNotifications] = useState([]);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const notificationRef = useRef(null);
 
   // Function to open the modal
   const openModal = () => setIsModalOpen(true);
@@ -29,11 +34,105 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
     refreshData();
   };
 
+  // Function to fetch notifications
+  const fetchNotifications = async () => {
+    if (!userUuid) return;
+
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:8080/notifications?userUuid=${userUuid}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      if (response.ok) {
+        const notificationData = await response.json();
+        setNotifications(notificationData);
+      } else {
+        console.error("Failed to fetch notifications");
+      }
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to mark notification as read
+  const markNotificationAsRead = async (notificationId) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/notifications/${notificationId}/mark-read?userUuid=${userUuid}`,
+        {
+          method: "PUT",
+          credentials: "include",
+        }
+      );
+
+      if (response.ok) {
+        // Update the notification state to reflect the change
+        setNotifications((prev) =>
+          prev.map((notification) =>
+            notification.notificationId === notificationId
+              ? { ...notification, isRead: true }
+              : notification
+          )
+        );
+      } else {
+        console.error("Failed to mark notification as read");
+      }
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+  };
+
+  // Function to toggle notification panel
+  const toggleNotifications = () => {
+    if (!isNotificationOpen) {
+      fetchNotifications();
+    }
+    setIsNotificationOpen(!isNotificationOpen);
+  };
+
+  // Close notification panel when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
+        setIsNotificationOpen(false);
+      }
+    };
+
+    if (isNotificationOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isNotificationOpen]);
+
+  // Function to format date
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return (
+      date.toLocaleDateString() +
+      " " +
+      date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    );
+  };
+
+  // Count unread notifications
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
+
   // Fetch user data and gym bookings
   useEffect(() => {
     const fetchUserData = async () => {
-      // You would add code here to refresh userData and userTarget
-      // by making API calls similar to what you have in your app elsewhere
       console.log("Refreshing user data");
     };
 
@@ -43,7 +142,7 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
           `http://localhost:8080/user-schedules/records?userUuid=${userUuid}`,
           {
             method: "GET",
-            credentials: "include", // Include session cookies
+            credentials: "include",
           }
         );
 
@@ -64,14 +163,14 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
       fetchActivity();
       fetchUserData();
     }
-  }, [userUuid, refreshTrigger]); // Add refreshTrigger to dependencies
+  }, [userUuid, refreshTrigger]);
 
-  if (!userData | !userTarget) {
+  if (!userData || !userTarget) {
     return "Loading";
   }
 
   return (
-    <section class="self-stretch mt-24 min-w-60 w-[882px] max-md:max-w-full md:flex-1">
+    <section className="self-stretch mt-24 min-w-60 w-[882px] max-md:max-w-full md:flex-1">
       <header className="flex flex-wrap gap-10 justify-between items-start w-full max-md:max-w-full">
         <div className="min-w-60 w-[246px]">
           <h2 className="text-lg font-medium text-zinc-400">Good Morning</h2>
@@ -101,21 +200,97 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
           >
             Book a session
           </button>
-          <img
-            src="/notification.png"
-            className="object-contain shrink-0 self-stretch my-auto w-6 aspect-square"
-            alt="Notification"
-          />
+
+          {/* Notification Icon with dropdown */}
+          <div className="relative" ref={notificationRef}>
+            <button
+              onClick={toggleNotifications}
+              className="relative p-1 hover:bg-gray-800 rounded-full transition-colors"
+            >
+              <img
+                src="/notification.png"
+                className="object-contain shrink-0 w-6 aspect-square"
+                alt="Notification"
+              />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </button>
+
+            {/* Notification Dropdown */}
+            {isNotificationOpen && (
+              <div className="absolute right-0 top-full mt-2 w-80 bg-[#1c1c1c] border border-[#05A31D] rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+                <div className="p-4 border-b border-gray-700">
+                  <h3 className="text-white font-semibold">Notifications</h3>
+                  {unreadCount > 0 && (
+                    <p className="text-sm text-gray-400">
+                      {unreadCount} unread
+                    </p>
+                  )}
+                </div>
+
+                <div className="max-h-80 overflow-y-auto">
+                  {loading ? (
+                    <div className="p-4 text-center text-gray-400">
+                      Loading notifications...
+                    </div>
+                  ) : notifications.length === 0 ? (
+                    <div className="p-4 text-center text-gray-400">
+                      No notifications
+                    </div>
+                  ) : (
+                    notifications.map((notification) => (
+                      <div
+                        key={notification.notificationId}
+                        onClick={() =>
+                          !notification.isRead &&
+                          markNotificationAsRead(notification.notificationId)
+                        }
+                        className={`p-4 border-b border-gray-700 cursor-pointer transition-colors hover:bg-gray-800 ${
+                          notification.isRead
+                            ? "bg-[#1c1c1c] opacity-70"
+                            : "bg-[#05A31D]/10 border-l-4 border-l-[#05A31D]"
+                        }`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <p
+                              className={`text-sm ${notification.isRead ? "text-gray-400" : "text-white"}`}
+                            >
+                              {notification.message}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {formatDate(notification.createdAt)}
+                            </p>
+                          </div>
+                          {!notification.isRead && (
+                            <div className="w-2 h-2 bg-[#05A31D] rounded-full ml-2 mt-1 flex-shrink-0"></div>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {notifications.length > 0 && (
+                  <div className="p-3 border-t border-gray-700 text-center">
+                    <button
+                      onClick={() => setIsNotificationOpen(false)}
+                      className="text-sm text-[#05A31D] hover:text-green-400 transition-colors"
+                    >
+                      Close
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
       <div className="mt-8 w-full max-md:max-w-full relative">
-        {/* <button
-          onClick={openModal}
-          className="relative top-0 right-0 bg-green-500 p-4 rounded-full text-white shadow-xl"
-        >
-          Update All Stats
-        </button> */}
         <div className="w-full max-md:max-w-full">
           <div className="flex flex-wrap gap-7 items-center w-full max-md:max-w-full">
             <StatCard
@@ -172,9 +347,6 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
             <ProgressCard />
           </div>
         </div>
-        {/* <div className="mt-8">
-          <Calendar />
-        </div> */}
       </div>
 
       {/* Modal - Keep as a backup for batch updates */}
