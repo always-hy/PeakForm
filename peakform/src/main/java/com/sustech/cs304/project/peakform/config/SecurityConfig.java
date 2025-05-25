@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight requests
-                        .requestMatchers("/login", "/user/register", "/user/verify-email", "/user/search/**", "/gyms").permitAll()
+                        .requestMatchers("/login", "/user/register", "/user/verify-email", "/user/search/**", "/gyms", "/records/top").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
