@@ -4,16 +4,14 @@ import com.sustech.cs304.project.peakform.domain.User;
 import com.sustech.cs304.project.peakform.domain.UserRecord;
 import com.sustech.cs304.project.peakform.dto.TopRecordResponse;
 import com.sustech.cs304.project.peakform.dto.UserRecordResponse;
+import com.sustech.cs304.project.peakform.dto.UserRecordUpdateRequest;
 import com.sustech.cs304.project.peakform.repository.UserRecordRepository;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import com.sustech.cs304.project.peakform.service.UserRecordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -42,6 +40,14 @@ public class UserRecordController {
         }
 
         return ResponseEntity.ok(userRecordService.getUserRecord(userUuid));
+    }
+
+    @PutMapping("/update")
+    @PreAuthorize("#userUuid.toString() == authentication.principal.userUuid.toString()")
+    public ResponseEntity<String> updateUserRecord(
+            @RequestParam("userUuid") UUID userUuid,
+            @RequestBody UserRecordUpdateRequest userRecordUpdateRequest) {
+        return userRecordService.updateUserRecord(userUuid, userRecordUpdateRequest);
     }
 
     @GetMapping("/top")

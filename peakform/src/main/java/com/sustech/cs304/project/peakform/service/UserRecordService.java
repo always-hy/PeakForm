@@ -4,6 +4,7 @@ import com.sustech.cs304.project.peakform.domain.UserRecord;
 import com.sustech.cs304.project.peakform.dto.*;
 import com.sustech.cs304.project.peakform.repository.UserRecordRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -30,6 +31,29 @@ public class UserRecordService {
                 record.getSquatPr(),
                 record.getDeadliftPr()
         )).orElse(null);
+    }
+
+    public ResponseEntity<String> updateUserRecord(UUID userUuid, UserRecordUpdateRequest userRecordUpdateRequest) {
+        Optional<UserRecord> userRecordOptional = userRecordRepository.findByUser_UserUuid(userUuid);
+
+        if (userRecordOptional.isEmpty()) {
+            return ResponseEntity.status(404).body("User record not found for UUID: " + userUuid);
+        }
+
+        UserRecord userRecord = userRecordOptional.get();
+        
+        if (userRecordUpdateRequest.benchPressPr() != null) {
+            userRecord.setBenchPressPr(userRecordUpdateRequest.benchPressPr());
+        }
+        if (userRecordUpdateRequest.squatPr() != null) {
+            userRecord.setSquatPr(userRecordUpdateRequest.squatPr());
+        }
+        if (userRecordUpdateRequest.deadliftPr() != null) {
+            userRecord.setDeadliftPr(userRecordUpdateRequest.deadliftPr());
+        }
+
+        userRecordRepository.save(userRecord);
+        return ResponseEntity.ok("User record updated successfully");
     }
 
     public TopRecordResponse getTopRecords(int limit) {
