@@ -2,6 +2,7 @@ package com.sustech.cs304.project.peakform.controller;
 
 import com.sustech.cs304.project.peakform.domain.User;
 import com.sustech.cs304.project.peakform.domain.UserRecord;
+import com.sustech.cs304.project.peakform.dto.TopRecordResponse;
 import com.sustech.cs304.project.peakform.dto.UserRecordResponse;
 import com.sustech.cs304.project.peakform.repository.UserRecordRepository;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
@@ -41,5 +42,10 @@ public class UserRecordController {
         }
 
         return ResponseEntity.ok(userRecordService.getUserRecord(userUuid));
+    }
+
+    @GetMapping("/top")
+    public ResponseEntity<TopRecordResponse> getTopRecords() {
+        return ResponseEntity.ok(userRecordService.getTopRecords(5));
     }
 }
