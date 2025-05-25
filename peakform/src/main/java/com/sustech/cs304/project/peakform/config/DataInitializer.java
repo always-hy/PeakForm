@@ -20,15 +20,16 @@ import java.util.stream.Collectors;
 public class DataInitializer {
 
     private final UserRepository userRepository;
+    private final UserTargetRepository userTargetRepository;
+    private final UserStatRepository userStatRepository;
+    private final UserRecordRepository userRecordRepository;
     private final ExerciseRepository exerciseRepository;
     private final GymRepository gymRepository;
     private final GymSessionRepository gymSessionRepository;
+    private final UserScheduleRepository userScheduleRepository;
+    private final NotificationRepository notificationRepository;
     private final AchievementRepository achievementRepository;
     private final UserAchievementRepository userAchievementRepository;
-    private final UserScheduleRepository userScheduleRepository;
-    private final UserTargetRepository userTargetRepository;
-    private final UserStatRepository userStatRepository;
-    private final NotificationRepository notificationRepository;
     private final SocialRepository socialRepository;
 
     private final GymSessionService gymSessionService;
@@ -41,6 +42,7 @@ public class DataInitializer {
         initUserData();
         initUserTargetData();
         initUserStatData();
+        initUserRecordData();
         initExerciseData();
         initGymData();
         initGymSessionData();
@@ -217,6 +219,94 @@ public class DataInitializer {
                             .build()
             );
             userTargetRepository.saveAll(userTargets);
+        }
+    }
+
+    private void initUserRecordData() {
+        if (userRecordRepository.count() == 0) {
+            List<UserRecord> userRecords = new ArrayList<>();
+
+            // Toji Fushiguro (UUID: 9fa2fa3e-a194-4187-95a3-5c818c433973)
+            userRecords.add(UserRecord.builder()
+                    .user(userRepository.findById(UUID.fromString("9fa2fa3e-a194-4187-95a3-5c818c433973")).get())
+                    .workoutStreak(10)
+                    .waterIntakeStreak(10)
+                    .benchPressPr(120f)
+                    .squatPr(180f)
+                    .deadliftPr(220f)
+                    .build());
+
+            // Escanor (UUID: eea34b25-6d9d-4bd4-a2aa-688c9969e0a1)
+            userRecords.add(UserRecord.builder()
+                    .user(userRepository.findById(UUID.fromString("eea34b25-6d9d-4bd4-a2aa-688c9969e0a1")).get())
+                    .workoutStreak(5)
+                    .waterIntakeStreak(11)
+                    .benchPressPr(90f)
+                    .squatPr(110f)
+                    .deadliftPr(130f)
+                    .build());
+
+            // Guts (UUID: aded6999-0e77-4710-8b61-031db5e7d456)
+            userRecords.add(UserRecord.builder()
+                    .user(userRepository.findById(UUID.fromString("aded6999-0e77-4710-8b61-031db5e7d456")).get())
+                    .workoutStreak(12)
+                    .waterIntakeStreak(5)
+                    .benchPressPr(110f)
+                    .squatPr(140f)
+                    .deadliftPr(170f)
+                    .build());
+
+            // Yujiro Hanma (UUID: d137a897-d0c9-4a36-85f3-efbc83e96800)
+            userRecords.add(UserRecord.builder()
+                    .user(userRepository.findById(UUID.fromString("d137a897-d0c9-4a36-85f3-efbc83e96800")).get())
+                    .workoutStreak(1)
+                    .waterIntakeStreak(0)
+                    .benchPressPr(200f)
+                    .squatPr(250f)
+                    .deadliftPr(300f)
+                    .build());
+
+            // Broly (UUID: 2c2134c1-d410-429f-8ea7-da0ba62534d0)
+            userRecords.add(UserRecord.builder()
+                    .user(userRepository.findById(UUID.fromString("2c2134c1-d410-429f-8ea7-da0ba62534d0")).get())
+                    .workoutStreak(3)
+                    .waterIntakeStreak(1)
+                    .benchPressPr(180f)
+                    .squatPr(220f)
+                    .deadliftPr(260f)
+                    .build());
+
+            // Kenpachi Zaraki (UUID: 54f843ef-665c-4f9e-b4c7-414dd5495662)
+            userRecords.add(UserRecord.builder()
+                    .user(userRepository.findById(UUID.fromString("54f843ef-665c-4f9e-b4c7-414dd5495662")).get())
+                    .workoutStreak(6)
+                    .waterIntakeStreak(1)
+                    .benchPressPr(160f)
+                    .squatPr(190f)
+                    .deadliftPr(230f)
+                    .build());
+
+            // Doom Slayer (UUID: 5d2a7b34-3c9d-4f5a-9e2b-1f9a2d7e3c4f)
+            userRecords.add(UserRecord.builder()
+                    .user(userRepository.findById(UUID.fromString("5d2a7b34-3c9d-4f5a-9e2b-1f9a2d7e3c4f")).get())
+                    .workoutStreak(2)
+                    .waterIntakeStreak(8)
+                    .benchPressPr(170f)
+                    .squatPr(200f)
+                    .deadliftPr(240f)
+                    .build());
+
+            // Kratos (UUID: 7e1f3a9d-2b4c-5d7e-8f3a-1c9d4e2b5a7f)
+            userRecords.add(UserRecord.builder()
+                    .user(userRepository.findById(UUID.fromString("7e1f3a9d-2b4c-5d7e-8f3a-1c9d4e2b5a7f")).get())
+                    .workoutStreak(6)
+                    .waterIntakeStreak(9)
+                    .benchPressPr(190f)
+                    .squatPr(230f)
+                    .deadliftPr(280f)
+                    .build());
+
+            userRecordRepository.saveAll(userRecords);
         }
     }
 

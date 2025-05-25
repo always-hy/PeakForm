@@ -1,12 +1,14 @@
 package com.sustech.cs304.project.peakform.service;
 
 import com.sustech.cs304.project.peakform.domain.User;
+import com.sustech.cs304.project.peakform.domain.UserRecord;
 import com.sustech.cs304.project.peakform.domain.UserStat;
 import com.sustech.cs304.project.peakform.domain.UserTarget;
 import com.sustech.cs304.project.peakform.dto.BasicUserDetailResponse;
 import com.sustech.cs304.project.peakform.dto.RegistrationRequest;
 import com.sustech.cs304.project.peakform.dto.UserRequest;
 import com.sustech.cs304.project.peakform.dto.UserResponse;
+import com.sustech.cs304.project.peakform.repository.UserRecordRepository;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import com.sustech.cs304.project.peakform.repository.UserStatRepository;
 import com.sustech.cs304.project.peakform.repository.UserTargetRepository;
@@ -34,12 +36,16 @@ import java.util.UUID;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
-    private final RestTemplate restTemplate;
-    private final EmailService emailService;
     private final UserTargetRepository userTargetRepository;
     private final UserStatRepository userStatRepository;
+    private final UserRecordRepository userRecordRepository;
+
+    private final EmailService emailService;
     private final FirebaseStorageService firebaseStorageService;
+
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    private final RestTemplate restTemplate;
 
     // This method is used by Spring Security to load user details by email
     @Override
@@ -102,10 +108,22 @@ public class UserService implements UserDetailsService {
                 .workoutDuration(0)
                 .build();
 
+        UserRecord userRecord = UserRecord.builder()
+                .user(user)
+                .workoutStreak(0)
+                .waterIntakeStreak(0)
+                .benchPressPr(0f)
+                .squatPr(0f)
+                .deadliftPr(0f)
+                .build();
+
         userRepository.save(user);
         userTargetRepository.save(userTarget);
         userStatRepository.save(userStat);
+        userRecordRepository.save(userRecord);
+
         emailService.sendVerificationEmail(user.getEmail(), verificationToken);
+
         return ResponseEntity.status(HttpStatus.OK).body("Registration successful. Please check your email to verify your account.");
     }
 
