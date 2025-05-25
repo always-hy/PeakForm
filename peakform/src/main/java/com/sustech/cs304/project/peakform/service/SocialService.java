@@ -3,7 +3,11 @@ package com.sustech.cs304.project.peakform.service;
 import com.sustech.cs304.project.peakform.domain.Social;
 import com.sustech.cs304.project.peakform.domain.User;
 import com.sustech.cs304.project.peakform.dto.BasicUserDetailResponse;
+import com.sustech.cs304.project.peakform.dto.SocialProfileResponse;
+import com.sustech.cs304.project.peakform.dto.UserAchievementResponse;
+import com.sustech.cs304.project.peakform.dto.UserProfileResponse;
 import com.sustech.cs304.project.peakform.repository.SocialRepository;
+import com.sustech.cs304.project.peakform.repository.UserAchievementRepository;
 import com.sustech.cs304.project.peakform.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,7 @@ public class SocialService {
 
     private final SocialRepository socialRepository;
     private final UserRepository userRepository;
+    private final UserAchievementRepository userAchievementRepository;
 
     private final FirebaseStorageService firebaseStorageService;
 
@@ -35,17 +40,11 @@ public class SocialService {
 
         return followers.stream()
                 .map(Social::getFollower)
-                .map(user -> {
-                    String profilePictureUrl = firebaseStorageService
-                            .getFileUrl("user-profile/" + user.getUserUuid() + ".jpg")
-                            .getBody();
-
-                    return new BasicUserDetailResponse(
-                            user.getRealUsername(),
-                            user.getEmail(),
-                            profilePictureUrl
-                    );
-                })
+                .map(user -> new BasicUserDetailResponse(
+                        user.getRealUsername(),
+                        user.getEmail(),
+                        firebaseStorageService.getFileUrl("user-profile/" + user.getUserUuid() + ".jpg").getBody()
+                ))
                 .collect(Collectors.toList());
     }
 
@@ -55,17 +54,11 @@ public class SocialService {
 
         return followings.stream()
                 .map(Social::getFollowing)
-                .map(user -> {
-                    String profilePictureUrl = firebaseStorageService
-                            .getFileUrl("user-profile/" + user.getUserUuid() + ".jpg")
-                            .getBody();
-
-                    return new BasicUserDetailResponse(
-                            user.getRealUsername(),
-                            user.getEmail(),
-                            profilePictureUrl
-                    );
-                })
+                .map(user -> new BasicUserDetailResponse(
+                        user.getRealUsername(),
+                        user.getEmail(),
+                        firebaseStorageService.getFileUrl("user-profile/" + user.getUserUuid() + ".jpg").getBody()
+                ))
                 .collect(Collectors.toList());
     }
 
@@ -103,5 +96,35 @@ public class SocialService {
 
         socialRepository.save(follow);
         return ResponseEntity.ok("Successfully followed the user.");
+    }
+
+    public SocialProfileResponse getSocialProfile(UUID user1Uuid, String user2Email) {
+        User user1 = userRepository.findByUserUuid(user1Uuid)
+                .orElseThrow(() -> new IllegalArgumentException("Original user not found"));
+
+        User user2 = userRepository.findByEmail(user2Email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        UserProfileResponse userProfileResponse = new UserProfileResponse(
+                user2.getRealUsername(),
+                user2.getEmail(),
+                user2.getGender(),
+                user2.getAge(),
+                user2.getBio(),
+                firebaseStorageService.getFileUrl("user-profile/" + user2.getUserUuid() + ".jpg").getBody(),
+                socialRepository.countByFollower_UserUuid(user2.getUserUuid()),
+                socialRepository.countByFollowing_UserUuid(user2.getUserUuid()),
+                socialRepository.existsByFollowerAndFollowing(user1, user2)
+        );
+
+        List<UserAchievementResponse> achievements = userAchievementRepository.findByUser_UserUuid(user2.getUserUuid())
+                .stream()
+                .map(ua -> new UserAchievementResponse(
+                        ua.getAchievement().getAchievementName(),
+                        ua.getAchievedAt()
+                ))
+                .toList();
+
+        return new SocialProfileResponse(userProfileResponse, achievements);
     }
 }

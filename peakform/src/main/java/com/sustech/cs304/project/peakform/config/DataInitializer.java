@@ -24,6 +24,7 @@ public class DataInitializer {
     private final GymRepository gymRepository;
     private final GymSessionRepository gymSessionRepository;
     private final AchievementRepository achievementRepository;
+    private final UserAchievementRepository userAchievementRepository;
     private final UserScheduleRepository userScheduleRepository;
     private final UserTargetRepository userTargetRepository;
     private final UserStatRepository userStatRepository;
@@ -46,6 +47,7 @@ public class DataInitializer {
         initUserScheduleData();
         initNotificationData();
         initAchievementData();
+        initUserAchievementData();
         initSocialData();
     }
 
@@ -523,6 +525,53 @@ public class DataInitializer {
                     Achievement.builder().achievementName("Target Weight Reached").build()
             );
             achievementRepository.saveAll(achievements);
+        }
+    }
+
+    private void initUserAchievementData() {
+        if (userAchievementRepository.count() == 0) {
+            List<UserAchievement> userAchievements = new ArrayList<>();
+
+            // Toji Fushiguro
+            User toji = userRepository.findById(UUID.fromString("9fa2fa3e-a194-4187-95a3-5c818c433973")).get();
+            userAchievements.add(UserAchievement.builder()
+                    .user(toji)
+                    .achievement(achievementRepository.findById(1L).get()) // 10 Workout Completed
+                    .achievedAt(LocalDateTime.now().minusDays(2))
+                    .build());
+            userAchievements.add(UserAchievement.builder()
+                    .user(toji)
+                    .achievement(achievementRepository.findById(4L).get()) // 10 Water Intake Streak
+                    .achievedAt(LocalDateTime.now().minusDays(1))
+                    .build());
+
+            // Escanor
+            User escanor = userRepository.findById(UUID.fromString("eea34b25-6d9d-4bd4-a2aa-688c9969e0a1")).get();
+            userAchievements.add(UserAchievement.builder()
+                    .user(escanor)
+                    .achievement(achievementRepository.findById(4L).get()) // 10 Water Intake Streak
+                    .achievedAt(LocalDateTime.now().minusDays(2))
+                    .build());
+            userAchievements.add(UserAchievement.builder()
+                    .user(escanor)
+                    .achievement(achievementRepository.findById(7L).get()) // Target Weight Reached
+                    .achievedAt(LocalDateTime.now().minusDays(1))
+                    .build());
+
+            // Guts
+            User guts = userRepository.findById(UUID.fromString("aded6999-0e77-4710-8b61-031db5e7d456")).get();
+            userAchievements.add(UserAchievement.builder()
+                    .user(guts)
+                    .achievement(achievementRepository.findById(1L).get()) // 10 Workout Completed
+                    .achievedAt(LocalDateTime.now().minusDays(3))
+                    .build());
+            userAchievements.add(UserAchievement.builder()
+                    .user(guts)
+                    .achievement(achievementRepository.findById(7L).get()) // Target Weight Reached
+                    .achievedAt(LocalDateTime.now())
+                    .build());
+
+            userAchievementRepository.saveAll(userAchievements);
         }
     }
 
