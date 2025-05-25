@@ -88,14 +88,42 @@ public class SocialService {
                 .createdAt(LocalDateTime.now())
                 .build();
 
+        socialRepository.save(follow);
+
         String followerKey = follower.getUserUuid() + "-followings";
         String followingKey = following.getUserUuid() + "-followers";
 
         cacheManager.getCache("social").evict(followerKey);
         cacheManager.getCache("social").evict(followingKey);
 
-        socialRepository.save(follow);
         return ResponseEntity.ok("Successfully followed the user.");
+    }
+
+    @Transactional
+    public ResponseEntity<String> unfollowUser(UUID followerUuid, String followingEmail) {
+        Optional<User> followerOptional = userRepository.findById(followerUuid);
+        Optional<User> followingOptional = userRepository.findByEmail(followingEmail);
+
+        if (followerOptional.isEmpty() || followingOptional.isEmpty()) {
+            return ResponseEntity.status(404).body("User not found.");
+        }
+
+        User follower = followerOptional.get();
+        User following = followingOptional.get();
+
+        if (!socialRepository.existsByFollowerAndFollowing(follower, following)) {
+            return ResponseEntity.badRequest().body("Not following this user.");
+        }
+
+        socialRepository.deleteByFollowerAndFollowing(follower, following);
+
+        String followerKey = follower.getUserUuid() + "-followings";
+        String followingKey = following.getUserUuid() + "-followers";
+
+        cacheManager.getCache("social").evict(followerKey);
+        cacheManager.getCache("social").evict(followingKey);
+
+        return ResponseEntity.ok("Unfollowed successfully.");
     }
 
     public SocialProfileResponse getSocialProfile(UUID user1Uuid, String user2Email) {
