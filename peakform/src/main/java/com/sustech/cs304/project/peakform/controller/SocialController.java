@@ -51,7 +51,7 @@ public class SocialController {
     @PutMapping("/unfollow")
     @PreAuthorize("#followerUuid.toString() == authentication.principal.userUuid.toString()")
     public ResponseEntity<String> unfollowUser(@RequestParam UUID followerUuid, @RequestParam String followingEmail) {
-        return socialService.followUser(followerUuid, followingEmail);
+        return socialService.unfollowUser(followerUuid, followingEmail);
     }
 
     @PreAuthorize("#user1Uuid.toString() == authentication.principal.userUuid.toString()")
