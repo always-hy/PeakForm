@@ -13,5 +13,9 @@ public interface SocialRepository extends JpaRepository<Social, Long> {
 
     List<Social> findByFollowing_UserUuid(UUID userUuid);
 
+    Integer countByFollowing_UserUuid(UUID userUuid);
+
+    Integer countByFollower_UserUuid(UUID userUuid);
+
     Boolean existsByFollowerAndFollowing(User follower, User following);
 }
