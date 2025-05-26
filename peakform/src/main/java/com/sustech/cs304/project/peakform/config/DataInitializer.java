@@ -229,7 +229,7 @@ public class DataInitializer {
             // Toji Fushiguro (UUID: 9fa2fa3e-a194-4187-95a3-5c818c433973)
             userRecords.add(UserRecord.builder()
                     .user(userRepository.findById(UUID.fromString("9fa2fa3e-a194-4187-95a3-5c818c433973")).get())
-                    .workoutStreak(10)
+                    .workoutStreak(9)
                     .waterIntakeStreak(10)
                     .benchPressPr(120f)
                     .squatPr(180f)
@@ -624,11 +624,6 @@ public class DataInitializer {
 
             // Toji Fushiguro
             User toji = userRepository.findById(UUID.fromString("9fa2fa3e-a194-4187-95a3-5c818c433973")).get();
-            userAchievements.add(UserAchievement.builder()
-                    .user(toji)
-                    .achievement(achievementRepository.findById(1L).get()) // 10 Workout Completed
-                    .achievedAt(LocalDateTime.now().minusDays(2))
-                    .build());
             userAchievements.add(UserAchievement.builder()
                     .user(toji)
                     .achievement(achievementRepository.findById(4L).get()) // 10 Water Intake Streak
