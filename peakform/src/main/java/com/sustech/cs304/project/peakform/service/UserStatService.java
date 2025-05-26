@@ -102,18 +102,22 @@ public class UserStatService {
     @Scheduled(cron = "0 0 0 * * ?")
     public void resetStatsAtStartOfDay() {
         LocalDate today = LocalDate.now();
-        var stats = userStatRepository.findAllByDate(today);
+        List<User> users = userRepository.findAll();
 
-        for (UserStat userStat : stats) {
-            userStat.setWeight(0F);
-            userStat.setHeight(0F);
-            userStat.setWaterIntake(0F);
-            userStat.setCaloriesBurned(0);
-            userStat.setWorkoutDuration(0);
+        for (User user : users) {
+            UserStat newStat = new UserStat();
+            newStat.setUser(user);
+            newStat.setDate(today.plusDays(1));
+            newStat.setWeight(0F);
+            newStat.setHeight(0F);
+            newStat.setWaterIntake(0F);
+            newStat.setCaloriesBurned(0);
+            newStat.setWorkoutDuration(0);
+
+            userStatRepository.save(newStat);
         }
 
-        userStatRepository.saveAll(stats);
-        System.out.println("User statistics have been reset for today: " + today);
+        System.out.println("New user statistics have been reset for today: " + today);
     }
 
     @Cacheable(value = "userStatHistory", key = "#userUuid")
