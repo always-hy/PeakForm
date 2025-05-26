@@ -1,15 +1,11 @@
 package com.sustech.cs304.project.peakform.service;
 
 import com.sustech.cs304.project.peakform.config.RabbitMQConfig;
-import com.sustech.cs304.project.peakform.domain.GymSession;
-import com.sustech.cs304.project.peakform.domain.User;
-import com.sustech.cs304.project.peakform.domain.UserSchedule;
+import com.sustech.cs304.project.peakform.domain.*;
 import com.sustech.cs304.project.peakform.dto.AppointmentNotification;
 import com.sustech.cs304.project.peakform.dto.AppointmentStatsResponse;
 import com.sustech.cs304.project.peakform.dto.BookingRecordResponse;
-import com.sustech.cs304.project.peakform.repository.GymSessionRepository;
-import com.sustech.cs304.project.peakform.repository.UserRepository;
-import com.sustech.cs304.project.peakform.repository.UserScheduleRepository;
+import com.sustech.cs304.project.peakform.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cache.CacheManager;
@@ -33,6 +29,9 @@ public class UserScheduleService {
     private final UserScheduleRepository userScheduleRepository;
     private final GymSessionRepository gymSessionRepository;
     private final UserRepository userRepository;
+    private final UserRecordRepository userRecordRepository;
+    private final AchievementRepository achievementRepository;
+    private final UserAchievementRepository userAchievementRepository;
 
     private final RabbitTemplate rabbitTemplate;
     private final CacheManager cacheManager;
@@ -135,7 +134,48 @@ public class UserScheduleService {
         userSchedule.setAppointmentStatus(UserSchedule.AppointmentStatus.COMPLETED);
         userScheduleRepository.save(userSchedule);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Gym session marked as completed for user: " + userUuid + ".");
+        Optional<UserRecord> userRecordOptional = userRecordRepository.findByUser_UserUuid(userUuid);
+        boolean achievementUnlocked = false;
+        String unlockedAchievementName = null;
+
+        if (userRecordOptional.isPresent()) {
+            UserRecord userRecord = userRecordOptional.get();
+            int newStreak = userRecord.getWorkoutStreak() + 1;
+            userRecord.setWorkoutStreak(newStreak);
+            userRecordRepository.save(userRecord);
+
+            List<Integer> milestones = List.of(10, 50, 100);
+            if (milestones.contains(newStreak)) {
+                String achievementName = newStreak + " Workout Completed";
+
+                Optional<Achievement> achievementOptional = achievementRepository.findByAchievementName(achievementName);
+                if (achievementOptional.isPresent()) {
+                    Achievement achievement = achievementOptional.get();
+
+                    boolean alreadyUnlocked = userAchievementRepository.existsByUser_UserUuidAndAchievement_AchievementId(
+                            userUuid, achievement.getAchievementId());
+
+                    if (!alreadyUnlocked) {
+                        UserAchievement userAchievement = UserAchievement.builder()
+                                .user(userRecord.getUser())
+                                .achievement(achievement)
+                                .achievedAt(LocalDateTime.now())
+                                .build();
+                        userAchievementRepository.save(userAchievement);
+
+                        achievementUnlocked = true;
+                        unlockedAchievementName = achievementName;
+                    }
+                }
+            }
+        }
+
+        String responseMessage = "Gym session marked as completed for user: " + userUuid + ".";
+        if (achievementUnlocked) {
+            responseMessage += " New achievement unlocked: \"" + unlockedAchievementName + "\"!";
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
 
     @Transactional
