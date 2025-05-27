@@ -85,18 +85,18 @@ services:
     networks:
       - peakform-network
 
-  ngrok:
-    image: ngrok/ngrok:latest
-    container_name: peakform-ngrok
-    environment:
-      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
-    command: http host.docker.internal:8080 --log=stdout
-    ports:
-      - "4040:4040"
-    depends_on:
-      - backend
-    networks:
-      - peakform-network
+#  ngrok:
+#    image: ngrok/ngrok:latest
+#    container_name: peakform-ngrok
+#    environment:
+#      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+#    command: http host.docker.internal:8080 --log=stdout
+#    ports:
+#      - "4040:4040"
+#    depends_on:
+#      - backend
+#    networks:
+#      - peakform-network
 
 networks:
   peakform-network:

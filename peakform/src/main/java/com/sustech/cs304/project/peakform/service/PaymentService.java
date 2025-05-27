@@ -43,26 +43,33 @@ public class PaymentService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         // Create payment intent
-        PaymentIntent paymentIntent = PaymentIntent.create(
-                PaymentIntentCreateParams.builder()
-                        .setAmount(request.amount())
-                        .setCurrency(request.currency())
-                        .setPaymentMethod(request.paymentMethodId())
-                        .setConfirm(true)
-                        .setAutomaticPaymentMethods(
-                                PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
-                                        .setEnabled(true)
-                                        .build()
-                        )
-                        .build()
-        );
-
-        if ("succeeded".equals(paymentIntent.getStatus())) {
-            user.setSubscribed(true);
-            userRepository.save(user);
-            return paymentIntent.getId();
-        } else {
-            throw new RuntimeException("Payment failed: " + paymentIntent.getStatus());
+        try {
+            PaymentIntent paymentIntent = PaymentIntent.create(
+                    PaymentIntentCreateParams.builder()
+                            .setAmount(request.amount())
+                            .setCurrency(request.currency())
+                            .setPaymentMethod(request.paymentMethodId())
+                            .setConfirm(true)
+                            .setAutomaticPaymentMethods(
+                                    PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
+                                            .setEnabled(true)
+                                            .build()
+                            )
+                            .build()
+            );
+            if ("succeeded".equals(paymentIntent.getStatus())) {
+                user.setSubscribed(true);
+                userRepository.save(user);
+                return paymentIntent.getId();
+            } else {
+                throw new RuntimeException("Payment failed: " + paymentIntent.getStatus());
+            }
+        } catch (StripeException e) {
+            // Log detailed error
+            System.err.println("StripeException: " + e.getMessage());
+            System.err.println("Stripe Code: " + e.getCode());
+            System.err.println("Stripe Request ID: " + e.getRequestId());
+            throw new RuntimeException("Payment failed: " + e.getMessage(), e);
         }
     }
 
