@@ -83,7 +83,11 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
       <aside className="hidden md:flex flex-col items-center self-stretch my-auto bg-stone-950 min-h-[1543px] min-w-60 w-[388px]">
         <div className="flex gap-3.5 items-center py-10 max-w-full w-[284px]">
           <div className="flex overflow-hidden flex-col items-center self-stretch my-auto bg-white rounded-xl h-[46px] w-[46px]">
-            <div className="flex w-full min-h-[46px]" />
+            <img
+              src={profile.url}
+              alt="Profile"
+              className="h-[46px] w-[46px] object-cover"
+            />
           </div>
           <div className="self-stretch my-auto w-[136px]">
             <h2 className="text-lg font-bold text-white">{profile.username}</h2>
