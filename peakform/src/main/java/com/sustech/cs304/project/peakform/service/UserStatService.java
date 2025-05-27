@@ -25,6 +25,7 @@ public class UserStatService {
     private final UserRepository userRepository;
     private final UserStatRepository userStatRepository;
     private final UserTargetRepository userTargetRepository;
+    private final UserRecordRepository userRecordRepository;
     private final AchievementRepository achievementRepository;
     private final UserAchievementRepository userAchievementRepository;
 
@@ -44,6 +45,7 @@ public class UserStatService {
         }
 
         UserStat userStat = existingStatOptional.get();
+
         userStat.setWeight(request.weight());
         userStat.setHeight(request.height());
         userStat.setWaterIntake(request.waterIntake());
@@ -52,38 +54,81 @@ public class UserStatService {
 
         userStatRepository.save(userStat);
 
+        Float currentWaterIntake = userStat.getWaterIntake();
+        Float targetWaterIntake = userTargetRepository.findByUser_UserUuid(userUuid)
+                .map(UserTarget::getTargetWaterIntake)
+                .orElse(null);
+        Optional<UserRecord> userRecordOptional = userRecordRepository.findByUser_UserUuid(userUuid);
+        boolean waterAchievementUnlocked = false;
+        String unlockedWaterAchievementName = null;
+
+        if (currentWaterIntake != null && targetWaterIntake != null && userRecordOptional.isPresent()) {
+            UserRecord userRecord = userRecordOptional.get();
+
+            if (currentWaterIntake >= targetWaterIntake) {
+                int newStreak = userRecord.getWaterIntakeStreak() + 1;
+                userRecord.setWaterIntakeStreak(newStreak);
+                userRecordRepository.save(userRecord);
+
+                List<Integer> milestones = List.of(10, 50, 100);
+                if (milestones.contains(newStreak)) {
+                    String achievementName = newStreak + " Water Intake Target Reached";
+
+                    Optional<Achievement> achievementOptional = achievementRepository.findByAchievementName(achievementName);
+                    if (achievementOptional.isPresent()) {
+                        Achievement achievement = achievementOptional.get();
+                        boolean alreadyUnlocked = userAchievementRepository.existsByUser_UserUuidAndAchievement_AchievementId(
+                                userUuid, achievement.getAchievementId());
+
+                        if (!alreadyUnlocked) {
+                            UserAchievement userAchievement = UserAchievement.builder()
+                                    .user(user)
+                                    .achievement(achievement)
+                                    .achievedAt(LocalDateTime.now())
+                                    .build();
+                            userAchievementRepository.save(userAchievement);
+
+                            waterAchievementUnlocked = true;
+                            unlockedWaterAchievementName = achievementName;
+                        }
+                    }
+                }
+            }
+        }
+
         Float currentWeight = userStat.getWeight();
         Float targetWeight = userTargetRepository.findByUser_UserUuid(userUuid)
                 .map(UserTarget::getTargetWeight)
                 .orElse(null);
+        boolean weightAchievementUnlocked = false;
+        String weightAchievementName = null;
+        Optional<Achievement> weightAcheivementOptional = achievementRepository.findByAchievementName("Target Weight Reached");
 
-        boolean achievementUnlocked = false;
-        String unlockedAchievementName = null;
-        Optional<Achievement> achievementOptional = achievementRepository.findByAchievementName("Target Weight Reached");
+        if (currentWeight != null && targetWeight != null && weightAcheivementOptional.isPresent()) {
+            Achievement weightAchievement = weightAcheivementOptional.get();
+            boolean weightTargetAchieved = currentWeight.equals(targetWeight);
+            boolean alreadyUnlocked = userAchievementRepository.existsByUser_UserUuidAndAchievement_AchievementId(userUuid, weightAchievement.getAchievementId());
 
-        if (currentWeight != null && targetWeight != null && achievementOptional.isPresent()) {
-            Achievement achievement = achievementOptional.get();
-            boolean targetAchieved = currentWeight.equals(targetWeight);
-            boolean alreadyUnlocked = userAchievementRepository.existsByUser_UserUuidAndAchievement_AchievementId(userUuid, achievement.getAchievementId());
-
-            if (targetAchieved && !alreadyUnlocked) {
+            if (weightTargetAchieved && !alreadyUnlocked) {
                 UserAchievement userAchievement = UserAchievement.builder()
                         .user(user)
-                        .achievement(achievement)
+                        .achievement(weightAchievement)
                         .achievedAt(LocalDateTime.now())
                         .build();
                 userAchievementRepository.save(userAchievement);
 
-                achievementUnlocked = true;
-                unlockedAchievementName = achievement.getAchievementName();
+                weightAchievementUnlocked = true;
+                weightAchievementName = weightAchievement.getAchievementName();
             }
         }
 
         String responseMessage = "User statistics updated successfully.";
-        if (achievementUnlocked) {
-            responseMessage += " New achievement unlocked: \"" + unlockedAchievementName + "\"!";
+        if (weightAchievementUnlocked) {
+            responseMessage += " New achievement unlocked: \"" + weightAchievementName + "\"!";
         }
-
+        if (waterAchievementUnlocked) {
+            responseMessage += " New achievement unlocked: \"" + unlockedWaterAchievementName + "\"!";
+        }
         return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
 
