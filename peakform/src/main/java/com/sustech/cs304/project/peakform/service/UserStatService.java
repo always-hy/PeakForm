@@ -1,11 +1,9 @@
 package com.sustech.cs304.project.peakform.service;
 
-import com.sustech.cs304.project.peakform.domain.User;
-import com.sustech.cs304.project.peakform.domain.UserStat;
+import com.sustech.cs304.project.peakform.domain.*;
 import com.sustech.cs304.project.peakform.dto.UserStatRequest;
 import com.sustech.cs304.project.peakform.dto.UserStatResponse;
-import com.sustech.cs304.project.peakform.repository.UserRepository;
-import com.sustech.cs304.project.peakform.repository.UserStatRepository;
+import com.sustech.cs304.project.peakform.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,6 +24,9 @@ public class UserStatService {
 
     private final UserRepository userRepository;
     private final UserStatRepository userStatRepository;
+    private final UserTargetRepository userTargetRepository;
+    private final AchievementRepository achievementRepository;
+    private final UserAchievementRepository userAchievementRepository;
 
     @CacheEvict(value = "userStat", key = "#userUuid")
     public ResponseEntity<String> updateUserStat(UUID userUuid, UserStatRequest request) {
@@ -50,7 +52,39 @@ public class UserStatService {
 
         userStatRepository.save(userStat);
 
-        return ResponseEntity.status(HttpStatus.OK).body("User statistics updated successfully.");
+        Float currentWeight = userStat.getWeight();
+        Float targetWeight = userTargetRepository.findByUser_UserUuid(userUuid)
+                .map(UserTarget::getTargetWeight)
+                .orElse(null);
+
+        boolean achievementUnlocked = false;
+        String unlockedAchievementName = null;
+        Optional<Achievement> achievementOptional = achievementRepository.findByAchievementName("Target Weight Reached");
+
+        if (currentWeight != null && targetWeight != null && achievementOptional.isPresent()) {
+            Achievement achievement = achievementOptional.get();
+            boolean targetAchieved = currentWeight.equals(targetWeight);
+            boolean alreadyUnlocked = userAchievementRepository.existsByUser_UserUuidAndAchievement_AchievementId(userUuid, achievement.getAchievementId());
+
+            if (targetAchieved && !alreadyUnlocked) {
+                UserAchievement userAchievement = UserAchievement.builder()
+                        .user(user)
+                        .achievement(achievement)
+                        .achievedAt(LocalDateTime.now())
+                        .build();
+                userAchievementRepository.save(userAchievement);
+
+                achievementUnlocked = true;
+                unlockedAchievementName = achievement.getAchievementName();
+            }
+        }
+
+        String responseMessage = "User statistics updated successfully.";
+        if (achievementUnlocked) {
+            responseMessage += " New achievement unlocked: \"" + unlockedAchievementName + "\"!";
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
     }
 
     @Cacheable(value = "userStat", key = "#userUuid")

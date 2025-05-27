@@ -7,5 +7,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface UserTargetRepository extends JpaRepository<UserTarget, Long> {
+
     Optional<UserTarget> findByUser_UserUuid(UUID userUuid);
 }
