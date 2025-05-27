@@ -16,44 +16,77 @@ const ProgressCard = () => {
   const [selectedWorkoutId, setSelectedWorkoutId] = useState(null);
   const [showActiveOnly, setShowActiveOnly] = useState(true);
   const [isActivating, setIsActivating] = useState(false);
+  const [lastUpdateTime, setLastUpdateTime] = useState(Date.now());
+
+  const fetchWorkouts = async () => {
+    try {
+      const uuid = localStorage.getItem("user_uuid");
+      if (!uuid) {
+        console.error("No user UUID found");
+        return;
+      }
+
+      const response = await fetch(
+        `http://localhost:8080/workout-plans?userUuid=${uuid}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Fetched workouts:", data);
+
+      setWorkouts((prevWorkouts) => {
+        const hasChanged =
+          JSON.stringify(prevWorkouts) !== JSON.stringify(data || []);
+        if (hasChanged) {
+          setLastUpdateTime(Date.now());
+
+          if (data && data.length > 0) {
+            const activeWorkout = data.find((workout) => workout.isActive);
+            const currentSelected = data.find(
+              (w) => w.workoutId === selectedWorkoutId
+            );
+
+            if (
+              !selectedWorkoutId ||
+              (!currentSelected?.isActive && activeWorkout)
+            ) {
+              setSelectedWorkoutId(
+                activeWorkout ? activeWorkout.workoutId : data[0].workoutId
+              );
+            }
+          }
+        }
+        return data || [];
+      });
+    } catch (err) {
+      console.error("Failed to fetch workout data:", err);
+    }
+  };
 
   useEffect(() => {
-    // Fetch workout plans
-    const fetchWorkouts = async () => {
-      try {
-        const uuid = localStorage.getItem("user_uuid");
-        const response = await fetch(
-          `http://localhost:8080/workout-plans?userUuid=${uuid}`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-        const data = await response.json();
-        setWorkouts(data || []);
-        console.log("hi", data);
-        // Set default selected workout (active one first, or first available)
-        if (data && data.length > 0) {
-          const activeWorkout = data.find((workout) => workout.isActive);
-          setSelectedWorkoutId(
-            activeWorkout ? activeWorkout.workoutId : data[0].workoutId
-          );
-        }
-
-        console.log("Fetched workouts:", data);
-      } catch (err) {
-        console.error("Failed to fetch workout data:", err);
-      }
-    };
-
-    fetchWorkouts();
+    fetchWorkouts(); // Only fetch once on mount
   }, []);
 
-  // Function to activate a workout
   const activateWorkout = async (workoutId) => {
     if (!workoutId || isActivating) return;
 
     setIsActivating(true);
+
+    // Optimistically update UI
+    setWorkouts((prevWorkouts) =>
+      prevWorkouts.map((workout) => ({
+        ...workout,
+        isActive: workout.workoutId === workoutId,
+      }))
+    );
+
     try {
       const uuid = localStorage.getItem("user_uuid");
       const response = await fetch(
@@ -68,28 +101,11 @@ const ProgressCard = () => {
       );
 
       if (response.ok) {
-        // Refresh workout data to get updated active states
-        const workoutsResponse = await fetch(
-          `http://localhost:8080/workout-plans?userUuid=${uuid}`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-        const updatedWorkouts = await workoutsResponse.json();
-        setWorkouts(updatedWorkouts || []);
-
-        // Update selectedWorkoutId to the newly activated workout
-        // This ensures the UI switches to show the active workout
-        const newlyActivatedWorkout = updatedWorkouts.find(
-          (workout) => workout.workoutId === workoutId
-        );
-        if (newlyActivatedWorkout && newlyActivatedWorkout.isActive) {
-          setSelectedWorkoutId(workoutId);
-        }
-
+        await fetchWorkouts();
+        setSelectedWorkoutId(workoutId);
         console.log(`Workout ${workoutId} activated successfully`);
       } else {
+        await fetchWorkouts(); // Revert optimistic update
         const errorText = await response.text();
         console.error(
           "Failed to activate workout:",
@@ -101,6 +117,7 @@ const ProgressCard = () => {
         );
       }
     } catch (err) {
+      await fetchWorkouts(); // Revert on error
       console.error("Error activating workout:", err);
       alert(
         "Error activating workout. Please check your connection and try again."
@@ -110,17 +127,30 @@ const ProgressCard = () => {
     }
   };
 
-  // Get available workouts based on filter
+  const handleShowActiveOnlyChange = (e) => {
+    const newShowActiveOnly = e.target.checked;
+    setShowActiveOnly(newShowActiveOnly);
+
+    if (newShowActiveOnly) {
+      const activeWorkout = workouts.find((workout) => workout.isActive);
+      const currentWorkout = workouts.find(
+        (workout) => workout.workoutId === selectedWorkoutId
+      );
+
+      if (activeWorkout && (!currentWorkout || !currentWorkout.isActive)) {
+        setSelectedWorkoutId(activeWorkout.workoutId);
+      }
+    }
+  };
+
   const availableWorkouts = showActiveOnly
     ? workouts.filter((workout) => workout.isActive)
     : workouts;
 
-  // Get current selected workout
   const currentWorkout = workouts.find(
     (workout) => workout.workoutId === selectedWorkoutId
   );
 
-  // Get exercises for selected day from current workout
   const filteredExercises =
     currentWorkout?.exercises?.filter(
       (exercise) => exercise.day === selectedDay
@@ -128,16 +158,21 @@ const ProgressCard = () => {
 
   return (
     <article className="flex flex-col gap-5 p-5 rounded-xl bg-zinc-900 text-white min-w-60 w-full max-h-[500px] overflow-hidden">
-      {/* Header with title and controls */}
       <div className="flex flex-col gap-3">
         <div className="flex justify-between items-center">
-          <h3 className="text-xl font-semibold">Workout Plans</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-xl font-semibold">Workout Plans</h3>
+            <div
+              className="w-2 h-2 bg-green-400 rounded-full animate-pulse"
+              title="Live updates enabled"
+            ></div>
+          </div>
           <div className="flex items-center gap-2">
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
                 checked={showActiveOnly}
-                onChange={(e) => setShowActiveOnly(e.target.checked)}
+                onChange={handleShowActiveOnlyChange}
                 className="rounded"
               />
               Active Only
@@ -145,12 +180,12 @@ const ProgressCard = () => {
           </div>
         </div>
 
-        {/* Workout selector */}
         <div className="flex gap-2">
           <select
             value={selectedWorkoutId || ""}
             onChange={(e) => setSelectedWorkoutId(Number(e.target.value))}
             className="bg-zinc-800 text-white p-2 rounded-lg text-sm flex-1"
+            disabled={isActivating}
           >
             {availableWorkouts.length === 0 ? (
               <option value="">No workouts available</option>
@@ -168,6 +203,7 @@ const ProgressCard = () => {
             value={selectedDay}
             onChange={(e) => setSelectedDay(e.target.value)}
             className="bg-zinc-800 text-white p-2 rounded-lg text-sm"
+            disabled={isActivating}
           >
             {dayOptions.map((day) => (
               <option key={day} value={day}>
@@ -177,26 +213,31 @@ const ProgressCard = () => {
           </select>
         </div>
 
-        {/* Activate workout button */}
         {currentWorkout && !currentWorkout.isActive && (
           <button
             onClick={() => activateWorkout(currentWorkout.workoutId)}
             disabled={isActivating}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
               isActivating
                 ? "bg-gray-600 text-gray-400 cursor-not-allowed"
-                : "text-white hover:opacity-80"
+                : "text-white hover:opacity-80 transform hover:scale-[1.02]"
             }`}
             style={{
               backgroundColor: isActivating ? undefined : "#05A31D",
             }}
           >
-            {isActivating ? "Activating..." : "Set as Active Workout"}
+            {isActivating ? (
+              <span className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Activating...
+              </span>
+            ) : (
+              "Set as Active Workout"
+            )}
           </button>
         )}
       </div>
 
-      {/* Exercises display */}
       <div className="overflow-y-auto pr-2 custom-scrollbar">
         {!currentWorkout ? (
           <p className="text-sm text-gray-400">No workout selected.</p>
@@ -209,8 +250,10 @@ const ProgressCard = () => {
             {filteredExercises.map((exercise, index) => (
               <div
                 key={`${exercise.exerciseId}-${index}`}
-                className={`p-4 rounded-xl ${
-                  currentWorkout.isActive ? "bg-green-600" : "bg-gray-600"
+                className={`p-4 rounded-xl transition-all duration-300 ${
+                  currentWorkout.isActive
+                    ? "bg-green-600 shadow-lg shadow-green-600/20"
+                    : "bg-gray-600"
                 }`}
               >
                 <h4 className="font-semibold text-lg">
@@ -232,12 +275,22 @@ const ProgressCard = () => {
         )}
       </div>
 
-      {/* Workout info footer */}
       {currentWorkout && (
-        <div className="text-xs text-gray-400 border-t border-gray-700 pt-2">
-          Workout #{currentWorkout.workoutId} -{" "}
-          {currentWorkout.isActive ? "Active" : "Inactive"} (
-          {currentWorkout.exercises?.length || 0} total exercises)
+        <div className="text-xs text-gray-400 border-t border-gray-700 pt-2 flex justify-between items-center">
+          <span>
+            Workout #{currentWorkout.workoutId} -{" "}
+            <span
+              className={
+                currentWorkout.isActive ? "text-green-400 font-medium" : ""
+              }
+            >
+              {currentWorkout.isActive ? "Active" : "Inactive"}
+            </span>{" "}
+            ({currentWorkout.exercises?.length || 0} total exercises)
+          </span>
+          <span className="text-xs opacity-60">
+            Updated {new Date(lastUpdateTime).toLocaleTimeString()}
+          </span>
         </div>
       )}
     </article>
