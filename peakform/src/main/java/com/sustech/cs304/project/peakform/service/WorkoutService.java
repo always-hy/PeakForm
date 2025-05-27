@@ -36,7 +36,6 @@ public class WorkoutService {
 
     private final EmailService emailService;
 
-    @CacheEvict(value = "userTarget", key = "#userUuid")
     public ResponseEntity<String> createWorkoutPlan(UUID userUuid, WorkoutPlanRequest request) {
         Optional<User> userOptional = userRepository.findById(userUuid);
         if (userOptional.isEmpty()) {
@@ -78,7 +77,6 @@ public class WorkoutService {
         return ResponseEntity.status(HttpStatus.OK).body("New active workout plan created.");
     }
 
-    @Cacheable(value = "workoutPlan", key = "#userUuid")
     public List<WorkoutPlanResponse> getWorkoutPlan(UUID userUuid) {
         Optional<User> userOptional = userRepository.findById(userUuid);
         if (userOptional.isEmpty()) {
@@ -95,7 +93,6 @@ public class WorkoutService {
         return workoutPlanResponses;
     }
 
-    @CacheEvict(value = "userTarget", key = "#userUuid")
     public ResponseEntity<String> activateWorkout(Long workoutId, UUID userUuid) {
         Optional<Workout> workoutOptional = workoutRepository.findById(workoutId);
 
