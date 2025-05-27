@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import GoalCard from "./GoalCard";
 import AchievementCard from "./AchievementCard";
 import ProfileStatCard from "./ProfileStatCard";
@@ -10,6 +10,37 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [localUserData, setLocalUserData] = useState(userData);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
+  const [record, setRecord] = useState(null);
+
+  useEffect(() => {
+    const fetchRecords = async () => {
+      try {
+        const userUuid = localStorage.getItem("user_uuid");
+        if (!userUuid) return;
+
+        const response = await fetch(
+          `http://localhost:8080/records?userUuid=${userUuid}`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setRecord(data);
+        } else {
+          console.error("Failed to fetch records");
+        }
+      } catch (error) {
+        console.error("Error fetching records:", error);
+      }
+    };
+
+    fetchRecords();
+  }, []);
 
   const openModal = () => setIsModalOpen(true);
 
@@ -19,6 +50,72 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
   // Function to trigger refresh of data
   const refreshData = () => {
     setRefreshTrigger((prev) => prev + 1);
+  };
+
+  // Function to handle profile picture upload
+  const handleProfilePictureUpload = async (file) => {
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.includes("jpeg") && !file.type.includes("jpg")) {
+      alert("Please select a JPEG image file.");
+      return;
+    }
+
+    // Validate file size (optional - e.g., max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      alert("File size must be less than 5MB.");
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("userId", localStorage.getItem("user_uuid"));
+
+      const response = await fetch(
+        "http://localhost:8080/user/upload-profile",
+        {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        }
+      );
+
+      if (response.ok) {
+        // Refresh user data to get the new profile picture URL
+        refreshData();
+      } else {
+        const errorData = await response.text();
+        console.error("Upload failed:", errorData);
+        alert("Failed to upload profile picture. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error uploading profile picture:", error);
+      alert("An error occurred while uploading. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // Function to trigger file input click
+  const handleProfilePictureClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  // Function to handle file input change
+  const handleFileInputChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      handleProfilePictureUpload(file);
+    }
+    // Reset the input value so the same file can be selected again
+    event.target.value = "";
   };
 
   // Effect to fetch updated user data when needed
@@ -77,18 +174,42 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
     return "Loading";
   }
 
+  // Profile picture component with upload functionality
+  const ProfilePicture = ({ className, onClick }) => (
+    <div
+      className={`flex overflow-hidden flex-col items-center self-stretch my-auto bg-white rounded-xl h-[46px] w-[46px] relative cursor-pointer group ${className}`}
+      onClick={onClick}
+      title="Click to change profile picture"
+    >
+      <img
+        src={profile.url}
+        alt="Profile"
+        className="h-[46px] w-[46px] object-cover"
+      />
+
+      {isUploading && (
+        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-xl">
+          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <>
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/jpg"
+        onChange={handleFileInputChange}
+        style={{ display: "none" }}
+      />
+
       {/* Desktop version - always visible */}
       <aside className="hidden md:flex flex-col items-center self-stretch my-auto bg-stone-950 min-h-[1543px] min-w-60 w-[388px]">
         <div className="flex gap-3.5 items-center py-10 max-w-full w-[284px]">
-          <div className="flex overflow-hidden flex-col items-center self-stretch my-auto bg-white rounded-xl h-[46px] w-[46px]">
-            <img
-              src={profile.url}
-              alt="Profile"
-              className="h-[46px] w-[46px] object-cover"
-            />
-          </div>
+          <ProfilePicture onClick={handleProfilePictureClick} />
           <div className="self-stretch my-auto w-[136px]">
             <h2 className="text-lg font-bold text-white">{profile.username}</h2>
             <div className="flex gap-px items-start">
@@ -159,14 +280,14 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
           goals. Keep going!
         </div>
 
-        <h3 className="self-stretch mt-7 text-lg font-semibold text-white">
-          Achievements
-        </h3>
-
-        {/* Repeat the same achievement card 3 times */}
-        {[1, 2, 3].map((index) => (
-          <AchievementCard key={index} />
-        ))}
+        <h3 className="text-lg font-semibold text-white mb-4">Achievements</h3>
+        {record && (
+          <div className="flex flex-wrap gap-4">
+            <AchievementCard title="Squat" value={record.squatPr} />
+            <AchievementCard title="BenchPress" value={record.benchPressPr} />
+            <AchievementCard title="Deadlift" value={record.deadliftPr} />
+          </div>
+        )}
       </aside>
 
       {/* Mobile version - slides in */}
@@ -204,9 +325,7 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
         </div>
 
         <div className="flex gap-3.5 items-center py-6 max-w-full w-[284px]">
-          <div className="flex overflow-hidden flex-col items-center self-stretch my-auto bg-white rounded-xl h-[46px] w-[46px]">
-            <div className="flex w-full min-h-[46px]" />
-          </div>
+          <ProfilePicture onClick={handleProfilePictureClick} />
           <div className="self-stretch my-auto w-[136px]">
             <h2 className="text-lg font-bold text-white">{profile.username}</h2>
             <div className="flex gap-px items-start">
@@ -263,25 +382,14 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
           <GoalCard key={`mobile-goal-${index}`} />
         ))}
 
-        <h3 className="mt-7 text-lg font-semibold text-white">Goal Progress</h3>
-
-        <div className="px-14 py-5 mt-7 text-sm leading-5 text-center text-white rounded-xl bg-zinc-900 max-md:px-5">
-          You have achieved{" "}
-          <span style={{ color: "rgba(10,222,30,1)" }}>80%</span> of your
-          <br />
-          goals. Keep going!
-        </div>
-
-        <h3 className="self-stretch mt-7 text-lg font-semibold text-white pb-4">
-          Achievements
-        </h3>
-
-        {/* Repeat the same achievement card 3 times */}
-        <div className="w-full flex flex-col items-center pb-20">
-          {[1, 2, 3].map((index) => (
-            <AchievementCard key={`mobile-achievement-${index}`} />
-          ))}
-        </div>
+        <h3 className="text-lg font-semibold text-white mb-4">Achievements</h3>
+        {record && (
+          <div className="flex flex-wrap gap-4">
+            <AchievementCard title="Squat" value={record.squatPr} />
+            <AchievementCard title="BenchPress" value={record.benchPressPr} />
+            <AchievementCard title="Deadlift" value={record.deadliftPr} />
+          </div>
+        )}
       </aside>
 
       {/* Backdrop overlay for mobile */}

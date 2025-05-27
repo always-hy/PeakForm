@@ -1,24 +1,26 @@
 import React from "react";
+import { Dumbbell, ArmMuscle, Weight } from "lucide-react";
 
-const AchievementCard = () => {
+const icons = {
+  Squat: <Dumbbell className="text-[#05A31D] w-6 h-6" />,
+  BenchPress: <ArmMuscle className="text-[#05A31D] w-6 h-6" />,
+  Deadlift: <Weight className="text-[#05A31D] w-6 h-6" />,
+};
+
+const AchievementCard = ({ title, value }) => {
   return (
-    <article className="flex overflow-hidden relative flex-col items-start mt-7 max-w-full text-base whitespace-nowrap rounded-xl w-[312px] mb-2">
-      <div className="flex z-0 self-stretch w-full bg-zinc-900 min-h-[170px]" />
-      <h4 className="absolute top-5 z-0 h-6 font-bold text-white left-[45px] w-[62px]">
-        Deadlift
-      </h4>
-      <img
-        src="/dumbell 2.png"
-        className="object-contain absolute left-3.5 top-5 z-0 w-6 h-6 aspect-square"
-        alt="Deadlift icon"
-      />
-      <p className="absolute bottom-16 z-0 h-8 text-6xl font-semibold leading-none text-white left-[102px] w-[106px] max-md:text-4xl">
-        210
-      </p>
-      <span className="absolute z-0 h-6 bottom-[49px] right-[83px] text-neutral-50 w-[21px]">
-        KG
-      </span>
-    </article>
+    <div className="flex items-center gap-4 p-4 rounded-xl bg-zinc-900 text-white w-full shadow border border-[#05A31D]/40">
+      <div className="flex items-center justify-center w-12 h-12 bg-[#05A31D]/10 rounded-full">
+        {icons[title]}
+      </div>
+      <div className="flex flex-col">
+        <span className="text-sm text-gray-300">{title}</span>
+        <span className="text-2xl font-bold">
+          {value}{" "}
+          <span className="text-base text-gray-400 font-medium">KG</span>
+        </span>
+      </div>
+    </div>
   );
 };
 

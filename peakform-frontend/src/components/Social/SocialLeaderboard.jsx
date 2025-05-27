@@ -19,8 +19,28 @@ const API_BASE_URL = "http://localhost:8080";
 // Real API functions
 const api = {
   searchUsers: async (username) => {
-    console.warn("Search users endpoint not implemented in backend");
-    return [];
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/user/search?username=${encodeURIComponent(username)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Include cookies if needed for auth
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data; // assuming the backend returns an array of user objects
+    } catch (error) {
+      console.error("Error searching users:", error);
+      return [];
+    }
   },
 
   getFollowers: async (userUuid) => {
@@ -173,10 +193,10 @@ const api = {
       // Normalize data to match frontend expectations
       const normalizeUsers = (users, prField) =>
         users.map((user) => ({
-          uuid: user.username, // assuming this is a UUID
+          uuid: user.username,
           username: user.username,
           email: user.email,
-          profilePicture: user.profilePictureUrl,
+          profilePicture: user.profilePicture,
           pr: user[prField],
         }));
 
@@ -217,7 +237,7 @@ const SearchBar = ({ onSearch, placeholder = "Search users..." }) => {
     const value = e.target.value;
     setSearchTerm(value);
     // Auto-search as user types
-    if (value.length > 2 || value.length === 0) {
+    if (value.length === 0) {
       onSearch(value);
     }
   };
@@ -304,7 +324,7 @@ const ProfileDetails = ({ profile, onFollowToggle, followLoading }) => {
     <div className="bg-[#1C1C1C] border border-[#05A31D] rounded-lg p-6">
       <div className="flex flex-col md:flex-row items-start space-y-4 md:space-y-0 md:space-x-6">
         <img
-          src={profile.profilePicture || "/api/placeholder/100/100"}
+          src={profile.profilePictureUrl || "/api/placeholder/100/100"}
           alt={profile.username}
           className="w-24 h-24 rounded-full border-4 border-[#05A31D]"
         />
@@ -516,13 +536,10 @@ const SocialLeaderboardApp = () => {
     setFollowLoading(true);
     try {
       if (profile.isFollowing) {
-        await api.unfollowUser(
-          localStorage.getItem("user_uuid"),
-          profile.email
-        );
+        await api.unfollowUser(localStorage.getItem("user_uuid"), selectedUser);
         setProfileData((prev) => ({ ...prev, isFollowing: false }));
       } else {
-        await api.followUser(localStorage.getItem("user_uuid"), profile.email);
+        await api.followUser(localStorage.getItem("user_uuid"), selectedUser);
         setProfileData((prev) => ({ ...prev, isFollowing: true }));
       }
     } catch (error) {
@@ -537,12 +554,12 @@ const SocialLeaderboardApp = () => {
     setProfileError(null);
 
     try {
-      // You might need to adjust this logic based on how you determine the email from username
-      const targetEmail = email; // This is a placeholder - adjust as needed
+      const targetEmail = email;
       const profile = await api.getUserProfile(
         localStorage.getItem("user_uuid"),
         targetEmail
       );
+      console.log("hi", profile);
       setProfileData(profile);
       setSelectedUser(email);
       setCurrentPage("profile");
@@ -684,7 +701,7 @@ const SocialLeaderboardApp = () => {
       ) : profileData ? (
         <>
           <ProfileDetails
-            profile={profileData}
+            profile={profileData.userProfile}
             onFollowToggle={handleProfileFollowToggle}
             followLoading={followLoading}
           />
