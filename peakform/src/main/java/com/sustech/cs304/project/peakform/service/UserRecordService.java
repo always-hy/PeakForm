@@ -41,7 +41,7 @@ public class UserRecordService {
         }
 
         UserRecord userRecord = userRecordOptional.get();
-        
+
         if (userRecordUpdateRequest.benchPressPr() != null) {
             userRecord.setBenchPressPr(userRecordUpdateRequest.benchPressPr());
         }
@@ -65,7 +65,7 @@ public class UserRecordService {
                 .limit(limit)
                 .map(record -> new TopBenchPressRecordResponse(
                         record.getUser().getUserUuid().toString(),
-                        record.getUser().getUsername(),
+                        record.getUser().getRealUsername(),
                         firebaseStorageService.getFileUrl("user-profile/" + record.getUser().getUserUuid() + ".jpg").getBody(),
                         record.getBenchPressPr()
                 ))
@@ -77,7 +77,7 @@ public class UserRecordService {
                 .limit(limit)
                 .map(record -> new TopSquatRecordResponse(
                         record.getUser().getUserUuid().toString(),
-                        record.getUser().getUsername(),
+                        record.getUser().getRealUsername(),
                         firebaseStorageService.getFileUrl("user-profile/" + record.getUser().getUserUuid() + ".jpg").getBody(),
                         record.getSquatPr()
                 ))
@@ -89,7 +89,7 @@ public class UserRecordService {
                 .limit(limit)
                 .map(record -> new TopDeadliftRecordResponse(
                         record.getUser().getUserUuid().toString(),
-                        record.getUser().getUsername(),
+                        record.getUser().getRealUsername(),
                         firebaseStorageService.getFileUrl("user-profile/" + record.getUser().getUserUuid() + ".jpg").getBody(),
                         record.getDeadliftPr()
                 ))
