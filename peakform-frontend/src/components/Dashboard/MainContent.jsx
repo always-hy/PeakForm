@@ -162,6 +162,7 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
     if (userUuid) {
       fetchActivity();
       fetchUserData();
+      fetchNotifications();
     }
   }, [userUuid, refreshTrigger]);
 
