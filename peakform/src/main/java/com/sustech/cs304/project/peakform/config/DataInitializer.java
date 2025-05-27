@@ -230,7 +230,7 @@ public class DataInitializer {
             userRecords.add(UserRecord.builder()
                     .user(userRepository.findById(UUID.fromString("9fa2fa3e-a194-4187-95a3-5c818c433973")).get())
                     .workoutStreak(9)
-                    .waterIntakeStreak(10)
+                    .waterIntakeStreak(9)
                     .benchPressPr(120f)
                     .squatPr(180f)
                     .deadliftPr(220f)
@@ -609,9 +609,9 @@ public class DataInitializer {
                     Achievement.builder().achievementName("10 Workout Completed").build(),
                     Achievement.builder().achievementName("50 Workout Completed").build(),
                     Achievement.builder().achievementName("100 Workout Completed").build(),
-                    Achievement.builder().achievementName("10 Water Intake Streak").build(),
-                    Achievement.builder().achievementName("50 Water Intake Streak").build(),
-                    Achievement.builder().achievementName("100 Water Intake Streak").build(),
+                    Achievement.builder().achievementName("10 Water Intake Target Reached").build(),
+                    Achievement.builder().achievementName("50 Water Intake Target Reached").build(),
+                    Achievement.builder().achievementName("100 Water Intake Target Reached").build(),
                     Achievement.builder().achievementName("Target Weight Reached").build()
             );
             achievementRepository.saveAll(achievements);
@@ -624,11 +624,6 @@ public class DataInitializer {
 
             // Toji Fushiguro
             User toji = userRepository.findById(UUID.fromString("9fa2fa3e-a194-4187-95a3-5c818c433973")).get();
-            userAchievements.add(UserAchievement.builder()
-                    .user(toji)
-                    .achievement(achievementRepository.findById(4L).get()) // 10 Water Intake Streak
-                    .achievedAt(LocalDateTime.now().minusDays(1))
-                    .build());
 
             // Escanor
             User escanor = userRepository.findById(UUID.fromString("eea34b25-6d9d-4bd4-a2aa-688c9969e0a1")).get();
