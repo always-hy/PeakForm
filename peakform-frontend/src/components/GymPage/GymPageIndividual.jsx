@@ -10,6 +10,7 @@ import FeaturedPhotos from "./FeaturedPhotos";
 import BookingSection from "./BookingSection";
 import RelatedGyms from "./RelatedGyms";
 import Footer from "./Footer";
+import { API_URL } from "@/config";
 
 function GymPageIndividual() {
   const { gym_id } = useParams(); // Correctly match the dynamic segment
@@ -23,7 +24,7 @@ function GymPageIndividual() {
         const uuid = localStorage.getItem("user_uuid");
 
         const response = await fetch(
-          `${process.env.REACT_APP_URL}/gyms/${gym_id}?userUuid=${uuid}`,
+          `${API_URL}/gyms/${gym_id}?userUuid=${uuid}`,
           {
             method: "GET",
             credentials: "include",
