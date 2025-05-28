@@ -4,6 +4,7 @@ import ActivityCard from "./ActivityCard";
 import ProgressCard from "./ProgressCard";
 import CaloriesBurnedGraph from "./d3Graphs/CaloriesBurnedGraph";
 import UserStatsModal from "./UserStatsModal";
+import { API_URL } from "@/config";
 
 const MainContent = ({ userData, userUuid, userTarget }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,7 +41,7 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_URL}/notifications?userUuid=${userUuid}`,
+        `${API_URL}/notifications?userUuid=${userUuid}`,
         {
           method: "GET",
           credentials: "include",
@@ -64,7 +65,7 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
   const markNotificationAsRead = async (notificationId) => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_URL}/notifications/${notificationId}/mark-read?userUuid=${userUuid}`,
+        `${API_URL}/notifications/${notificationId}/mark-read?userUuid=${userUuid}`,
         {
           method: "PUT",
           credentials: "include",
@@ -138,7 +139,7 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
     const fetchActivity = async () => {
       try {
         const statsResponse = await fetch(
-          `${process.env.REACT_APP_URL}/user-schedules/records?userUuid=${userUuid}`,
+          `${API_URL}/user-schedules/records?userUuid=${userUuid}`,
           {
             method: "GET",
             credentials: "include",
@@ -187,7 +188,7 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
             onClick={async () => {
               try {
                 const response = await fetch(
-                  `${process.env.REACT_APP_URL}/logout`,
+                  `${API_URL}/logout`,
                   {
                     method: "POST",
                     credentials: "include",
