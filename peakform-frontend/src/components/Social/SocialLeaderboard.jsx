@@ -216,13 +216,6 @@ const api = {
   },
 };
 
-// Current user context - You should get this from your authentication system
-const currentUser = {
-  uuid: "9fa2fa3e-a194-4187-95a3-5c818c433973", // Using the UUID from your API examples
-  username: "current_user",
-  email: "current@example.com",
-};
-
 // Reusable Components
 const SearchBar = ({ onSearch, placeholder = "Search users..." }) => {
   const [searchTerm, setSearchTerm] = useState("");

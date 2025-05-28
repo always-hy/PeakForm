@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import StatCard from "./StatCard";
 import ActivityCard from "./ActivityCard";
 import ProgressCard from "./ProgressCard";
-import Calendar from "./Calendar";
 import CaloriesBurnedGraph from "./d3Graphs/CaloriesBurnedGraph";
 import UserStatsModal from "./UserStatsModal";
 
@@ -199,13 +198,6 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
             className="gap-2 self-stretch px-3 py-2 my-auto text-base font-semibold text-white whitespace-nowrap bg-green-500 rounded-md"
           >
             Logout
-          </button>
-
-          <button
-            onClick={() => (window.location.href = "http://localhost:3000/gym")}
-            className="gap-2 self-stretch px-3 py-2 my-auto text-base font-semibold text-white whitespace-nowrap bg-green-500 rounded-md"
-          >
-            Book a session
           </button>
 
           {/* Notification Icon with dropdown */}

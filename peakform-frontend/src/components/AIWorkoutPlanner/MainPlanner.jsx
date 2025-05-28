@@ -15,7 +15,7 @@ export default function Home() {
 
     try {
       const dataWithUuid = {
-        userUuid: "9fa2fa3e-a194-4187-95a3-5c818c433973",
+        userUuid: localStorage.getItem("user_uuid"),
         ...formData,
       };
 

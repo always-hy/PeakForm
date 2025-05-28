@@ -1,11 +1,18 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import GoalCard from "./GoalCard";
+import AchievementBadges from "./GoalCard";
 import AchievementCard from "./AchievementCard";
 import ProfileStatCard from "./ProfileStatCard";
 import UserStatsModal from "./UserStatsModal";
 
-const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
+const UserProfile = ({
+  isOpen,
+  toggleOpen,
+  userData,
+  userUuid,
+  profile,
+  userTarget,
+}) => {
   // Function to open the modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -13,6 +20,15 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef(null);
   const [record, setRecord] = useState(null);
+
+  // Achievement popup states
+  const [showAchievementPopup, setShowAchievementPopup] = useState(false);
+  const [achievementData, setAchievementData] = useState(null);
+
+  // Achievement image mapping
+  const achievementImages = {
+    "Target Weight Reached": "/Target_Weight_Reached.png",
+  };
 
   useEffect(() => {
     const fetchRecords = async () => {
@@ -47,9 +63,40 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
   // Function to close the modal
   const closeModal = () => setIsModalOpen(false);
 
-  // Function to trigger refresh of data
-  const refreshData = () => {
+  // Function to show achievement popup
+  const showAchievement = (achievementName) => {
+    setAchievementData({
+      name: achievementName,
+      image: achievementImages[achievementName],
+    });
+    setShowAchievementPopup(true);
+  };
+
+  // Function to close achievement popup
+  const closeAchievementPopup = () => {
+    setShowAchievementPopup(false);
+    setAchievementData(null);
+  };
+
+  // Function to check if target weight is reached
+  const checkTargetWeightAchievement = (currentWeight) => {
+    if (
+      userTarget &&
+      userTarget.targetWeight &&
+      currentWeight === userTarget.targetWeight
+    ) {
+      showAchievement("Target Weight Reached");
+    }
+  };
+
+  // Enhanced refresh function that also checks for achievements
+  const refreshData = (updatedWeight) => {
     setRefreshTrigger((prev) => prev + 1);
+
+    // Check for target weight achievement if weight was updated
+    if (updatedWeight !== undefined) {
+      checkTargetWeightAchievement(updatedWeight);
+    }
   };
 
   // Function to handle profile picture upload
@@ -153,8 +200,15 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
   const handleModalSubmit = (updatedValues) => {
     // Here you could call the API to update the stats with the updated values
     console.log(updatedValues);
-    refreshData();
+
+    // Check if weight was updated and if it matches target
+    if (updatedValues.weight !== undefined) {
+      refreshData(updatedValues.weight);
+    } else {
+      refreshData();
+    }
   };
+
   // Prevent scrolling when mobile menu is open on mobile only
   useEffect(() => {
     const isMobile = window.innerWidth < 768; // md breakpoint
@@ -207,7 +261,7 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
       />
 
       {/* Desktop version - always visible */}
-      <aside className="hidden md:flex flex-col items-center self-stretch my-auto bg-stone-950 min-h-[1543px] min-w-60 w-[388px]">
+      <aside className="hidden md:flex flex-col items-center bg-stone-950 w-[388px] min-w-60 min-h-screen">
         <div className="flex gap-3.5 items-center py-10 max-w-full w-[284px]">
           <ProfilePicture onClick={handleProfilePictureClick} />
           <div className="self-stretch my-auto w-[136px]">
@@ -238,6 +292,10 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
               userUuid={userUuid}
               onUpdate={refreshData}
               allStats={localUserData}
+              userTarget={userTarget}
+              onTargetWeightReached={() =>
+                showAchievement("Target Weight Reached")
+              }
             />
 
             <ProfileStatCard
@@ -266,19 +324,7 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
 
         <h3 className="mt-7 text-lg font-semibold text-white">Your Goals</h3>
 
-        {/* Repeat the same goal card 3 times */}
-        {[1, 2, 3].map((index) => (
-          <GoalCard key={index} />
-        ))}
-
-        <h3 className="mt-7 text-lg font-semibold text-white">Goal Progress</h3>
-
-        <div className="px-14 py-5 mt-7 text-sm leading-5 text-center text-white rounded-xl bg-zinc-900 max-md:px-5">
-          You have achieved{" "}
-          <span style={{ color: "rgba(10,222,30,1)" }}>80%</span> of your
-          <br />
-          goals. Keep going!
-        </div>
+        <AchievementBadges />
 
         <h3 className="text-lg font-semibold text-white mb-4">Achievements</h3>
         {record && (
@@ -352,6 +398,10 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
             userUuid={userUuid}
             onUpdate={refreshData}
             allStats={userData}
+            userTarget={userTarget}
+            onTargetWeightReached={() =>
+              showAchievement("Target Weight Reached")
+            }
           />
 
           <ProfileStatCard
@@ -377,11 +427,7 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
 
         <h3 className="mt-7 text-lg font-semibold text-white">Your Goals</h3>
 
-        {/* Repeat the same goal card 3 times */}
-        {[1, 2, 3].map((index) => (
-          <GoalCard key={`mobile-goal-${index}`} />
-        ))}
-
+        <AchievementBadges />
         <h3 className="text-lg font-semibold text-white mb-4">Achievements</h3>
         {record && (
           <div className="flex flex-wrap gap-4">
@@ -399,6 +445,63 @@ const UserProfile = ({ isOpen, toggleOpen, userData, userUuid, profile }) => {
           onClick={toggleOpen}
           aria-hidden="true"
         />
+      )}
+
+      {/* Target Weight Achievement Popup */}
+      {showAchievementPopup && achievementData && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="bg-zinc-900 rounded-2xl p-8 max-w-sm w-full mx-4 text-center border-2 border-green-500 shadow-2xl animate-pulse">
+            {/* Celebration Icons */}
+            <div className="text-4xl mb-4">🎉🎯🏆</div>
+
+            {/* Achievement Badge */}
+            <div className="mb-6">
+              <img
+                src={achievementData.image}
+                alt={achievementData.name}
+                className="w-24 h-24 mx-auto object-contain mb-4 animate-bounce"
+              />
+            </div>
+
+            {/* Achievement Text */}
+            <h2 className="text-2xl font-bold text-white mb-2">
+              🎊 Target Weight Reached! 🎊
+            </h2>
+            <p className="text-green-400 text-lg font-semibold mb-6">
+              {achievementData.name}
+            </p>
+
+            <p className="text-gray-300 text-sm mb-6">
+              Congratulations! You've successfully reached your target weight!
+              This is a huge milestone in your fitness journey. Keep up the
+              amazing work! 💪
+            </p>
+
+            {/* Close Button */}
+            <button
+              onClick={closeAchievementPopup}
+              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 w-full"
+            >
+              Amazing! 🎯
+            </button>
+          </div>
+
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 text-yellow-400 text-2xl animate-ping">
+              ⭐
+            </div>
+            <div className="absolute top-1/3 right-1/4 text-green-400 text-3xl animate-pulse">
+              🌟
+            </div>
+            <div className="absolute bottom-1/3 left-1/3 text-blue-400 text-2xl animate-bounce">
+              ✨
+            </div>
+            <div className="absolute bottom-1/4 right-1/3 text-purple-400 text-3xl animate-ping">
+              🎯
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Modal */}
