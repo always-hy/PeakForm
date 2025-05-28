@@ -28,7 +28,7 @@ const TimeSlotSelector = ({ selectedSlot, onSelectSlot, sessions }) => {
 };
 
 // Booking Section Component
-const BookingSection = ({ gymSessions, userUuid }) => {
+const BookingSection = ({ gymSessions, gymId }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [bookingStatus, setBookingStatus] = useState(""); // To show success or error message
@@ -81,7 +81,7 @@ const BookingSection = ({ gymSessions, userUuid }) => {
     try {
       const storedUuid = localStorage.getItem("user_uuid");
       const response = await fetch(
-        `http://localhost:8080/user-schedules/book?gymSessionId=${selectedSession.sessionId}&userUuid=${storedUuid}`,
+        `http://localhost:8080/user-schedules/book?gymId=${gymId}gymSessionId=${selectedSession.sessionId}&userUuid=${storedUuid}`,
         {
           method: "POST",
           credentials: "include",

@@ -1,44 +1,141 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 const StatCard = ({
   title,
   icon,
   type,
-  value,
-  target,
+  value: initialValue,
+  target: initialTarget,
   unit,
   chart,
   userUuid,
   allStats,
   allTargets,
+  onStatsUpdate, // Callback to update parent component
 }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [newValue, setNewValue] = useState(value);
-  const [newTarget, setNewTarget] = useState(target);
+  const [newValue, setNewValue] = useState(initialValue);
+  const [newTarget, setNewTarget] = useState(initialTarget);
   const [updateStatus, setUpdateStatus] = useState("");
+  const [currentValue, setCurrentValue] = useState(initialValue);
+  const [currentTarget, setCurrentTarget] = useState(initialTarget);
+
+  // Refs for managing intervals
+  const pollIntervalRef = useRef(null);
+  const isMountedRef = useRef(true);
 
   // Update local state when props change
   useEffect(() => {
-    setNewValue(value);
-    setNewTarget(target);
-  }, [value, target]);
+    setNewValue(initialValue);
+    setNewTarget(initialTarget);
+    setCurrentValue(initialValue);
+    setCurrentTarget(initialTarget);
+  }, [initialValue, initialTarget]);
+
+  // Fetch latest stats from server
+  const fetchLatestStats = async () => {
+    if (!isMountedRef.current) return;
+
+    try {
+      const [statsResponse, targetsResponse] = await Promise.all([
+        fetch(`http://localhost:8080/user-stats?userUuid=${userUuid}`, {
+          credentials: "include",
+        }),
+        fetch(`http://localhost:8080/user-target?userUuid=${userUuid}`, {
+          credentials: "include",
+        }),
+      ]);
+
+      if (statsResponse.ok && targetsResponse.ok) {
+        const [latestStats, latestTargets] = await Promise.all([
+          statsResponse.json(),
+          targetsResponse.json(),
+        ]);
+
+        // Map the field names to match the component
+        const statFieldMap = {
+          water: "waterIntake",
+          calories: "caloriesBurned",
+          duration: "workoutDuration",
+          weight: "weight",
+          height: "height",
+        };
+
+        const targetFieldMap = {
+          water: "targetWaterIntake",
+          calories: "targetCaloriesBurned",
+          duration: "targetWorkoutDuration",
+        };
+
+        const statField = statFieldMap[type];
+        const targetField = targetFieldMap[type];
+
+        if (statField && latestStats[statField] !== undefined) {
+          setCurrentValue(latestStats[statField]);
+          if (!isEditing) {
+            setNewValue(latestStats[statField]);
+          }
+        }
+
+        if (targetField && latestTargets[targetField] !== undefined) {
+          setCurrentTarget(latestTargets[targetField]);
+          if (!isEditing) {
+            setNewTarget(latestTargets[targetField]);
+          }
+        }
+
+        // Notify parent component of updates
+        if (onStatsUpdate) {
+          onStatsUpdate(latestStats, latestTargets);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching latest stats:", error);
+    }
+  };
+
+  // Start real-time polling
+  useEffect(() => {
+    // Initial fetch
+    fetchLatestStats();
+
+    // Set up polling every 5 seconds
+    pollIntervalRef.current = setInterval(fetchLatestStats, 5000);
+
+    // Cleanup
+    return () => {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+      }
+      isMountedRef.current = false;
+    };
+  }, [userUuid, type]);
+
+  // Stop polling when editing, resume when done
+  useEffect(() => {
+    if (isEditing) {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+      }
+    } else {
+      pollIntervalRef.current = setInterval(fetchLatestStats, 5000);
+    }
+
+    return () => {
+      if (pollIntervalRef.current) {
+        clearInterval(pollIntervalRef.current);
+      }
+    };
+  }, [isEditing]);
 
   // Function to update current stat
   const updateStat = async (statName, statValue) => {
-    const statFieldMap = {
-      water: "waterIntake",
-      calories: "caloriesBurned",
-      duration: "workoutDuration",
-      weight: "weight",
-      height: "height",
-    };
-
-    const body = {
-      ...allStats,
-      [statName]: parseFloat(statValue),
-    };
-
     try {
+      const body = {
+        ...allStats,
+        [statName]: parseFloat(statValue),
+      };
+
       const response = await fetch(
         `http://localhost:8080/user-stats/update?userUuid=${userUuid}`,
         {
@@ -52,6 +149,8 @@ const StatCard = ({
       if (response.ok) {
         setUpdateStatus("Updated!");
         setTimeout(() => setUpdateStatus(""), 2000);
+        // Immediately fetch latest data
+        setTimeout(fetchLatestStats, 500);
         return true;
       } else {
         setUpdateStatus("Failed!");
@@ -67,12 +166,12 @@ const StatCard = ({
 
   // Function to update target stat
   const updateTarget = async (targetName, targetValue) => {
-    const targetBody = {
-      ...allTargets,
-      [targetName]: parseFloat(targetValue),
-    };
-
     try {
+      const targetBody = {
+        ...allTargets,
+        [targetName]: parseFloat(targetValue),
+      };
+
       const response = await fetch(
         `http://localhost:8080/user-target/update?userUuid=${userUuid}`,
         {
@@ -86,6 +185,8 @@ const StatCard = ({
       if (response.ok) {
         setUpdateStatus("Target updated!");
         setTimeout(() => setUpdateStatus(""), 2000);
+        // Immediately fetch latest data
+        setTimeout(fetchLatestStats, 500);
         return true;
       } else {
         setUpdateStatus("Target update failed!");
@@ -120,12 +221,12 @@ const StatCard = ({
     const targetField = targetFieldMap[type];
 
     // Only update if values changed
-    if (newValue !== value) {
+    if (newValue !== currentValue) {
       const currentSuccess = await updateStat(statField, newValue);
       success = success && currentSuccess;
     }
 
-    if (newTarget !== target) {
+    if (newTarget !== currentTarget) {
       const targetSuccess = await updateTarget(targetField, newTarget);
       success = success && targetSuccess;
     }
@@ -135,10 +236,20 @@ const StatCard = ({
     }
   };
 
+  // Handle cancel editing
+  const handleCancel = () => {
+    setNewValue(currentValue);
+    setNewTarget(currentTarget);
+    setIsEditing(false);
+  };
+
   // For the streak card which has a different layout
   if (type === "streak") {
     return (
       <article className="flex overflow-hidden flex-col grow shrink items-center self-stretch px-4 pt-5 pb-2 my-auto w-40 rounded-xl bg-zinc-900 min-h-[170px] relative">
+        {/* Real-time indicator */}
+        <div className="absolute top-2 left-2 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+
         <div className="flex flex-wrap gap-2 justify-center items-end w-full max-w-[165px]">
           <div className="flex gap-2.5 items-center min-h-[22px] w-[22px]">
             <img
@@ -156,7 +267,7 @@ const StatCard = ({
         />
         <div className="flex gap-0.5 justify-center items-end mt-5 whitespace-nowrap">
           <p className="text-2xl font-semibold leading-none text-white">
-            {value}
+            {currentValue}
           </p>
           <p className="text-base text-neutral-50">{unit}</p>
         </div>
@@ -170,17 +281,20 @@ const StatCard = ({
       className="flex flex-col items-center justify-center px-4 pt-5 pb-5 text-base font-bold text-white rounded-xl bg-zinc-900 w-full max-w-[165px] relative"
       style={{ height: "170px" }}
     >
+      {/* Real-time indicator */}
+      <div className="absolute top-2 left-2 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+
       {/* Edit button */}
       <button
         onClick={() => setIsEditing(!isEditing)}
-        className="absolute top-2 right-2 text-xs bg-green-500 rounded-full w-6 h-6 flex items-center justify-center"
+        className="absolute top-2 right-2 text-xs bg-green-500 rounded-full w-6 h-6 flex items-center justify-center hover:bg-green-600 transition-colors"
       >
-        {isEditing ? "X" : "✏️"}
+        {isEditing ? "✕" : "✏️"}
       </button>
 
       {/* Status indicator */}
       {updateStatus && (
-        <div className="absolute top-2 left-2 text-xs bg-zinc-800 rounded px-2 py-1">
+        <div className="absolute top-8 left-2 text-xs bg-zinc-800 rounded px-2 py-1 z-10">
           {updateStatus}
         </div>
       )}
@@ -205,7 +319,7 @@ const StatCard = ({
                 type="number"
                 value={newValue}
                 onChange={(e) => setNewValue(e.target.value)}
-                className="w-16 p-1 text-sm bg-zinc-800 border border-green-500 rounded"
+                className="w-16 p-1 text-sm bg-zinc-800 border border-green-500 rounded focus:outline-none focus:border-green-400"
               />
             </div>
 
@@ -215,18 +329,26 @@ const StatCard = ({
                 type="number"
                 value={newTarget}
                 onChange={(e) => setNewTarget(e.target.value)}
-                className="w-16 p-1 text-sm bg-zinc-800 border border-green-500 rounded"
+                className="w-16 p-1 text-sm bg-zinc-800 border border-green-500 rounded focus:outline-none focus:border-green-400"
               />
             </div>
           </div>
 
-          {/* Save button */}
-          <button
-            onClick={handleSave}
-            className="bg-green-500 text-black px-3 py-1 rounded-md font-medium text-sm mt-1"
-          >
-            Save
-          </button>
+          {/* Action buttons */}
+          <div className="flex gap-2 mt-1">
+            <button
+              onClick={handleSave}
+              className="bg-green-500 text-black px-3 py-1 rounded-md font-medium text-sm hover:bg-green-600 transition-colors"
+            >
+              Save
+            </button>
+            <button
+              onClick={handleCancel}
+              className="bg-zinc-600 text-white px-3 py-1 rounded-md font-medium text-sm hover:bg-zinc-700 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       ) : type === "duration" ? (
         <div className="flex flex-col items-center justify-between h-full w-full">
@@ -239,8 +361,9 @@ const StatCard = ({
             />
             <h3 className="text-center">{title}</h3>
           </div>
-          <div>
-            {value} / {target} minutes
+          <div className="text-center">
+            <span className="text-green-400">{currentValue}</span> /{" "}
+            {currentTarget} minutes
           </div>
         </div>
       ) : (
@@ -258,8 +381,9 @@ const StatCard = ({
           <div className="flex justify-center items-center w-full h-full">
             {chart}
           </div>
-          <div>
-            {value} / {target} {unit}
+          <div className="text-center">
+            <span className="text-green-400">{currentValue}</span> /{" "}
+            {currentTarget} {unit}
           </div>
         </div>
       )}

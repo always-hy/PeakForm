@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import GymCard from "./GymCard";
-import { useNavigate } from "react-router-dom";
 
 function RelatedGyms() {
   const [gyms, setGyms] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchGyms = async () => {
