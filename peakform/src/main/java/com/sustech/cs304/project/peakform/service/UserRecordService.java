@@ -64,8 +64,8 @@ public class UserRecordService {
                 .sorted(Comparator.comparing(UserRecord::getBenchPressPr, Comparator.reverseOrder()))
                 .limit(limit)
                 .map(record -> new TopBenchPressRecordResponse(
-                        record.getUser().getUserUuid().toString(),
                         record.getUser().getRealUsername(),
+                        record.getUser().getEmail(),
                         firebaseStorageService.getFileUrl("user-profile/" + record.getUser().getUserUuid() + ".jpg").getBody(),
                         record.getBenchPressPr()
                 ))
@@ -76,8 +76,8 @@ public class UserRecordService {
                 .sorted(Comparator.comparing(UserRecord::getSquatPr, Comparator.reverseOrder()))
                 .limit(limit)
                 .map(record -> new TopSquatRecordResponse(
-                        record.getUser().getUserUuid().toString(),
                         record.getUser().getRealUsername(),
+                        record.getUser().getEmail(),
                         firebaseStorageService.getFileUrl("user-profile/" + record.getUser().getUserUuid() + ".jpg").getBody(),
                         record.getSquatPr()
                 ))
@@ -88,8 +88,8 @@ public class UserRecordService {
                 .sorted(Comparator.comparing(UserRecord::getDeadliftPr, Comparator.reverseOrder()))
                 .limit(limit)
                 .map(record -> new TopDeadliftRecordResponse(
-                        record.getUser().getUserUuid().toString(),
                         record.getUser().getRealUsername(),
+                        record.getUser().getEmail(),
                         firebaseStorageService.getFileUrl("user-profile/" + record.getUser().getUserUuid() + ".jpg").getBody(),
                         record.getDeadliftPr()
                 ))
