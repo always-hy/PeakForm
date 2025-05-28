@@ -431,7 +431,6 @@ const LeaderboardEntry = ({ user, rank, category }) => {
         />
         <div>
           <p className="text-white font-medium">{user.username}</p>
-          <p className="text-gray-400 text-sm">{user.email}</p>
         </div>
       </div>
       <div className="text-right">

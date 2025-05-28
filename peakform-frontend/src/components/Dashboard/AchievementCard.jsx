@@ -9,7 +9,7 @@ const icons = {
 
 const AchievementCard = ({
   title,
-  initialValue = 0,
+  initialValue,
   userUuid = "9fa2fa3e-a194-4187-95a3-5c818c433973",
 }) => {
   const [value, setValue] = useState(initialValue);
@@ -47,7 +47,7 @@ const AchievementCard = ({
         squatPr: exercise === "Squat" ? newValue : null,
         deadliftPr: exercise === "Deadlift" ? newValue : null,
       };
-
+      console.log(requestBody);
       const response = await fetch(
         `http://localhost:8080/records/update?userUuid=${userUuid}`,
         {
@@ -64,7 +64,7 @@ const AchievementCard = ({
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const result = await response.json();
+      const result = await response.text();
 
       // Update the local state with the new value
       setValue(newValue);

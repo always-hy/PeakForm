@@ -81,7 +81,7 @@ const BookingSection = ({ gymSessions, gymId }) => {
     try {
       const storedUuid = localStorage.getItem("user_uuid");
       const response = await fetch(
-        `http://localhost:8080/user-schedules/book?gymId=${gymId}gymSessionId=${selectedSession.sessionId}&userUuid=${storedUuid}`,
+        `http://localhost:8080/user-schedules/book?gymId=${gymId}&gymSessionId=${selectedSession.sessionId}&userUuid=${storedUuid}`,
         {
           method: "POST",
           credentials: "include",

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-const ActivityCard = ({ userUuid, gymBookings }) => {
+const ActivityCard = ({ userUuid, gymBookings, gymId }) => {
   const [bookings, setBookings] = useState(gymBookings?.bookingRecords || []);
   const [showAchievementPopup, setShowAchievementPopup] = useState(false);
   const [achievementData, setAchievementData] = useState(null);
@@ -43,7 +43,7 @@ const ActivityCard = ({ userUuid, gymBookings }) => {
   };
 
   // Function to update the status of a booking and send the API request
-  const handleStatusChange = async (gymSessionId, newStatus) => {
+  const handleStatusChange = async (gymSessionId, newStatus, gymId) => {
     let url = "";
 
     // Set the URL based on the new status
@@ -52,7 +52,7 @@ const ActivityCard = ({ userUuid, gymBookings }) => {
     } else if (newStatus === "MISSED") {
       url = `http://localhost:8080/user-schedules/miss?gymSessionId=${gymSessionId}&userUuid=${userUuid}`;
     } else if (newStatus === "CANCELLED") {
-      url = `http://localhost:8080/user-schedules/cancel?gymSessionId=${gymSessionId}&userUuid=${userUuid}`;
+      url = `http://localhost:8080/user-schedules/cancel?gymId=${gymId}&gymSessionId=${gymSessionId}&userUuid=${userUuid}`;
     }
 
     try {
@@ -141,7 +141,11 @@ const ActivityCard = ({ userUuid, gymBookings }) => {
                           : "bg-zinc-700 hover:bg-zinc-600"
                       }`}
                       onClick={() =>
-                        handleStatusChange(record.gymSessionId, status)
+                        handleStatusChange(
+                          record.gymSessionId,
+                          status,
+                          record.gymSessionId
+                        )
                       }
                     >
                       {status.charAt(0) + status.slice(1).toLowerCase()}
