@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import GymCard from "./GymCard";
+import { API_URL } from "@/config";
 
 function RelatedGyms() {
   const [gyms, setGyms] = useState([]);
@@ -7,7 +8,7 @@ function RelatedGyms() {
   useEffect(() => {
     const fetchGyms = async () => {
       try {
-        const response = await fetch("http://localhost:8080/gyms", {
+        const response = await fetch(`${API_URL}/gyms`, {
           method: "GET",
           credentials: "include",
         });

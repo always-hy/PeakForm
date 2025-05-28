@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import WorkoutPlannerForm from "./WorkoutPlannerForm";
 import WorkoutPlanDisplay from "./WorkoutDisplay";
+import { API_URL } from "@/config";
 
 export default function Home() {
   const [workoutPlan, setWorkoutPlan] = useState(null);
@@ -29,17 +30,14 @@ export default function Home() {
         JSON.stringify(dataWithUuid, null, 2)
       );
 
-      const response = await fetch(
-        "http://localhost:8080/user/ai-generate-workout",
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(dataWithUuid),
-        }
-      );
+      const response = await fetch(`${API_URL}/user/ai-generate-workout`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataWithUuid),
+      });
 
       if (!response.ok) {
         throw new Error("Failed to generate workout plan");

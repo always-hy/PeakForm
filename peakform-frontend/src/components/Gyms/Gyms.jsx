@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import ActivityCard from "./ActivityCard";
+import { API_URL } from "@/config";
 
 // Sample data as fallback
 const sampleGymData = [
@@ -41,7 +42,7 @@ export default function GymsPage() {
     // Fetch gym data from API
     const fetchGyms = async () => {
       try {
-        const response = await fetch("http://localhost:8080/gyms", {
+        const response = await fetch(`${API_URL}/gyms`, {
           method: "GET",
           credentials: "include", // Include session cookies
         });
@@ -76,7 +77,7 @@ export default function GymsPage() {
     const fetchActivity = async () => {
       try {
         const statsResponse = await fetch(
-          `http://localhost:8080/user-schedules/records?userUuid=${storedUuid}`,
+          `${API_URL}/user-schedules/records?userUuid=${storedUuid}`,
           {
             method: "GET",
             credentials: "include", // Include session cookies

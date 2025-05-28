@@ -40,7 +40,7 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:8080/notifications?userUuid=${userUuid}`,
+        `${process.env.REACT_APP_URL}/notifications?userUuid=${userUuid}`,
         {
           method: "GET",
           credentials: "include",
@@ -64,7 +64,7 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
   const markNotificationAsRead = async (notificationId) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/notifications/${notificationId}/mark-read?userUuid=${userUuid}`,
+        `${process.env.REACT_APP_URL}/notifications/${notificationId}/mark-read?userUuid=${userUuid}`,
         {
           method: "PUT",
           credentials: "include",
@@ -138,7 +138,7 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
     const fetchActivity = async () => {
       try {
         const statsResponse = await fetch(
-          `http://localhost:8080/user-schedules/records?userUuid=${userUuid}`,
+          `${process.env.REACT_APP_URL}/user-schedules/records?userUuid=${userUuid}`,
           {
             method: "GET",
             credentials: "include",
@@ -186,10 +186,13 @@ const MainContent = ({ userData, userUuid, userTarget }) => {
           <button
             onClick={async () => {
               try {
-                const response = await fetch("http://localhost:8080/logout", {
-                  method: "POST",
-                  credentials: "include",
-                });
+                const response = await fetch(
+                  `${process.env.REACT_APP_URL}/logout`,
+                  {
+                    method: "POST",
+                    credentials: "include",
+                  }
+                );
                 window.location.href = "/";
               } catch (error) {
                 console.error("Logout error:", error);

@@ -1,3 +1,4 @@
+import { API_URL } from "@/config";
 import React, { useState, useEffect } from "react";
 
 const ProfileStatCard = ({
@@ -55,7 +56,7 @@ const ProfileStatCard = ({
 
     try {
       const response = await fetch(
-        `http://localhost:8080/user-stats/update?userUuid=${userUuid}`,
+        `${API_URL}/user-stats/update?userUuid=${userUuid}`,
         {
           method: "PUT",
           credentials: "include",

@@ -4,6 +4,7 @@ import AchievementBadges from "./GoalCard";
 import AchievementCard from "./AchievementCard";
 import ProfileStatCard from "./ProfileStatCard";
 import UserStatsModal from "./UserStatsModal";
+import { API_URL } from "@/config";
 
 const UserProfile = ({
   isOpen,
@@ -30,7 +31,7 @@ const UserProfile = ({
     const fetchRecords = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/records?userUuid=9fa2fa3e-a194-4187-95a3-5c818c433973`,
+          `${API_URL}/records?userUuid=9fa2fa3e-a194-4187-95a3-5c818c433973`,
           {
             method: "GET",
             credentials: "include",
@@ -117,14 +118,11 @@ const UserProfile = ({
       formData.append("file", file);
       formData.append("userId", localStorage.getItem("user_uuid"));
 
-      const response = await fetch(
-        "http://localhost:8080/user/upload-profile",
-        {
-          method: "POST",
-          credentials: "include",
-          body: formData,
-        }
-      );
+      const response = await fetch(`${API_URL}/user/upload-profile`, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
 
       if (response.ok) {
         // Refresh user data to get the new profile picture URL
@@ -164,7 +162,7 @@ const UserProfile = ({
     const fetchUserData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/user-stats/get?userUuid=${userUuid}`,
+          `${API_URL}/user-stats/get?userUuid=${userUuid}`,
           {
             method: "GET",
             credentials: "include",

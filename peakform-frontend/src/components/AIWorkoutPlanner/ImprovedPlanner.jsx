@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Plus, Trash2, Save, Edit3, X, Check } from "lucide-react";
-
+import { API_URL } from "@/config";
 // Enhanced Workout Display Component
 const WorkoutPlanDisplay = ({
   workoutPlan,
@@ -47,7 +47,7 @@ const WorkoutPlanDisplay = ({
 
   const fetchAvailableExercises = async () => {
     try {
-      const response = await fetch("http://localhost:8080/exercises", {
+      const response = await fetch(`${API_URL}/exercises`, {
         method: "GET",
         credentials: "include",
       });
@@ -152,7 +152,7 @@ const WorkoutPlanDisplay = ({
       };
 
       const response = await fetch(
-        `http://localhost:8080/workout-plans/create?userUuid=${uuid}`,
+        `${API_URL}/workout-plans/create?userUuid=${uuid}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -739,15 +739,12 @@ export default function EnhancedWorkoutPlanner() {
 
       console.log("Submitting workout request:", dataWithUuid);
 
-      const response = await fetch(
-        "http://localhost:8080/user/ai-generate-workout",
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(dataWithUuid),
-        }
-      );
+      const response = await fetch(`${API_URL}/user/ai-generate-workout`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataWithUuid),
+      });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));

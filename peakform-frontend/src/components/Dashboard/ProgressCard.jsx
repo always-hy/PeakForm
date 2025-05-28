@@ -1,3 +1,4 @@
+import { API_URL } from "@/config";
 import React, { useEffect, useState } from "react";
 
 const dayOptions = [
@@ -27,7 +28,7 @@ const ProgressCard = () => {
       }
 
       const response = await fetch(
-        `http://localhost:8080/workout-plans?userUuid=${uuid}`,
+        `${API_URL}/workout-plans?userUuid=${uuid}`,
         {
           method: "GET",
           credentials: "include",
@@ -90,7 +91,7 @@ const ProgressCard = () => {
     try {
       const uuid = localStorage.getItem("user_uuid");
       const response = await fetch(
-        `http://localhost:8080/workout-plans/${workoutId}/activate?userUuid=${uuid}`,
+        `${API_URL}/workout-plans/${workoutId}/activate?userUuid=${uuid}`,
         {
           method: "PUT",
           credentials: "include",

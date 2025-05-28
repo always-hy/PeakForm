@@ -1,3 +1,4 @@
+import { API_URL } from "@/config";
 import React, { useState, useEffect } from "react";
 
 const AchievementBadges = ({
@@ -22,7 +23,7 @@ const AchievementBadges = ({
     const fetchAchievements = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/user-achievements?userUuid=${userUuid}`,
+          `${API_URL}/user-achievements?userUuid=${userUuid}`,
           {
             method: "GET",
             credentials: "include",

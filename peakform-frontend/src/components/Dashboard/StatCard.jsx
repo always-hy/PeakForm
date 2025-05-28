@@ -1,3 +1,4 @@
+import { API_URL } from "@/config";
 import React, { useState, useEffect, useRef } from "react";
 
 const StatCard = ({
@@ -39,10 +40,10 @@ const StatCard = ({
     try {
       if (userUuid) {
         const [statsResponse, targetsResponse] = await Promise.all([
-          fetch(`http://localhost:8080/user-stats?userUuid=${userUuid}`, {
+          fetch(`${API_URL}/user-stats?userUuid=${userUuid}`, {
             credentials: "include",
           }),
-          fetch(`http://localhost:8080/user-target?userUuid=${userUuid}`, {
+          fetch(`${API_URL}/user-target?userUuid=${userUuid}`, {
             credentials: "include",
           }),
         ]);
@@ -138,7 +139,7 @@ const StatCard = ({
       };
 
       const response = await fetch(
-        `http://localhost:8080/user-stats/update?userUuid=${userUuid}`,
+        `${API_URL}/user-stats/update?userUuid=${userUuid}`,
         {
           method: "PUT",
           credentials: "include",
@@ -174,7 +175,7 @@ const StatCard = ({
       };
 
       const response = await fetch(
-        `http://localhost:8080/user-target/update?userUuid=${userUuid}`,
+        `${API_URL}/user-target/update?userUuid=${userUuid}`,
         {
           method: "PUT",
           credentials: "include",

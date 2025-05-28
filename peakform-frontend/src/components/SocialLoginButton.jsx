@@ -1,6 +1,9 @@
 import React from "react";
 
-function SocialLoginButton({ provider, baseUrl = "http://localhost:8080" }) {
+function SocialLoginButton({
+  provider,
+  baseUrl = `${process.env.REACT_APP_URL}`,
+}) {
   const getIcon = () => {
     switch (provider) {
       case "google":

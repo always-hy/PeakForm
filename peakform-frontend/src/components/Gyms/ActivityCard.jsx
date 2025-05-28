@@ -1,5 +1,6 @@
 "use client";
 
+import { API_URL } from "@/config";
 import { useState, useEffect } from "react";
 
 const ActivityCard = ({ userUuid, gymBookings, gymId }) => {
@@ -48,11 +49,11 @@ const ActivityCard = ({ userUuid, gymBookings, gymId }) => {
 
     // Set the URL based on the new status
     if (newStatus === "COMPLETED") {
-      url = `http://localhost:8080/user-schedules/complete?gymSessionId=${gymSessionId}&userUuid=${userUuid}`;
+      url = `${API_URL}/user-schedules/complete?gymSessionId=${gymSessionId}&userUuid=${userUuid}`;
     } else if (newStatus === "MISSED") {
-      url = `http://localhost:8080/user-schedules/miss?gymSessionId=${gymSessionId}&userUuid=${userUuid}`;
+      url = `${API_URL}/user-schedules/miss?gymSessionId=${gymSessionId}&userUuid=${userUuid}`;
     } else if (newStatus === "CANCELLED") {
-      url = `http://localhost:8080/user-schedules/cancel?gymId=${gymId}&gymSessionId=${gymSessionId}&userUuid=${userUuid}`;
+      url = `${API_URL}/user-schedules/cancel?gymId=${gymId}&gymSessionId=${gymSessionId}&userUuid=${userUuid}`;
     }
 
     try {

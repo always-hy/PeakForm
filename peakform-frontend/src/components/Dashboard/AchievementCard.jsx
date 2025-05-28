@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Dumbbell, Activity, Weight, Edit2, Check, X } from "lucide-react";
+import { API_URL } from "@/config";
 
 const icons = {
   Squat: <Dumbbell className="text-[#05A31D] w-6 h-6" />,
@@ -49,7 +50,7 @@ const AchievementCard = ({
       };
       console.log(requestBody);
       const response = await fetch(
-        `http://localhost:8080/records/update?userUuid=${userUuid}`,
+        `${API_URL}/records/update?userUuid=${userUuid}`,
         {
           method: "PUT",
           credentials: "include",

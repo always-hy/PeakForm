@@ -1,3 +1,4 @@
+import { API_URL } from "@/config";
 import React, { useState, useEffect } from "react";
 
 const UserStatsModal = ({
@@ -46,7 +47,7 @@ const UserStatsModal = ({
 
     try {
       const response = await fetch(
-        `http://localhost:8080/user-stats/update?userUuid=${userUuid}`,
+        `${API_URL}/user-stats/update?userUuid=${userUuid}`,
         {
           method: "PUT",
           credentials: "include",
@@ -75,7 +76,7 @@ const UserStatsModal = ({
 
     try {
       const response = await fetch(
-        `http://localhost:8080/user-target/update?userUuid=${userUuid}`,
+        `${API_URL}/user-target/update?userUuid=${userUuid}`,
         {
           method: "PUT",
           credentials: "include",
@@ -108,7 +109,7 @@ const UserStatsModal = ({
 
     try {
       const response = await fetch(
-        `http://localhost:8080/user-stats/update?userUuid=${userUuid}`,
+        `${API_URL}/user-stats/update?userUuid=${userUuid}`,
         {
           method: "PUT",
           credentials: "include",
@@ -143,7 +144,7 @@ const UserStatsModal = ({
 
     try {
       const response = await fetch(
-        `http://localhost:8080/user-target/update?userUuid=${userUuid}`,
+        `${API_URL}/user-target/update?userUuid=${userUuid}`,
         {
           method: "PUT",
           credentials: "include",

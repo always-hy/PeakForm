@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import WorkoutPlan from "./WorkoutPlan";
 import ExerciseLibrary from "./ExerciseLibrary";
+import { API_URL } from "@/config";
 
 const WorkoutPlanner = () => {
   const days = [
@@ -29,7 +30,7 @@ const WorkoutPlanner = () => {
   useEffect(() => {
     const fetchExercises = async () => {
       try {
-        const response = await fetch("http://localhost:8080/exercises", {
+        const response = await fetch(`${API_URL}/exercises`, {
           method: "GET",
           credentials: "include",
         });
@@ -92,7 +93,7 @@ const WorkoutPlanner = () => {
 
     const storedUuid = localStorage.getItem("user_uuid");
     console.log(storedUuid);
-    const url = `http://localhost:8080/workout-plans/create?userUuid=${storedUuid}`;
+    const url = `${API_URL}/workout-plans/create?userUuid=${storedUuid}`;
     console.log(url);
     try {
       const response = await fetch(url, {

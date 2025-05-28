@@ -5,6 +5,7 @@ import MainContent from "./MainContent";
 import UserProfile from "./UserProfile";
 import MobileMenuButton from "./MobileMenuButton";
 import SidebarMenuButton from "./SidebarMenuButton";
+import { API_URL } from "@/config";
 
 const DashboardLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -30,7 +31,7 @@ const DashboardLayout = () => {
       try {
         const statsResponse = await fetch(
           // "http://localhost:8080/user-schedules/records?userUuid=" + data.userUuid,
-          `http://localhost:8080/user/details?userUuid=${uuid}`,
+          `${API_URL}/user/details?userUuid=${uuid}`,
 
           {
             method: "GET",
@@ -60,7 +61,7 @@ const DashboardLayout = () => {
       try {
         const statsResponse = await fetch(
           // "http://localhost:8080/user-schedules/records?userUuid=" + data.userUuid,
-          `http://localhost:8080/user-stats?userUuid=${uuid}`,
+          `${API_URL}/user-stats?userUuid=${uuid}`,
 
           {
             method: "GET",
@@ -90,7 +91,7 @@ const DashboardLayout = () => {
       try {
         const statsResponse = await fetch(
           // "http://localhost:8080/user-schedules/records?userUuid=" + data.userUuid,
-          `http://localhost:8080/user-target?userUuid=${uuid}`,
+          `${API_URL}/user-target?userUuid=${uuid}`,
 
           {
             method: "GET",
