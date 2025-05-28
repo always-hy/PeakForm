@@ -1,3 +1,4 @@
+import { API_URL } from "@/config";
 import React, { useState } from "react";
 
 // Time Slot Selector Component
@@ -81,7 +82,7 @@ const BookingSection = ({ gymSessions, gymId }) => {
     try {
       const storedUuid = localStorage.getItem("user_uuid");
       const response = await fetch(
-        `http://localhost:8080/user-schedules/book?gymId=${gymId}&gymSessionId=${selectedSession.sessionId}&userUuid=${storedUuid}`,
+        `${API_URL}/user-schedules/book?gymId=${gymId}&gymSessionId=${selectedSession.sessionId}&userUuid=${storedUuid}`,
         {
           method: "POST",
           credentials: "include",

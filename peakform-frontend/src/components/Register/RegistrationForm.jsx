@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import SocialLoginButton from "./SocialLoginButton";
+import { API_URL } from "@/config";
 
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
@@ -18,7 +19,7 @@ const RegistrationForm = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/user/register", {
+      const response = await fetch(`${API_URL}/user/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

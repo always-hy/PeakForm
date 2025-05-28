@@ -7,6 +7,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import { API_URL } from "@/config";
 
 const stripePromise = loadStripe(
   "pk_test_51RQAQaBCtau77VoyhtdPCJKrJ1nV1ZeF4wVn4lQqpfRVusyctKOAxMPcRc8xUjZefBMltN9sCmlg79JpCLNWwyIl003EilSdFo"
@@ -55,7 +56,7 @@ function CheckoutForm() {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/payment/stripe", {
+      const response = await fetch(`${API_URL}/payment/stripe`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

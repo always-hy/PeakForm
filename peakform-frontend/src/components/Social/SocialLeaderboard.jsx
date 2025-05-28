@@ -12,9 +12,10 @@ import {
 } from "lucide-react";
 import Sidebar from "./Sidebar";
 import { LocaleRouteNormalizer } from "next/dist/server/normalizers/locale-route-normalizer";
+import { API_URL } from "@/config";
 
 // API Configuration
-const API_BASE_URL = "http://localhost:8080";
+const API_BASE_URL = `${API_URL}`;
 
 // Real API functions
 const api = {
@@ -176,7 +177,7 @@ const api = {
 
   getLeaderboard: async () => {
     try {
-      const response = await fetch("http://localhost:8080/records/top", {
+      const response = await fetch(`${API_URL}/records/top`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

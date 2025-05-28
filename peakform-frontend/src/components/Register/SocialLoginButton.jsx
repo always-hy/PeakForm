@@ -1,6 +1,7 @@
+import { API_URL } from "@/config";
 import React from "react";
 
-function SocialLoginButton({ provider, baseUrl = "http://localhost:8080" }) {
+function SocialLoginButton({ provider, baseUrl = `${API_URL}` }) {
   const getIcon = () => {
     switch (provider) {
       case "google":

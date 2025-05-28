@@ -1,4 +1,5 @@
 "use client";
+import { API_URL } from "@/config";
 import { useState, useEffect } from "react";
 import {
   LineChart,
@@ -21,7 +22,7 @@ export default function ActivityCard() {
     const fetchUserStats = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/user-stats/history?userUuid=${uuid}`,
+          `${API_URL}/user-stats/history?userUuid=${uuid}`,
           {
             method: "GET",
             credentials: "include", // Include session cookies

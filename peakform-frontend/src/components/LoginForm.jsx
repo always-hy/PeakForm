@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import InputField from "./InputField";
 import PasswordInput from "./PasswordInput";
 import SocialLoginButton from "./SocialLoginButton";
-
+import { API_URL } from "../config";
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,7 +16,8 @@ function LoginForm() {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8080/login", {
+      console.log("hello", API_URL);
+      const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",

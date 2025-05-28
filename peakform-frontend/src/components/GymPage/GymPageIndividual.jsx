@@ -23,7 +23,7 @@ function GymPageIndividual() {
         const uuid = localStorage.getItem("user_uuid");
 
         const response = await fetch(
-          `http://localhost:8080/gyms/${gym_id}?userUuid=${uuid}`,
+          `${process.env.REACT_APP_URL}/gyms/${gym_id}?userUuid=${uuid}`,
           {
             method: "GET",
             credentials: "include",
