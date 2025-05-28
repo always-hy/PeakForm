@@ -68,7 +68,7 @@ function CheckoutForm() {
         credentials: "include", // Include cookies for session management
       });
 
-      const data = await response.json();
+      const data = await response.text();
 
       if (!response.ok) throw new Error(data.message || "Payment failed");
 
