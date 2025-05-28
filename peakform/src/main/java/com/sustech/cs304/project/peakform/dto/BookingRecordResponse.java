@@ -9,6 +9,7 @@ import java.time.LocalTime;
 public record BookingRecordResponse(
         Long gymSessionId,
         String gymName,
+        Long gymId,
         LocalDate date,
         LocalTime sessionStart,
         LocalTime sessionEnd,

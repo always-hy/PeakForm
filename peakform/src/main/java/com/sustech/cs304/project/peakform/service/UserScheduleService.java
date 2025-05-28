@@ -215,6 +215,7 @@ public class UserScheduleService {
                 .map(booking -> new BookingRecordResponse(
                         booking.getGymSession().getGymSessionId(),
                         booking.getGymSession().getGym().getGymName(),
+                        booking.getGymSession().getGym().getGymId(),
                         booking.getGymSession().getDate(),
                         booking.getGymSession().getSessionStart(),
                         booking.getGymSession().getSessionEnd(),
