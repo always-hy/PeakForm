@@ -16,7 +16,7 @@ function LoginForm() {
     setError(null);
 
     try {
-      console.log("hello", API_URL);
+      console.log("helloo", API_URL);
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: {
