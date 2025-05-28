@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import InputField from "./InputField";
 import PasswordInput from "./PasswordInput";
 import SocialLoginButton from "./SocialLoginButton";
-import { API_URL } from "../config";
+import { API_URL, FRONTEND_URL } from "../config";
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -114,7 +114,7 @@ function LoginForm() {
             Don't have an account yet?{" "}
             <button
               onClick={() =>
-                (window.location.href = "http://localhost:3000/register")
+                (window.location.href = `${FRONTEND_URL}/register`)
               }
               className="font-bold text-white cursor-pointer"
             >
