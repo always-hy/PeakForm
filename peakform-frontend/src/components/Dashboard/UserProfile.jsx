@@ -29,11 +29,8 @@ const UserProfile = ({
   useEffect(() => {
     const fetchRecords = async () => {
       try {
-        const userUuid = localStorage.getItem("user_uuid");
-        if (!userUuid) return;
-
         const response = await fetch(
-          `http://localhost:8080/records?userUuid=${userUuid}`,
+          `http://localhost:8080/records?userUuid=9fa2fa3e-a194-4187-95a3-5c818c433973`,
           {
             method: "GET",
             credentials: "include",
@@ -43,6 +40,7 @@ const UserProfile = ({
         if (response.ok) {
           const data = await response.json();
           setRecord(data);
+          console.log("fefefef", data);
         } else {
           console.error("Failed to fetch records");
         }
@@ -329,9 +327,15 @@ const UserProfile = ({
 
         {record && (
           <div className="flex flex-wrap gap-4">
-            <AchievementCard title="Squat" value={record.squatPr} />
-            <AchievementCard title="BenchPress" value={record.benchPressPr} />
-            <AchievementCard title="Deadlift" value={record.deadliftPr} />
+            <AchievementCard title="Squat" initialValue={record.squatPr} />
+            <AchievementCard
+              title="BenchPress"
+              initialValue={record.benchPressPr}
+            />
+            <AchievementCard
+              title="Deadlift"
+              initialValue={record.deadliftPr}
+            />
           </div>
         )}
       </aside>
@@ -437,9 +441,15 @@ const UserProfile = ({
         </div>
         {record && (
           <div className="flex flex-wrap gap-4">
-            <AchievementCard title="Squat" value={record.squatPr} />
-            <AchievementCard title="BenchPress" value={record.benchPressPr} />
-            <AchievementCard title="Deadlift" value={record.deadliftPr} />
+            <AchievementCard title="Squat" initialValue={record.squatPr} />
+            <AchievementCard
+              title="BenchPress"
+              initialValue={record.benchPressPr}
+            />
+            <AchievementCard
+              title="Deadlift"
+              initialValue={record.deadliftPr}
+            />
           </div>
         )}
       </aside>

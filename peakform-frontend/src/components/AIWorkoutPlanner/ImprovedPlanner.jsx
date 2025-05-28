@@ -97,7 +97,7 @@ const WorkoutPlanDisplay = ({
   const updateExercise = (exerciseId, field, value) => {
     setExercises((prev) => {
       const updated = prev.map((ex) =>
-        ex.id === exerciseId ? { ...ex, [field]: value } : ex
+        ex.exerciseId === exerciseId ? { ...ex, [field]: value } : ex
       );
       onUpdateWorkout?.(updated);
       return updated;
@@ -107,7 +107,7 @@ const WorkoutPlanDisplay = ({
   // Delete exercise
   const deleteExercise = (exerciseId) => {
     setExercises((prev) => {
-      const updated = prev.filter((ex) => ex.id !== exerciseId);
+      const updated = prev.filter((ex) => ex.exerciseId !== exerciseId);
       onUpdateWorkout?.(updated);
       return updated;
     });
@@ -116,8 +116,8 @@ const WorkoutPlanDisplay = ({
   // Add new exercise
   const addExercise = (exerciseData, day, sets, reps) => {
     const newExercise = {
-      id: `${exerciseData.id}-${day}-${Date.now()}`,
-      exerciseId: exerciseData.id,
+      id: `${exerciseData.exerciseId}-${day}-${Date.now()}`,
+      exerciseId: exerciseData.exerciseId,
       day: day,
       sets: parseInt(sets),
       reps: reps,
@@ -243,10 +243,10 @@ const WorkoutPlanDisplay = ({
       <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
         {currentExercises.map((exercise) => (
           <ExerciseCard
-            key={exercise.id}
+            key={exercise.exerciseId}
             exercise={exercise}
-            isEditing={editingExercise === exercise.id}
-            onEdit={() => setEditingExercise(exercise.id)}
+            isEditing={editingExercise === exercise.exerciseId}
+            onEdit={() => setEditingExercise(exercise.exerciseId)}
             onSave={() => setEditingExercise(null)}
             onCancel={() => setEditingExercise(null)}
             onUpdate={updateExercise}
@@ -318,8 +318,8 @@ const ExerciseCard = ({
   const [editReps, setEditReps] = useState(exercise.reps);
 
   const handleSave = () => {
-    onUpdate(exercise.id, "sets", editSets);
-    onUpdate(exercise.id, "reps", editReps);
+    onUpdate(exercise.exerciseId, "sets", editSets);
+    onUpdate(exercise.exerciseId, "reps", editReps);
     onSave();
   };
 
@@ -396,7 +396,7 @@ const ExerciseCard = ({
             </button>
           )}
           <button
-            onClick={() => onDelete(exercise.id)}
+            onClick={() => onDelete(exercise.exerciseId)}
             className="p-2 text-zinc-400 hover:text-red-400 transition-colors"
           >
             <Trash2 size={16} />
@@ -426,10 +426,10 @@ const AddExerciseModal = ({ availableExercises, days, onAdd, onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!selectedExercise) return;
-
     const exercise = availableExercises.find(
-      (ex) => ex.id.toString() === selectedExercise
+      (ex) => ex.exerciseId.toString() === selectedExercise
     );
+    console.log("jello", exercise);
     onAdd(exercise, selectedDay, sets, reps);
   };
 
@@ -454,7 +454,7 @@ const AddExerciseModal = ({ availableExercises, days, onAdd, onClose }) => {
             >
               <option value="">Select an exercise</option>
               {availableExercises.map((exercise) => (
-                <option key={exercise.id} value={exercise.id}>
+                <option key={exercise.exerciseId} value={exercise.exerciseId}>
                   {exercise.name || exercise.exerciseName}
                 </option>
               ))}

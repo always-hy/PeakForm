@@ -37,56 +37,57 @@ const StatCard = ({
     if (!isMountedRef.current) return;
 
     try {
-      const [statsResponse, targetsResponse] = await Promise.all([
-        fetch(`http://localhost:8080/user-stats?userUuid=${userUuid}`, {
-          credentials: "include",
-        }),
-        fetch(`http://localhost:8080/user-target?userUuid=${userUuid}`, {
-          credentials: "include",
-        }),
-      ]);
-
-      if (statsResponse.ok && targetsResponse.ok) {
-        const [latestStats, latestTargets] = await Promise.all([
-          statsResponse.json(),
-          targetsResponse.json(),
+      if (userUuid) {
+        const [statsResponse, targetsResponse] = await Promise.all([
+          fetch(`http://localhost:8080/user-stats?userUuid=${userUuid}`, {
+            credentials: "include",
+          }),
+          fetch(`http://localhost:8080/user-target?userUuid=${userUuid}`, {
+            credentials: "include",
+          }),
         ]);
+        if (statsResponse.ok && targetsResponse.ok) {
+          const [latestStats, latestTargets] = await Promise.all([
+            statsResponse.json(),
+            targetsResponse.json(),
+          ]);
 
-        // Map the field names to match the component
-        const statFieldMap = {
-          water: "waterIntake",
-          calories: "caloriesBurned",
-          duration: "workoutDuration",
-          weight: "weight",
-          height: "height",
-        };
+          // Map the field names to match the component
+          const statFieldMap = {
+            water: "waterIntake",
+            calories: "caloriesBurned",
+            duration: "workoutDuration",
+            weight: "weight",
+            height: "height",
+          };
 
-        const targetFieldMap = {
-          water: "targetWaterIntake",
-          calories: "targetCaloriesBurned",
-          duration: "targetWorkoutDuration",
-        };
+          const targetFieldMap = {
+            water: "targetWaterIntake",
+            calories: "targetCaloriesBurned",
+            duration: "targetWorkoutDuration",
+          };
 
-        const statField = statFieldMap[type];
-        const targetField = targetFieldMap[type];
+          const statField = statFieldMap[type];
+          const targetField = targetFieldMap[type];
 
-        if (statField && latestStats[statField] !== undefined) {
-          setCurrentValue(latestStats[statField]);
-          if (!isEditing) {
-            setNewValue(latestStats[statField]);
+          if (statField && latestStats[statField] !== undefined) {
+            setCurrentValue(latestStats[statField]);
+            if (!isEditing) {
+              setNewValue(latestStats[statField]);
+            }
           }
-        }
 
-        if (targetField && latestTargets[targetField] !== undefined) {
-          setCurrentTarget(latestTargets[targetField]);
-          if (!isEditing) {
-            setNewTarget(latestTargets[targetField]);
+          if (targetField && latestTargets[targetField] !== undefined) {
+            setCurrentTarget(latestTargets[targetField]);
+            if (!isEditing) {
+              setNewTarget(latestTargets[targetField]);
+            }
           }
-        }
 
-        // Notify parent component of updates
-        if (onStatsUpdate) {
-          onStatsUpdate(latestStats, latestTargets);
+          // Notify parent component of updates
+          if (onStatsUpdate) {
+            onStatsUpdate(latestStats, latestTargets);
+          }
         }
       }
     } catch (error) {
