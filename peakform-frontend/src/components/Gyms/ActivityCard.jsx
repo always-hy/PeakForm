@@ -145,7 +145,7 @@ const ActivityCard = ({ userUuid, gymBookings, gymId }) => {
                         handleStatusChange(
                           record.gymSessionId,
                           status,
-                          record.gymSessionId
+                          record.gymId
                         )
                       }
                     >
