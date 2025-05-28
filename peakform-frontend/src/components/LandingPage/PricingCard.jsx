@@ -9,6 +9,10 @@ const PricingCard = ({
   buttonVariant = "primary",
   isPopular = false,
 }) => {
+  const handleButtonClick = () => {
+    window.location.href = "/payment";
+  };
+
   return (
     <div className="flex-1 shrink basis-0 min-w-60 relative">
       <div className="relative px-10 pt-20 pb-10 w-full h-[788px] rounded-3xl bg-neutral-900 max-md:px-5 flex flex-col">
@@ -60,7 +64,11 @@ const PricingCard = ({
 
           {/* Button at bottom */}
           <div className="mt-auto">
-            <Button variant={buttonVariant} className="w-full">
+            <Button
+              variant={buttonVariant}
+              className="w-full"
+              onClick={handleButtonClick}
+            >
               {buttonText}
             </Button>
           </div>

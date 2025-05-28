@@ -113,7 +113,7 @@ const Sidebar = ({ isOpen, toggleOpen }) => {
   return (
     <>
       {/* Desktop version - always visible */}
-      <nav className="hidden md:flex flex-col items-center self-stretch px-4 pt-3.5 my-auto bg-stone-950 pb-[1005px] w-[100px]">
+      <nav className="hidden md:flex flex-col items-center self-stretch px-4 pt-3.5 my-auto bg-stone-950 w-[100px]">
         <div className="flex overflow-hidden flex-wrap gap-0 items-start rounded-md h-[58px] w-[66px]">
           <div className="flex min-h-[38px] w-[55px]" />
         </div>

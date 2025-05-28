@@ -366,9 +366,33 @@ const ProfileDetails = ({ profile, onFollowToggle, followLoading }) => {
 };
 
 const AchievementBadge = ({ achievement }) => {
+  const achievementImages = {
+    "Target Weight Reached": "/Target_Weight_Reached.png",
+    "10 Workout Completed": "/Workouts_Completed_10.png",
+    "50 Workout Completed": "/Workouts_Completed_50.png",
+    "100 Workout Completed": "/Workouts_Completed_100.png",
+    "10 Water Intake Target Reached": "/Water_Intake_10.png",
+    "50 Water Intake Target Reached": "/Water_Intake_50.png",
+    "100 Water Intake Target Reached": "/Water_Intake_100.png",
+  };
+
+  // Get the appropriate badge image for this achievement
+  const badgeImage = achievementImages[achievement.achievementName];
+
   return (
     <div className="bg-[#1C1C1C] border border-[#05A31D] rounded-lg p-4 flex items-center space-x-3">
-      <Medal className="w-6 h-6 text-[#05A31D]" />
+      {badgeImage ? (
+        <img
+          src={badgeImage}
+          alt={`${achievement.achievementName} badge`}
+          className="w-32 h-32 object-contain"
+        />
+      ) : (
+        // Fallback icon if no image is found
+        <div className="w-6 h-6 bg-[#05A31D]/20 rounded-full flex items-center justify-center">
+          <span className="text-[#05A31D] text-xs font-bold">?</span>
+        </div>
+      )}
       <div>
         <p className="text-white font-medium">{achievement.achievementName}</p>
         <div className="flex items-center space-x-1 text-gray-400 text-sm">

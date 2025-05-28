@@ -320,7 +320,13 @@ const UserProfile = ({
 
         <AchievementBadges />
 
-        <h3 className="text-lg font-semibold text-white mb-4">Achievements</h3>
+        <div className="text-center mb-8 mt-8">
+          <h1 className="text-3xl font-bold text-white mb-2">
+            Personal Records
+          </h1>
+          <p className="text-gray-400">Track and update your lifting PRs</p>
+        </div>
+
         {record && (
           <div className="flex flex-wrap gap-4">
             <AchievementCard title="Squat" value={record.squatPr} />
@@ -422,7 +428,13 @@ const UserProfile = ({
         <h3 className="mt-7 text-lg font-semibold text-white">Your Goals</h3>
 
         <AchievementBadges />
-        <h3 className="text-lg font-semibold text-white mb-4">Achievements</h3>
+
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">
+            Personal Records
+          </h1>
+          <p className="text-gray-400">Track and update your lifting PRs</p>
+        </div>
         {record && (
           <div className="flex flex-wrap gap-4">
             <AchievementCard title="Squat" value={record.squatPr} />

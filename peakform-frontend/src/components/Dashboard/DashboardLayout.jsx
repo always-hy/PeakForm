@@ -153,10 +153,7 @@ const DashboardLayout = () => {
   };
 
   return (
-    <main
-      className="flex flex-wrap gap-9 items-start self-stretch my-auto min-w-60 max-md:max-w-full relative max-h-[1280px]
- overflow-hidden"
-    >
+    <main className="flex flex-wrap gap-9 items-start my-auto min-w-60 relative max-h-[1280px]">
       <Sidebar isOpen={isMobileSidebarOpen} toggleOpen={toggleMobileSidebar} />
       <MainContent
         userData={userData}
