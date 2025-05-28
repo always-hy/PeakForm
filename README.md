@@ -73,3 +73,5 @@
 - Ensure the MySQL server is running before starting the backend.
 - The `.env` file must be correctly configured for the backend to connect to the database.
 - Use separate terminal windows to run the backend and frontend servers simultaneously.
+
+📘 [Click here to view the End-User Guide](./USER_GUIDE.md)
