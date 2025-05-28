@@ -1,9 +1,9 @@
 import React from "react";
-import { Dumbbell, ArmMuscle, Weight } from "lucide-react";
+import { Dumbbell, BicepsFlexed, Weight } from "lucide-react";
 
 const icons = {
   Squat: <Dumbbell className="text-[#05A31D] w-6 h-6" />,
-  BenchPress: <ArmMuscle className="text-[#05A31D] w-6 h-6" />,
+  BenchPress: <BicepsFlexed className="text-[#05A31D] w-6 h-6" />,
   Deadlift: <Weight className="text-[#05A31D] w-6 h-6" />,
 };
 

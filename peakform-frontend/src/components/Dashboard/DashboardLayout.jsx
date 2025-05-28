@@ -153,7 +153,10 @@ const DashboardLayout = () => {
   };
 
   return (
-    <main className="flex flex-wrap gap-9 items-start self-stretch my-auto min-w-60 max-md:max-w-full relative">
+    <main
+      className="flex flex-wrap gap-9 items-start self-stretch my-auto min-w-60 max-md:max-w-full relative max-h-[1280px]
+ overflow-hidden"
+    >
       <Sidebar isOpen={isMobileSidebarOpen} toggleOpen={toggleMobileSidebar} />
       <MainContent
         userData={userData}
@@ -166,6 +169,7 @@ const DashboardLayout = () => {
         userData={userData}
         userUuid={storedUuid}
         profile={userDetails}
+        userTarget={userTarget}
       />
       {isMobile && (
         <>

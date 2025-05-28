@@ -8,7 +8,9 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 
-const stripePromise = loadStripe("pk_test_51RQAQaBCtau77VoyhtdPCJKrJ1nV1ZeF4wVn4lQqpfRVusyctKOAxMPcRc8xUjZefBMltN9sCmlg79JpCLNWwyIl003EilSdFo"); // Replace with your public key
+const stripePromise = loadStripe(
+  "pk_test_51RQAQaBCtau77VoyhtdPCJKrJ1nV1ZeF4wVn4lQqpfRVusyctKOAxMPcRc8xUjZefBMltN9sCmlg79JpCLNWwyIl003EilSdFo"
+); // Replace with your public key
 
 const CARD_OPTIONS = {
   style: {
@@ -57,7 +59,7 @@ function CheckoutForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userUuid: "9fa2fa3e-a194-4187-95a3-5c818c433973",
+          userUuid: localStorage.getItem("user_uuid"),
           amount: 1000,
           currency: "usd",
           paymentMethodId: paymentMethod.id,
@@ -66,7 +68,7 @@ function CheckoutForm() {
       });
 
       const data = await response.json();
-      
+
       if (!response.ok) throw new Error(data.message || "Payment failed");
 
       setSuccess(true);

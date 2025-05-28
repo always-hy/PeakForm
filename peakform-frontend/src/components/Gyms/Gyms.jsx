@@ -111,13 +111,12 @@ export default function GymsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex">
+    <div className="bg-black text-white flex min-h-screen">
       <Sidebar isOpen={isSidebarOpen} toggleOpen={toggleSidebar} />
-
       {/* Main content layout with flex */}
-      <div className="flex-1 flex ml-0 md:ml-[100px]">
+      <div className="flex-1 flex ml-0 md:ml-[100px] h-full">
         {/* Middle section - Gym listings (wider now) */}
-        <div className="w-full lg:w-3/4 xl:w-4/5 container px-4 py-8">
+        <div className="w-full lg:w-3/4 xl:w-4/5 container px-4 py-8 h-full">
           <h1 className="text-3xl font-bold mb-8 text-center md:text-left text-white">
             Find a Gym Near You
           </h1>
@@ -234,7 +233,7 @@ export default function GymsPage() {
         </div>
 
         {/* Right section - Activity card (narrower now) */}
-        <div className="hidden lg:block lg:w-1/4 xl:w-1/5">
+        <div className="hidden lg:block lg:w-1/4 xl:w-1/5 ">
           <ActivityCard userUuid={storedUuid} gymBookings={gymBookings} />
         </div>
       </div>
