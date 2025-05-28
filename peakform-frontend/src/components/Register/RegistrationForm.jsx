@@ -99,7 +99,7 @@ const RegistrationForm = () => {
           <p className="text-xs font-semibold text-center text-white">
             Have an account?{" "}
             <button
-              onClick={() => (window.location.href = "http://localhost:3000/")}
+              onClick={() => (window.location.href = `${FRONTEND_URL}/`)}
               className="font-bold text-white cursor-pointer"
             >
               Login
