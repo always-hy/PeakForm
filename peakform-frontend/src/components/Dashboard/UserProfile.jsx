@@ -21,10 +21,6 @@ const UserProfile = ({
   const fileInputRef = useRef(null);
   const [record, setRecord] = useState(null);
 
-  // Achievement popup states
-  const [showAchievementPopup, setShowAchievementPopup] = useState(false);
-  const [achievementData, setAchievementData] = useState(null);
-
   // Achievement image mapping
   const achievementImages = {
     "Target Weight Reached": "/Target_Weight_Reached.png",
@@ -281,9 +277,7 @@ const UserProfile = ({
 
         <div className="flex flex-col items-end gap-4 mt-8 max-w-full">
           {/* Weight and Height Card */}
-          <div className="flex relative gap-10 items-center py-3 pr-6 pl-8 max-w-full min-h-[78px] w-[296px] max-md:px-5">
-            <div className="flex absolute bottom-0 z-0 shrink-0 self-start rounded-xl bg-zinc-900 h-[78px] min-w-60 right-[-9px] w-[305px]" />
-
+          <div className="flex justify-start relative gap-6 items-start py-3 px-0 max-w-full min-h-[78px] w-[296px]">
             <ProfileStatCard
               label="Weight"
               value={localUserData.weight}
@@ -437,72 +431,6 @@ const UserProfile = ({
           </div>
         )}
       </aside>
-
-      {/* Backdrop overlay for mobile */}
-      {isOpen && (
-        <div
-          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
-          onClick={toggleOpen}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Target Weight Achievement Popup */}
-      {showAchievementPopup && achievementData && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-          <div className="bg-zinc-900 rounded-2xl p-8 max-w-sm w-full mx-4 text-center border-2 border-green-500 shadow-2xl animate-pulse">
-            {/* Celebration Icons */}
-            <div className="text-4xl mb-4">🎉🎯🏆</div>
-
-            {/* Achievement Badge */}
-            <div className="mb-6">
-              <img
-                src={achievementData.image}
-                alt={achievementData.name}
-                className="w-24 h-24 mx-auto object-contain mb-4 animate-bounce"
-              />
-            </div>
-
-            {/* Achievement Text */}
-            <h2 className="text-2xl font-bold text-white mb-2">
-              🎊 Target Weight Reached! 🎊
-            </h2>
-            <p className="text-green-400 text-lg font-semibold mb-6">
-              {achievementData.name}
-            </p>
-
-            <p className="text-gray-300 text-sm mb-6">
-              Congratulations! You've successfully reached your target weight!
-              This is a huge milestone in your fitness journey. Keep up the
-              amazing work! 💪
-            </p>
-
-            {/* Close Button */}
-            <button
-              onClick={closeAchievementPopup}
-              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 w-full"
-            >
-              Amazing! 🎯
-            </button>
-          </div>
-
-          {/* Animated Background Elements */}
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-1/4 left-1/4 text-yellow-400 text-2xl animate-ping">
-              ⭐
-            </div>
-            <div className="absolute top-1/3 right-1/4 text-green-400 text-3xl animate-pulse">
-              🌟
-            </div>
-            <div className="absolute bottom-1/3 left-1/3 text-blue-400 text-2xl animate-bounce">
-              ✨
-            </div>
-            <div className="absolute bottom-1/4 right-1/3 text-purple-400 text-3xl animate-ping">
-              🎯
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Modal */}
       <UserStatsModal
