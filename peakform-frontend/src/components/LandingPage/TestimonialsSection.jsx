@@ -10,21 +10,21 @@ const TestimonialsSection = () => {
       content:
         "I really like the system at this management, i love recommending this software to you guys",
       author: "Alfredo Lubin",
-      rating: "/stars.svg",
+      rating: "/starss.svg",
       quote: "/quotes.png",
     },
     {
       content:
-        '"We alighn our succeess with the success of our customers which is why our offering transcends our software".',
+        '"We align our succeess with the success of our customers which is why our offering transcends our software".',
       author: "Randy Levin",
-      rating: "/stars.svg",
+      rating: "/starss.svg",
       quote: "/quotes.png",
     },
     {
       content:
         "I really like the system at this management, i love recommending this software to you guys",
       author: "Angel Mango",
-      rating: "/stars.svg",
+      rating: "/starss.svg",
       quote: "/quotes.png",
     },
   ];
@@ -74,7 +74,6 @@ const TestimonialsSection = () => {
                 <TestimonialCard
                   content={testimonial.content}
                   author={testimonial.author}
-                  image={testimonial.image}
                   rating={testimonial.rating}
                   quote={testimonial.quote}
                   className="mx-auto max-w-[655px]"
