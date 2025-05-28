@@ -1,5 +1,8 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+
 import Header from "./Header";
 import GymHero from "./GymHero";
 import FeaturesSection from "./FeaturesSection";
@@ -9,48 +12,48 @@ import RelatedGyms from "./RelatedGyms";
 import Footer from "./Footer";
 
 function GymPageIndividual() {
+  const { gym_id } = useParams(); // Correctly match the dynamic segment
   const [gymData, setGymData] = useState(null);
 
   useEffect(() => {
-    const FetchGym = async () => {
+    if (!gym_id) return;
+
+    const fetchGym = async () => {
       try {
         const uuid = localStorage.getItem("user_uuid");
-        const statsResponse = await fetch(
-          // "http://localhost:8080/user-schedules/records?userUuid=" + data.userUuid,
-          `http://localhost:8080/gyms/1?userUuid=${uuid}`,
 
+        const response = await fetch(
+          `http://localhost:8080/gyms/${gym_id}?userUuid=${uuid}`,
           {
             method: "GET",
-            credentials: "include", // Include session cookies
+            credentials: "include",
           }
         );
 
-        if (statsResponse.ok) {
-          const statsData = await statsResponse.json();
-          setGymData(statsData);
-          console.log("Gym Data:", statsData);
+        if (response.ok) {
+          const data = await response.json();
+          setGymData(data);
+          console.log("Gym Data:", data);
         } else {
-          const statsError = await statsResponse.text();
-          console.error("Gym stats failed:", statsError);
+          const error = await response.text();
+          console.error("Fetch error:", error);
         }
-      } catch (error) {
-        console.error("Error during login or fetching gym data:", error);
+      } catch (err) {
+        console.error("Error fetching gym data:", err);
       }
     };
 
-    FetchGym();
-  }, []);
+    fetchGym();
+  }, [gym_id]);
 
-  if (!gymData) {
-    return <div>Loading...</div>;
-  }
+  if (!gymData) return <div>Loading...</div>;
 
   return (
     <main className="overflow-hidden bg-black shadow-[0px_3px_6px_rgba(18,15,40,0.12)]">
       <GymHero gymData={gymData} />
       <FeaturesSection />
       <FeaturedPhotos gymPhotos={gymData.gymPhotos} />
-      <BookingSection gymSessions={gymData.gymSessions} />
+      <BookingSection gymSessions={gymData.gymSessions} gymId={gym_id} />
       <RelatedGyms />
       <Footer />
     </main>

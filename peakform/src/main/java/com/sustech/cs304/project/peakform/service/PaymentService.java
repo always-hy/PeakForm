@@ -50,6 +50,7 @@ public class PaymentService {
                             .setCurrency(request.currency())
                             .setPaymentMethod(request.paymentMethodId())
                             .setConfirm(true)
+                            .setReturnUrl("http://localhost:3000/dashboard") // required for redirect methods
                             .setAutomaticPaymentMethods(
                                     PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
                                             .setEnabled(true)
