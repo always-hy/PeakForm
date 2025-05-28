@@ -54,18 +54,30 @@ public class UserStatService {
 
         userStatRepository.save(userStat);
 
+        StringBuilder responseMessage = new StringBuilder("User statistics updated successfully.");
+
+        String waterAchievement = handleWaterAchievement(user, userStat, userUuid);
+        if (waterAchievement != null) {
+            responseMessage.append(" New achievement unlocked: \"").append(waterAchievement).append("\"!");
+        }
+
+        String weightAchievement = handleWeightAchievement(user, userStat, userUuid);
+        if (weightAchievement != null) {
+            responseMessage.append(" New achievement unlocked: \"").append(weightAchievement).append("\"!");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseMessage.toString());
+    }
+
+    private String handleWaterAchievement(User user, UserStat userStat, UUID userUuid) {
         Float currentWaterIntake = userStat.getWaterIntake();
         Float targetWaterIntake = userTargetRepository.findByUser_UserUuid(userUuid)
-                .map(UserTarget::getTargetWaterIntake)
-                .orElse(null);
+                .map(UserTarget::getTargetWaterIntake).orElse(null);
         Optional<UserRecord> userRecordOptional = userRecordRepository.findByUser_UserUuid(userUuid);
-        boolean waterAchievementUnlocked = false;
-        String unlockedWaterAchievementName = null;
 
         if (currentWaterIntake != null && targetWaterIntake != null && userRecordOptional.isPresent()) {
-            UserRecord userRecord = userRecordOptional.get();
-
             if (currentWaterIntake >= targetWaterIntake) {
+                UserRecord userRecord = userRecordOptional.get();
                 int newStreak = userRecord.getWaterIntakeStreak() + 1;
                 userRecord.setWaterIntakeStreak(newStreak);
                 userRecordRepository.save(userRecord);
@@ -73,63 +85,49 @@ public class UserStatService {
                 List<Integer> milestones = List.of(10, 50, 100);
                 if (milestones.contains(newStreak)) {
                     String achievementName = newStreak + " Water Intake Target Reached";
-
-                    Optional<Achievement> achievementOptional = achievementRepository.findByAchievementName(achievementName);
-                    if (achievementOptional.isPresent()) {
-                        Achievement achievement = achievementOptional.get();
-                        boolean alreadyUnlocked = userAchievementRepository.existsByUser_UserUuidAndAchievement_AchievementId(
-                                userUuid, achievement.getAchievementId());
-
-                        if (!alreadyUnlocked) {
-                            UserAchievement userAchievement = UserAchievement.builder()
-                                    .user(user)
-                                    .achievement(achievement)
-                                    .achievedAt(LocalDateTime.now())
-                                    .build();
-                            userAchievementRepository.save(userAchievement);
-
-                            waterAchievementUnlocked = true;
-                            unlockedWaterAchievementName = achievementName;
-                        }
-                    }
+                    return unlockAchievement(user, userUuid, achievementName);
                 }
             }
         }
+        return null;
+    }
 
+    private String handleWeightAchievement(User user, UserStat userStat, UUID userUuid) {
         Float currentWeight = userStat.getWeight();
         Float targetWeight = userTargetRepository.findByUser_UserUuid(userUuid)
-                .map(UserTarget::getTargetWeight)
-                .orElse(null);
-        boolean weightAchievementUnlocked = false;
-        String weightAchievementName = null;
-        Optional<Achievement> weightAcheivementOptional = achievementRepository.findByAchievementName("Target Weight Reached");
+                .map(UserTarget::getTargetWeight).orElse(null);
 
-        if (currentWeight != null && targetWeight != null && weightAcheivementOptional.isPresent()) {
-            Achievement weightAchievement = weightAcheivementOptional.get();
-            boolean weightTargetAchieved = currentWeight.equals(targetWeight);
-            boolean alreadyUnlocked = userAchievementRepository.existsByUser_UserUuidAndAchievement_AchievementId(userUuid, weightAchievement.getAchievementId());
+        if (currentWeight != null && targetWeight != null &&
+                currentWeight.equals(targetWeight)) {
 
-            if (weightTargetAchieved && !alreadyUnlocked) {
+            Optional<Achievement> weightAchievementOptional =
+                    achievementRepository.findByAchievementName("Target Weight Reached");
+
+            if (weightAchievementOptional.isPresent()) {
+                return unlockAchievement(user, userUuid, "Target Weight Reached");
+            }
+        }
+        return null;
+    }
+
+    private String unlockAchievement(User user, UUID userUuid, String achievementName) {
+        Optional<Achievement> achievementOptional = achievementRepository.findByAchievementName(achievementName);
+        if (achievementOptional.isPresent()) {
+            Achievement achievement = achievementOptional.get();
+            boolean alreadyUnlocked = userAchievementRepository
+                    .existsByUser_UserUuidAndAchievement_AchievementId(userUuid, achievement.getAchievementId());
+
+            if (!alreadyUnlocked) {
                 UserAchievement userAchievement = UserAchievement.builder()
                         .user(user)
-                        .achievement(weightAchievement)
+                        .achievement(achievement)
                         .achievedAt(LocalDateTime.now())
                         .build();
                 userAchievementRepository.save(userAchievement);
-
-                weightAchievementUnlocked = true;
-                weightAchievementName = weightAchievement.getAchievementName();
+                return achievementName;
             }
         }
-
-        String responseMessage = "User statistics updated successfully.";
-        if (weightAchievementUnlocked) {
-            responseMessage += " New achievement unlocked: \"" + weightAchievementName + "\"!";
-        }
-        if (waterAchievementUnlocked) {
-            responseMessage += " New achievement unlocked: \"" + unlockedWaterAchievementName + "\"!";
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
+        return null;
     }
 
     @Cacheable(value = "userStat", key = "#userUuid")
