@@ -821,8 +821,10 @@ export default function EnhancedWorkoutPlanner() {
               </div>
             ) : error ? (
               <div className="text-red-500 p-4 bg-red-900/20 rounded border border-red-700/30">
-                <p>Error: {error}</p>
-                <p className="mt-2">Please try again later.</p>
+                <p>You are on a free plan</p>
+                <p className="mt-2">
+                  Purchase PeakForm Premium to access this tool!
+                </p>
               </div>
             ) : workoutPlan ? (
               <WorkoutPlanDisplay
