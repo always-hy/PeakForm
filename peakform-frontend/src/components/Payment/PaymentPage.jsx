@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -35,6 +35,12 @@ function CheckoutForm() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
+  useEffect(() => {
+    if (success) {
+      window.location.href = "/dashboard";
+    }
+  }, [success]);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
@@ -61,11 +67,11 @@ function CheckoutForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userUuid: localStorage.getItem("user_uuid"),
-          amount: 1000,
+          amount: 10000,
           currency: "usd",
           paymentMethodId: paymentMethod.id,
         }),
-        credentials: "include", // Include cookies for session management
+        credentials: "include",
       });
 
       const data = await response.text();
